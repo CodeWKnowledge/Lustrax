@@ -147,7 +147,7 @@ const Home = () => {
       {/* Promotional Banner */}
       <section className="py-20 bg-charcoal text-white relative overflow-hidden">
          <div className="absolute inset-0 opacity-20">
-            <img src="https://images.unsplash.com/photo-1611085583191-a3b1a1a27e7?q=80&w=2070&auto=format&fit=crop" className="w-full h-full object-cover" alt="Campaign Banner" />
+            <img src="https://images.unsplash.com/photo-1611085583191-a3b1a1a27e7?q=80&w=2070&auto=format&fit=crop" loading="lazy" decoding="async" className="w-full h-full object-cover" alt="Campaign Banner" />
          </div>
          <div className="relative z-10 max-w-4xl mx-auto text-center px-6">
             <span className="text-subheading text-gold mb-4 inline-block">The Summer Campaign</span>

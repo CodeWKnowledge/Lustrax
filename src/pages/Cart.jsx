@@ -86,6 +86,7 @@ const Cart = () => {
                           )}
                       </div>
                       <button 
+                        aria-label={`Remove ${item.name} from bag`}
                         onClick={() => removeFromCart(item.id)}
                         className="text-gray-300 hover:text-red-500 transition-luxury p-2"
                       >
@@ -96,12 +97,14 @@ const Cart = () => {
                     <div className="flex items-center space-x-6 lg:space-x-8">
                        <div className="flex items-center bg-soft-bg rounded-luxury border-subtle h-11 lg:h-12">
                           <button 
+                            aria-label={`Decrease quantity of ${item.name}`}
                             onClick={() => updateQuantity(item.id, item.quantity - 1)} 
                             className="w-11 lg:w-12 h-full hover:bg-white transition-luxury text-sm"
                           >—</button>
                           <span className="w-10 lg:w-12 text-center font-bold text-[10px] lg:text-[11px] tracking-widest">{item.quantity}</span>
                            {/* C-3: Cap increment at stock_quantity */}
                            <button 
+                             aria-label={`Increase quantity of ${item.name}`}
                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
                              disabled={item.stock_quantity != null && item.quantity >= item.stock_quantity}
                              className="w-11 lg:w-12 h-full hover:bg-white transition-luxury text-sm disabled:opacity-30 disabled:cursor-not-allowed"

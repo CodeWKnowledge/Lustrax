@@ -53,18 +53,22 @@ const ProductCard = ({ product }) => {
           <img 
             src={getImageUrl(product.image_url)} 
             alt={product.name}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover transition-luxury duration-1000 group-hover:scale-105"
           />
           
-          {/* Quick Actions */}
+          {/* Quick Actions (Accessible) */}
           <div className="absolute top-4 right-4 translate-x-10 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-luxury flex flex-col space-y-3">
              <button 
+               aria-label={`Add ${product.name} to Wishlist`}
                onClick={(e) => handleAction(e, () => toggleWishlist(product))}
                className={`p-3 bg-white shadow-premium rounded-full transition-luxury group/fav ${isInWishlist(product.id) ? 'text-gold' : 'text-charcoal hover:text-gold'}`}
              >
                <FavouriteIcon size={18} className={`group-hover/fav:scale-110 ${isInWishlist(product.id) ? 'fill-gold' : ''}`} />
              </button>
              <button 
+                aria-label={product.stock_quantity === 0 ? `${product.name} is Sold Out` : `Add ${product.name} to Cart`}
                 onClick={(e) => handleAction(e, () => addToCart(product, 1))}
                 disabled={product.stock_quantity === 0}
                 className={`p-3 bg-white shadow-premium rounded-full transition-luxury group/cart ${

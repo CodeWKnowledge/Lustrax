@@ -99,8 +99,10 @@ const ProductDetails = () => {
   return (
     <div className="bg-white min-h-screen pt-24 lg:pt-40 pb-20 lg:pb-32 overflow-hidden">
       <Helmet>
-        <title>{product ? `${product.name} | Lustrax Jewelries` : 'Luxury Piece | Lustrax'}</title>
-        <meta name="description" content={product?.description || 'Discover handcrafted luxury jewelry.'} />
+        <title>{product.name} | Lustrax Jewelries</title>
+        <meta name="description" content={product.description?.substring(0, 150) || 'Discover exclusive luxury pieces at Lustrax Jewelries.'} />
+        <meta property="og:title" content={product.name} />
+        <meta property="og:image" content={product.image_url} />
       </Helmet>
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
         {/* Navigation */}
