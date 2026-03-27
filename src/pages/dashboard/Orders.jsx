@@ -15,6 +15,11 @@ import StatusBadge from '../../components/admin/ui/StatusBadge'
 const Orders = () => {
   const { user } = useAuth()
   const [orders, setOrders] = useState([])
+  const [filter, setFilter] = useState('all')
+  const [loading, setLoading] = useState(true)
+  const [selectedOrder, setSelectedOrder] = useState(null)
+  const [orderItems, setOrderItems] = useState([])
+  const [itemsLoading, setItemsLoading] = useState(false)
   const PAGE_SIZE = 10
   const [page, setPage] = useState(0)
   const [hasMore, setHasMore] = useState(true)
