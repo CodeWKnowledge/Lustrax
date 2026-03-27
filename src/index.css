@@ -1,0 +1,171 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Cinzel";
+  src: url("./assets/fonts/Cinzel/Cinzel-VariableFont_wght.ttf") format("truetype");
+  font-weight: 400 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Playfair Display";
+  src: url("./assets/fonts/Playfair_Display/PlayfairDisplay-VariableFont_wght.ttf") format("truetype");
+  font-weight: 400 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Playfair Display";
+  src: url("./assets/fonts/Playfair_Display/PlayfairDisplay-Italic-VariableFont_wght.ttf") format("truetype");
+  font-weight: 400 900;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Libre Baskerville";
+  src: url("./assets/fonts/Libre_Baskerville/LibreBaskerville-VariableFont_wght.ttf") format("truetype");
+  font-weight: 400 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("./assets/fonts/Inter/Inter-VariableFont_opsz,wght.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+@theme {
+  /* Ultra-Minimal Luxury Palette */
+  --color-gold: #D4AF37;
+  --color-gold-light: #F4E8C1;
+  --color-gold-dark: #A68A2D;
+  --color-charcoal: #0B0B0B;
+  --color-soft-bg: #FAFAFA;
+  --color-neutral-border: #F0F0F0;
+  
+  /* Modern Luxury Typography Hierarchy */
+  --font-cinzel: "Cinzel", serif;
+  --font-playfair: "Playfair Display", serif;
+  --font-libre: "Libre Baskerville", serif;
+  --font-inter: "Inter", sans-serif;
+  
+  /* Precision Shadows & Radii */
+  --shadow-premium-sm: 0 2px 4px rgba(0, 0, 0, 0.02);
+  --shadow-premium: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
+  --shadow-premium-hover: 0 30px 60px -12px rgba(0, 0, 0, 0.08);
+  --radius-luxury: 4px; /* Sharper edges feel more expensive */
+  --radius-full: 9999px;
+}
+
+@layer base {
+  :root {
+    font-family: var(--font-inter);
+    line-height: 1.6;
+    font-weight: 400;
+    color: var(--color-charcoal);
+    background-color: white;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-playfair);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  h1 { @apply text-3xl md:text-5xl lg:text-7xl; }
+  h2 { @apply text-xl md:text-2xl lg:text-4xl; }
+  h3 { @apply text-lg md:text-xl lg:text-3xl; }
+
+  /* Global Smooth Scroll */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background-color: white;
+    overflow-x: hidden;
+  }
+}
+
+@layer utilities {
+  /* Branding / Identity */
+  .font-brand {
+    font-family: var(--font-cinzel);
+    @apply uppercase tracking-[0.3em] font-medium;
+  }
+
+  /* Typography Scale */
+  .text-h1 { font-family: var(--font-playfair); @apply text-3xl md:text-5xl lg:text-7xl font-bold tracking-tighter; }
+  .text-h2 { font-family: var(--font-playfair); @apply text-2xl md:text-4xl lg:text-5xl font-bold tracking-tight; }
+  .text-subheading { font-family: var(--font-libre); @apply text-[10px] md:text-xs uppercase tracking-[0.4em] font-bold text-gray-400; }
+  .text-body { font-family: var(--font-inter); @apply text-sm md:text-base leading-relaxed; }
+  .text-price { font-family: var(--font-libre); @apply text-lg md:text-xl font-bold tracking-tight; }
+  .text-ui { font-family: var(--font-inter); @apply text-[9px] md:text-[10px] uppercase tracking-widest font-bold; }
+
+  /* Admin & Dashboard Enforced Clarity */
+  .inter-scope {
+    font-family: var(--font-inter) !important;
+  }
+  .inter-scope h1, .inter-scope h2, .inter-scope h3, .inter-scope h4, .inter-scope h5, .inter-scope h6 {
+    font-family: var(--font-inter) !important;
+    letter-spacing: -0.01em;
+  }
+
+  .mobile-only { @apply block lg:hidden; }
+  .desktop-only { @apply hidden lg:block; }
+  
+  .safe-padding { @apply px-6 md:px-12 lg:px-20; }
+
+  .glass {
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(0, 0, 0, 0.02);
+  }
+
+  .text-luxury-gradient {
+    background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-charcoal) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .border-subtle { @apply border border-neutral-border; }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Transitions */
+.transition-luxury {
+  transition: all 0.6s cubic-bezier(0.2, 1, 0.2, 1);
+}
+
+.hover-scale {
+  transition: transform 0.8s cubic-bezier(0.2, 1, 0.2, 1);
+}
+.hover-scale:hover {
+  transform: scale(1.03);
+}
+
+/* Scrollbar Style */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: white;
+}
+::-webkit-scrollbar-thumb {
+  background: #E5E7EB;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gold);
+}
