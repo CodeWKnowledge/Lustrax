@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import { Cancel01Icon } from 'hugeicons-react'
+import Button from './ui/Button'
 import LoginForm from './auth/LoginForm'
 import SignupForm from './auth/SignupForm'
 
@@ -11,8 +12,12 @@ import SignupForm from './auth/SignupForm'
  */
 const AuthModal = () => {
 
-  const { isAuthModalOpen, closeAuthModal } = useAuth()
-  const [mode, setMode] = useState('login') // 'login' or 'signup'
+  const { isAuthModalOpen, closeAuthModal, authMode } = useAuth()
+  const [mode, setMode] = useState(authMode || 'login')
+
+  useEffect(() => {
+    if (authMode) setMode(authMode)
+  }, [authMode, isAuthModalOpen])
 
   const toggleMode = () => setMode(prev => prev === 'login' ? 'signup' : 'login')
 
@@ -47,7 +52,16 @@ const AuthModal = () => {
             </button>
 
 
-            {mode === 'login' ? (
+            {mode === 'select' ? (
+              <div className="text-center space-y-6 py-8">
+                 <h2 className="text-2xl font-serif text-charcoal tracking-wide">Welcome</h2>
+                 <p className="text-[10px] uppercase tracking-[0.2em] text-gray-400">Gain access to the exclusive collection.</p>
+                 <div className="flex flex-col space-y-4 pt-4">
+                    <Button onClick={() => setMode('signup')} variant="gold" className="w-full h-12 text-[10px] tracking-widest shadow-premium-sm">Create Account</Button>
+                    <Button onClick={() => setMode('login')} variant="outline" className="w-full h-12 text-[10px] tracking-widest">Sign In</Button>
+                 </div>
+              </div>
+            ) : mode === 'login' ? (
               <LoginForm onToggleMode={toggleMode} onComplete={closeAuthModal} />
             ) : (
               <SignupForm onToggleMode={toggleMode} onComplete={closeAuthModal} />

@@ -8,6 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+  const [authMode, setAuthMode] = useState('login')
 
   useEffect(() => {
     // Get initial session
@@ -87,14 +88,17 @@ export const AuthProvider = ({ children }) => {
     if (user) return fetchProfile(user.id)
   }
 
-  const openAuthModal = () => setIsAuthModalOpen(true)
+  const openAuthModal = (mode = 'login') => {
+    setAuthMode(mode)
+    setIsAuthModalOpen(true)
+  }
   const closeAuthModal = () => setIsAuthModalOpen(false)
 
   return (
     <AuthContext.Provider value={{ 
       user, profile, loading, 
       signIn, signUp, signOut, refreshProfile,
-      isAuthModalOpen, openAuthModal, closeAuthModal 
+      isAuthModalOpen, openAuthModal, closeAuthModal, authMode
     }}>
       {children}
     </AuthContext.Provider>
