@@ -28,11 +28,11 @@ const AdminTopbar = ({ title, onMenuClick }) => {
         <h2 className="text-[10px] font-bold uppercase tracking-[0.5em] text-charcoal truncate max-w-[150px] sm:max-w-none">{title || 'Overview'}</h2>
         
         <div className="hidden lg:flex items-center border-b border-transparent focus-within:border-gold transition-luxury group py-1">
-          <Search01Icon size={16} className="text-gray-200 group-focus-within:text-gold transition-luxury" />
+          <Search01Icon size={18} className="text-gray-400 group-focus-within:text-gold transition-luxury" />
           <input 
             type="text" 
             placeholder="Search manifest..." 
-            className="bg-transparent border-none outline-none ml-4 text-[10px] font-bold tracking-[0.2em] uppercase text-charcoal placeholder:text-gray-200 w-48"
+            className="bg-transparent border-none outline-none ml-4 text-[11px] font-bold tracking-[0.2em] uppercase text-charcoal placeholder:text-gray-400 w-48"
           />
         </div>
       </div>
@@ -83,9 +83,9 @@ const AdminTopbar = ({ title, onMenuClick }) => {
                         <div className="flex items-start gap-4">
                            <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${!notif.is_read ? 'bg-gold shadow-[0_0_8px_rgba(212,175,55,0.6)]' : 'bg-gray-100'}`}></div>
                            <div className="space-y-1">
-                              <p className="text-[10px] font-bold uppercase tracking-wide text-charcoal group-hover:text-gold transition-luxury">{notif.title}</p>
-                              <p className="text-[9px] text-gray-400 line-clamp-1 opacity-80">{notif.message}</p>
-                              <p className="text-[8px] text-gray-200 uppercase tracking-tighter">
+                              <p className="text-[11px] font-bold uppercase tracking-wide text-charcoal group-hover:text-gold transition-luxury">{notif.title}</p>
+                              <p className="text-[10px] text-gray-500 line-clamp-1">{notif.message}</p>
+                              <p className="text-[9px] text-gray-400 uppercase tracking-tighter">
                                 {formatDistanceToNow(new Date(notif.created_at), { addSuffix: true })}
                               </p>
                            </div>
@@ -113,10 +113,10 @@ const AdminTopbar = ({ title, onMenuClick }) => {
         <div className="flex items-center space-x-3 lg:space-x-4 group cursor-pointer border-l border-gray-50 pl-4 lg:pl-10">
 
           <div className="text-right hidden lg:block">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-charcoal leading-none mb-1">
+            <p className="text-[11px] font-bold uppercase tracking-widest text-charcoal leading-none mb-1">
                {profile?.first_name || 'Administrator'}
             </p>
-            <p className="text-[8px] font-bold uppercase tracking-[0.3em] text-gold opacity-60">Admin Access</p>
+            <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-gold">Admin Access</p>
           </div>
           <div className="w-10 h-10 rounded-full bg-soft-bg border border-gray-50 flex items-center justify-center group-hover:border-gold transition-luxury overflow-hidden">
             <UserCircleIcon size={20} className="text-gray-300 group-hover:text-gold transition-luxury" />

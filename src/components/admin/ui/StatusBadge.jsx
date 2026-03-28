@@ -21,7 +21,7 @@ const StatusBadge = ({ status }) => {
   }
 
   return (
-    <span className={`text-[8px] font-bold uppercase tracking-[0.3em] px-3 py-1.5 rounded-full ${getStyles(status)} transition-luxury flex-shrink-0 inline-block`}>
+    <span className={`text-[10px] font-bold uppercase tracking-[0.3em] px-3 py-1.5 rounded-full ${getStyles(status)} transition-luxury flex-shrink-0 inline-block`}>
       {status || 'Unknown'}
     </span>
   )

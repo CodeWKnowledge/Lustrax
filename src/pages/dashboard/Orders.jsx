@@ -139,7 +139,7 @@ const Orders = () => {
           </thead>
           <tbody className="divide-y divide-gray-50 block lg:table-row-group">
             {orders.length > 0 ? orders.map(order => (
-              <tr key={order.id} className="block lg:table-row group hover:bg-soft-bg/30 transition-luxury p-4 lg:p-0">
+              <tr key={order.id} className="block lg:table-row text-sm border border-gray-100 lg:border-t-0 lg:border-l-0 lg:border-r-0 lg:border-b lg:border-gray-50 rounded-xl mb-4 lg:mb-0 lg:rounded-none group hover:bg-soft-bg/30 transition-luxury p-5 lg:p-0">
                 <td className="block lg:table-cell px-0 lg:px-10 py-1 lg:py-8 font-mono text-[10px] text-gray-400 group-hover:text-charcoal transition-luxury">
                   <span className="lg:hidden text-gray-400 mr-2 uppercase tracking-widest font-bold">Ref:</span>
                   #{order.id.slice(0, 8).toUpperCase()}

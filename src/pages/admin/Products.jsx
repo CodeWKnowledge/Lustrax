@@ -289,7 +289,7 @@ const Products = () => {
         ]}
       >
         {filteredProducts.map(p => (
-          <tr key={p.id} className={`block lg:table-row text-sm border-b border-gray-50 last:border-0 group transition-luxury p-3 lg:p-0 ${selectedProductIds.includes(p.id) ? 'bg-gold/5' : 'hover:bg-soft-bg/20'}`}>
+          <tr key={p.id} className={`block lg:table-row text-sm border border-gray-100 lg:border-t-0 lg:border-l-0 lg:border-r-0 lg:border-b lg:border-gray-50 rounded-xl mb-4 lg:mb-0 lg:rounded-none lg:last:border-b-0 group transition-luxury p-5 lg:p-0 ${selectedProductIds.includes(p.id) ? 'bg-gold/5' : 'hover:bg-soft-bg/20'}`}>
             <td className="px-3 py-3 lg:px-6 lg:py-4 w-12 hidden lg:table-cell">
                <input 
                  type="checkbox" 

@@ -196,7 +196,7 @@ const Overview = () => {
       />
 
       <div className="flex flex-col space-y-4">
-         <span className="text-[10px] uppercase tracking-[0.6em] font-bold text-gold italic">Admin Intelligence</span>
+         <span className="text-[11px] uppercase tracking-[0.6em] font-bold text-gold italic">Admin Intelligence</span>
          <h1 className="text-2xl lg:text-4xl font-serif text-charcoal uppercase tracking-[0.2em]">Business Overview</h1>
       </div>
 
@@ -236,10 +236,10 @@ const Overview = () => {
          <div className="flex-[3] min-w-[100%] lg:min-w-[500px] space-y-10 transition-all duration-300">
             <div className="flex items-center justify-between border-b border-gray-50 pb-8">
                <div className="flex items-center space-x-4">
-                  <ChartLineData01Icon size={18} className="text-gold" />
-                  <h3 className="text-[10px] font-bold uppercase tracking-[0.5em] text-charcoal/80">Revenue Performance</h3>
+                  <ChartLineData01Icon size={20} className="text-gold" />
+                  <h3 className="text-[11px] font-bold uppercase tracking-[0.5em] text-charcoal">Revenue Performance</h3>
                </div>
-               <span className="text-[9px] font-bold uppercase tracking-widest text-gray-300">Last 7 Cycles</span>
+               <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Last 7 Cycles</span>
             </div>
             
             <div className="min-h-[400px] h-[400px] w-full bg-white rounded-luxury border border-gray-50/50 p-6 lg:p-10 shadow-premium">
@@ -294,24 +294,24 @@ const Overview = () => {
          {/* Sidebar Stats or Highlights */}
          <div className="flex-1 min-w-[100%] lg:min-w-[300px] space-y-12 transition-all duration-300">
             <div className="flex items-center space-x-4 border-b border-gray-50 pb-8">
-               <h3 className="text-[10px] font-bold uppercase tracking-[0.5em] text-charcoal/60">Inventory Health</h3>
+               <h3 className="text-[11px] font-bold uppercase tracking-[0.5em] text-charcoal">Inventory Health</h3>
             </div>
             
             <div className="space-y-8 bg-charcoal text-white p-10 lg:p-12 rounded-luxury relative overflow-hidden shadow-2xl border border-white/5">
                <div className="absolute top-0 right-0 w-full h-full bg-gold/5 blur-[100px] pointer-events-none"></div>
                <div className="space-y-2 relative z-10">
-                  <span className="text-[9px] uppercase tracking-[0.5em] text-white/40 font-bold">Stock Intelligence</span>
+                  <span className="text-[10px] uppercase tracking-[0.5em] text-white/80 font-bold">Stock Intelligence</span>
                   <p className="text-4xl font-serif text-white tracking-widest">{stats.products}</p>
-                  <p className="text-[8px] uppercase tracking-[0.3em] text-gold font-bold italic pt-2">Curated Pieces in Asset Book</p>
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-bold pt-2">Curated Pieces in Asset Book</p>
                </div>
                <div className="pt-8 border-t border-white/5 space-y-4">
-                  <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-widest text-white/60">
+                  <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-white">
                      <span>Low Stock Alert</span>
                      <span className={stats.lowStock > 0 ? 'text-orange-400' : 'text-green-400'}>
                        {stats.lowStock} Pieces
                      </span>
                   </div>
-                  <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-widest text-white/60">
+                  <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-white">
                      <span>Acquisition Velocity</span>
                      <span>Stable</span>
                   </div>
@@ -336,7 +336,7 @@ const Overview = () => {
           ]}
         >
           {recentOrders.map(order => (
-            <tr key={order.id} className="block lg:table-row text-sm border-b border-gray-50 last:border-0 group hover:bg-soft-bg/20 transition-luxury p-4 lg:p-0">
+            <tr key={order.id} className="block lg:table-row text-sm border border-gray-100 lg:border-t-0 lg:border-l-0 lg:border-r-0 lg:border-b lg:border-gray-50 rounded-xl mb-4 lg:mb-0 lg:rounded-none group hover:bg-soft-bg/20 transition-luxury p-5 lg:p-0">
               <td className="block lg:table-cell px-0 lg:px-10 py-1 lg:py-8">
                  <div className="flex flex-col">
                     <span className="text-[11px] font-bold uppercase tracking-widest text-charcoal">{order.profiles?.full_name || 'Anonymous User'}</span>

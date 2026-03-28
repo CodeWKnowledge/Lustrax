@@ -195,16 +195,16 @@ const Customers = () => {
         
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-4 lg:gap-6 w-full md:w-auto">
           <div className="flex items-center space-x-4 bg-soft-bg px-4 py-3 rounded-luxury border border-gray-50 focus-within:border-gold/30 transition-luxury min-w-[320px]">
-            <Search01Icon size={14} className="text-gray-300" />
+            <Search01Icon size={16} className="text-gray-400" />
             <input 
               type="text"
               placeholder="SEARCH BY NAME, EMAIL, ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-transparent text-[10px] uppercase font-bold tracking-[0.2em] text-charcoal outline-none w-full placeholder:text-gray-200"
+              className="bg-transparent text-[11px] uppercase font-bold tracking-[0.2em] text-charcoal outline-none w-full placeholder:text-gray-400"
             />
           </div>
-          <span className="hidden lg:block text-[9px] text-gray-300 font-bold uppercase tracking-[0.4em] pl-4 border-l border-gray-50 h-6 leading-6">
+          <span className="hidden lg:block text-[10px] text-gray-500 font-bold uppercase tracking-[0.4em] pl-4 border-l border-gray-50 h-6 leading-6">
             {filteredCustomers.length} REGISTERED USERS
           </span>
         </div>
@@ -220,7 +220,7 @@ const Customers = () => {
         ]}
       >
         {filteredCustomers.map(client => (
-          <tr key={client.id} className={`block lg:table-row text-sm border-b border-gray-50 last:border-0 group transition-luxury p-4 lg:p-0 ${selectedUserIds.includes(client.id) ? 'bg-gold/5' : 'hover:bg-soft-bg/20'}`}>
+          <tr key={client.id} className={`block lg:table-row text-sm border border-gray-100 lg:border-t-0 lg:border-l-0 lg:border-r-0 lg:border-b lg:border-gray-50 rounded-xl mb-4 lg:mb-0 lg:rounded-none last:border-gray-100 lg:last:border-0 group transition-luxury p-5 lg:p-0 ${selectedUserIds.includes(client.id) ? 'bg-gold/5' : 'hover:bg-soft-bg/20'}`}>
             <td className="px-6 py-5 lg:px-10 lg:py-8 w-12 hidden lg:table-cell">
                <input 
                  type="checkbox" 
@@ -231,12 +231,12 @@ const Customers = () => {
             </td>
             <td className="block lg:table-cell px-0 lg:px-4 xl:px-10 py-1 lg:py-8">
               <div className="flex items-center space-x-4 lg:space-x-6">
-                <div className="w-9 h-9 lg:w-11 lg:h-11 rounded-full bg-soft-bg border-subtle flex items-center justify-center text-gray-200 group-hover:text-gold transition-luxury">
-                  <UserCircleIcon size={16} />
+                <div className="w-9 h-9 lg:w-11 lg:h-11 rounded-full bg-soft-bg border-subtle flex items-center justify-center text-gray-400 group-hover:text-gold transition-luxury">
+                  <UserCircleIcon size={20} />
                 </div>
                 <div className="flex flex-col space-y-0.5 lg:space-y-1">
-                   <span className="text-[11px] font-bold uppercase tracking-widest text-charcoal">{client.full_name || 'Anonymous User'}</span>
-                   <span className="text-[8px] font-mono text-gray-300 tracking-widest uppercase opacity-40 italic">{client.email}</span>
+                   <span className="text-[12px] lg:text-sm font-bold uppercase tracking-widest text-charcoal">{client.full_name || 'Anonymous User'}</span>
+                   <span className="text-[10px] font-mono text-gray-500 tracking-widest uppercase opacity-80 italic">{client.email}</span>
                 </div>
               </div>
             </td>
@@ -253,15 +253,15 @@ const Customers = () => {
                    <button 
                      onClick={() => toggleRole(client.id, client.role)}
                      disabled={client.id === user?.id}
-                     className={`flex items-center space-x-3 text-[9px] font-bold uppercase tracking-[0.3em] transition-luxury py-2 px-4 border border-gray-50 lg:border-none rounded-luxury ${
-                       client.id === user?.id ? 'opacity-20 cursor-not-allowed text-gray-400' : 'text-gray-300 hover:text-gold'
+                     className={`flex items-center space-x-3 text-[10px] font-bold uppercase tracking-[0.3em] transition-luxury py-2 px-4 border border-gray-50 lg:border-none rounded-luxury ${
+                       client.id === user?.id ? 'opacity-30 cursor-not-allowed text-gray-500' : 'text-gray-500 hover:text-gold'
                      }`}
                    >
-                      {client.role === 'admin' ? <Shield01Icon size={16} /> : <ChampionIcon size={16} />}
+                      {client.role === 'admin' ? <Shield01Icon size={18} /> : <ChampionIcon size={18} />}
                       <span>{client.role === 'admin' ? 'Revoke Admin' : 'Grant Admin'}</span>
                    </button>
-                   <button onClick={() => handleViewDetails(client)} className="text-gray-200 hover:text-gold transition-luxury p-2 border border-gray-50 lg:border-transparent rounded-luxury lg:rounded-none">
-                       <ViewIcon size={18} />
+                   <button onClick={() => handleViewDetails(client)} className="text-gray-500 hover:text-gold transition-luxury p-2 border border-gray-50 lg:border-transparent rounded-luxury lg:rounded-none">
+                       <ViewIcon size={20} />
                    </button>
                 </div>
             </td>

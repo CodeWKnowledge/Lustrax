@@ -107,7 +107,7 @@ const Finance = () => {
         ]}
       >
         {payments.map(pay => (
-          <tr key={pay.id} className="block lg:table-row text-sm border-b border-gray-50 last:border-0 group hover:bg-soft-bg/30 transition-luxury p-4 lg:p-0">
+          <tr key={pay.id} className="block lg:table-row text-sm border border-gray-100 lg:border-t-0 lg:border-l-0 lg:border-r-0 lg:border-b lg:border-gray-50 rounded-xl mb-4 lg:mb-0 lg:rounded-none group hover:bg-soft-bg/30 transition-luxury p-5 lg:p-0">
             <td className="block lg:table-cell px-0 lg:px-10 py-2 lg:py-8 font-mono text-[9px] text-gray-300 group-hover:text-charcoal transition-luxury">
               <div className="flex items-center space-x-6 lg:space-x-8">
                 <div className="hidden lg:flex w-10 h-10 rounded-full bg-soft-bg border-subtle items-center justify-center text-gray-200 group-hover:text-gold transition-luxury flex-shrink-0">

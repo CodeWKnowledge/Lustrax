@@ -62,20 +62,20 @@ const AdminSidebar = ({ isCollapsed, isSidebarOpen, onClose, toggleCollapse }) =
           <div className={`h-24 flex items-center transition-all overflow-hidden ${isCollapsed ? 'lg:justify-center lg:flex-col lg:px-0 lg:pt-4 lg:gap-2' : 'justify-between px-8'}`}>
             <Link to="/" className={`flex flex-col items-center justify-center ${isCollapsed ? '' : 'items-start'}`}>
               <span className={`text-xl font-serif text-white uppercase tracking-[0.4em] transition-all ${isCollapsed ? 'lg:opacity-0 lg:hidden' : 'opacity-100'}`}>Lustrax</span>
-              <span className={`text-[7px] text-gold font-bold tracking-[0.4em] uppercase opacity-60 transition-all ${isCollapsed ? 'lg:opacity-0 lg:hidden' : 'opacity-100'}`}>Admin</span>
+              <span className={`text-[9px] text-gold font-bold tracking-[0.4em] uppercase transition-all ${isCollapsed ? 'lg:opacity-0 lg:hidden' : 'opacity-100'}`}>Admin</span>
               {isCollapsed && <span className="text-xl font-serif text-gold hidden lg:block">L</span>}
             </Link>
             <button 
               onClick={toggleCollapse}
-              className={`text-gray-600 hover:text-white transition-luxury hidden lg:block ${isCollapsed ? 'm-0' : ''}`}
+              className={`text-gray-400 hover:text-white transition-luxury hidden lg:block ${isCollapsed ? 'm-0' : ''}`}
             >
-              <Menu01Icon size={18} />
+              <Menu01Icon size={20} />
             </button>
             <button 
               onClick={onClose}
-              className="text-gray-600 hover:text-white transition-luxury lg:hidden"
+              className="text-gray-400 hover:text-white transition-luxury lg:hidden"
             >
-              <Menu01Icon size={18} />
+              <Menu01Icon size={20} />
             </button>
           </div>
 
@@ -90,7 +90,7 @@ const AdminSidebar = ({ isCollapsed, isSidebarOpen, onClose, toggleCollapse }) =
                   onClick={() => onClose()}
                   className={`flex items-center transition-luxury relative group rounded-luxury 
                     ${isCollapsed ? 'lg:justify-center lg:px-0 lg:py-4 px-5 py-3.5 space-x-4 lg:space-x-0' : 'space-x-4 px-5 py-3.5'}
-                    ${active ? 'bg-white/5 text-white' : 'text-gray-500 hover:text-white'}
+                    ${active ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white'}
                   `}
                 >
                   {active && (
@@ -99,7 +99,7 @@ const AdminSidebar = ({ isCollapsed, isSidebarOpen, onClose, toggleCollapse }) =
                   <div className={`${active ? 'text-gold' : 'group-hover:text-gold transition-luxury'}`}>
                     {item.icon}
                   </div>
-                  <span className={`text-[10px] font-bold uppercase tracking-[0.2em] transition-all flex items-center justify-between flex-grow ${isCollapsed ? 'lg:opacity-0 lg:hidden lg:w-0' : 'opacity-100'}`}>
+                  <span className={`text-[11px] font-bold uppercase tracking-[0.2em] transition-all flex items-center justify-between flex-grow ${isCollapsed ? 'lg:opacity-0 lg:hidden lg:w-0' : 'opacity-100'}`}>
                     <span>{item.name}</span>
                     {item.badge > 0 && !isCollapsed && (
                       <span className="bg-gold text-white text-[8px] px-1.5 py-0.5 rounded-full font-black min-w-[18px] text-center">
@@ -122,10 +122,10 @@ const AdminSidebar = ({ isCollapsed, isSidebarOpen, onClose, toggleCollapse }) =
           </nav>
 
           {/* Footer */}
-          <div className={`border-t border-white/5 transition-all ${isCollapsed ? 'lg:p-4 p-6' : 'p-6'}`}>
-             <button className={`w-full flex items-center rounded-luxury text-gray-600 hover:bg-red-500/10 hover:text-red-500 transition-luxury group ${isCollapsed ? 'lg:justify-center lg:px-0 lg:py-4 px-5 py-4 space-x-4 lg:space-x-0' : 'space-x-4 px-5 py-4'}`}>
-                <Logout01Icon size={18} />
-                <span className={`text-[10px] font-bold uppercase tracking-[0.2em] transition-all ${isCollapsed ? 'lg:opacity-0 lg:hidden' : 'opacity-100'}`}>
+          <div className={`border-t border-white/10 transition-all ${isCollapsed ? 'lg:p-4 p-6' : 'p-6'}`}>
+             <button className={`w-full flex items-center rounded-luxury text-gray-400 hover:bg-red-500/20 hover:text-red-400 transition-luxury group ${isCollapsed ? 'lg:justify-center lg:px-0 lg:py-4 px-5 py-4 space-x-4 lg:space-x-0' : 'space-x-4 px-5 py-4'}`}>
+                <Logout01Icon size={20} />
+                <span className={`text-[11px] font-bold uppercase tracking-[0.2em] transition-all ${isCollapsed ? 'lg:opacity-0 lg:hidden' : 'opacity-100'}`}>
                   Logout
                 </span>
              </button>
