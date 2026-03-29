@@ -6,7 +6,8 @@
   "scripts": {
     "start": "npx serve -s dist",
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run sitemap && vite build",
+    "sitemap": "node --env-file=.env scripts/generate-sitemap.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },

@@ -1,0 +1,11 @@
+# LUSTRAX JEWELRIES ROBOTS.TXT
+# https://lustrax-jewelries.com
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /checkout
+Disallow: /cart
+
+Sitemap: https://lustrax-jewelries.com/sitemap.xml
