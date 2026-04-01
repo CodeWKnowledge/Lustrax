@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ShoppingBag02Icon, FavouriteIcon } from 'hugeicons-react'
+import { getOptimizedImage } from '../../utils/imageOptimizer'
 import { useAuth } from '../../context/AuthContext'
 import { useCart } from '../../context/CartContext'
 import { useWishlist } from '../../context/WishlistContext'
@@ -32,15 +33,6 @@ const ProductCard = ({ product }) => {
     else callback()
   }
 
-  const getImageUrl = (url) => {
-    if (!url) return 'https://via.placeholder.com/400x500?text=LUSTRAX';
-    if (typeof url !== 'string' || url.startsWith('{') || url.startsWith('[')) {
-      console.warn('Potential malformed image URL detected:', url);
-      return 'https://via.placeholder.com/400x500?text=LUSTRAX';
-    }
-    return url;
-  };
-
   return (
     <motion.div 
       initial={{ opacity: 0, y: 15 }}
@@ -51,12 +43,18 @@ const ProductCard = ({ product }) => {
       <Link to={`/product/${product.id}`}>
         <div className="relative aspect-[4/5] overflow-hidden bg-soft-bg rounded-luxury mb-4 transition-luxury border border-transparent group-hover:border-black/5">
           <img 
-            src={getImageUrl(product.image_url)} 
-            alt={product.name}
+            src={getOptimizedImage(product.image_url, 600)} 
+            alt={`Lustrax Luxury ${product.name} - Handcrafted High-End Jewelry`}
             loading="lazy"
             decoding="async"
             className="w-full h-full object-cover transition-luxury duration-1000 group-hover:scale-105"
           />
+          
+          {product.stock_quantity === 0 && (
+            <div className="absolute inset-0 bg-white/40 backdrop-blur-[1px] flex items-center justify-center z-10 pointer-events-none">
+              <span className="bg-charcoal text-white px-4 py-2 text-[10px] font-bold tracking-[0.2em] uppercase shadow-premium">OUT OF STOCK</span>
+            </div>
+          )}
           
           {/* Quick Actions (Accessible) */}
           <div className="absolute top-4 right-4 translate-x-10 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-luxury flex flex-col space-y-3">
@@ -97,7 +95,7 @@ const ProductCard = ({ product }) => {
               </span>
             )}
           </div>
-          <p className="text-price text-charcoal/80">
+          <p className={`text-price ${product.stock_quantity === 0 ? 'line-through text-gray-400/50' : 'text-charcoal/80'}`}>
             ₦{parseFloat(product.price || 0).toLocaleString()}
           </p>
         </div>

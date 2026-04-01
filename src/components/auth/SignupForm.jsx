@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Button from '../ui/Button'
 import { useAuth } from '../../context/AuthContext'
 import { useModal } from '../../context/ModalContext'
+import { EyeIcon, ViewOffIcon, CheckmarkCircle01Icon, Cancel01Icon } from 'hugeicons-react'
 
 /**
  * SignupForm Component
@@ -12,12 +13,34 @@ const SignupForm = ({ onToggleMode, onComplete }) => {
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  
+  const [validation, setValidation] = useState({
+    length: false,
+    upper: false,
+    number: false,
+    special: false
+  })
+
   const { signUp } = useAuth()
   const { showAlert } = useModal()
 
+  useEffect(() => {
+    setValidation({
+      length: password.length >= 6,
+      upper: /[A-Z]/.test(password),
+      number: /[0-9]/.test(password),
+      special: /[!@#$%^&*()_+\-=\[\]{};':"|<>?,.\/`~]/.test(password)
+    })
+  }, [password])
+
+  const isFormValid = validation.length && validation.upper && validation.number && validation.special && fullName && email && phone
+
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (!isFormValid) return
+    
     setLoading(true)
     const { error } = await signUp(email, password, fullName, phone)
     if (error) showAlert('Registration Error', error.message)
@@ -29,49 +52,84 @@ const SignupForm = ({ onToggleMode, onComplete }) => {
   }
 
   return (
-    <div className="space-y-10">
-      <div className="text-center space-y-2">
-         <h2 className="text-2xl font-bold tracking-tight text-charcoal">Create Account</h2>
-         <p className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">Create a new account</p>
+    <div className="space-y-6">
+      <div className="text-center space-y-1">
+         <h2 className="text-2xl font-bold tracking-tight text-charcoal uppercase">Create Account</h2>
+         <p className="text-[9px] text-gray-400 uppercase tracking-widest font-medium">New Identity Protocol</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-         <div className="space-y-2">
-            <label className="text-[9px] uppercase font-bold tracking-[0.2em] text-gray-400">Full Name</label>
-            <input 
-              type="text" value={fullName} onChange={e => setFullName(e.target.value)}
-              className="w-full bg-transparent border-b border-gray-100 py-3 outline-none focus:border-charcoal transition-luxury font-medium text-sm placeholder:text-gray-200"
-              placeholder="Julian Blackwood" required
-            />
+      <form onSubmit={handleSubmit} className="space-y-4">
+         {/* Row 1: COMPACT GRID */}
+         <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+                <label className="text-[8px] uppercase font-bold tracking-[0.2em] text-gray-400">Full Name</label>
+                <input 
+                  type="text" value={fullName} onChange={e => setFullName(e.target.value)}
+                  className="w-full bg-transparent border-b border-gray-100 py-2 outline-none focus:border-charcoal transition-luxury font-medium text-[11px] placeholder:text-gray-200"
+                  placeholder="Julian Blackwood" required
+                />
+            </div>
+            <div className="space-y-1">
+                <label className="text-[8px] uppercase font-bold tracking-[0.2em] text-gray-400">Email</label>
+                <input 
+                  type="email" value={email} onChange={e => setEmail(e.target.value)}
+                  className="w-full bg-transparent border-b border-gray-100 py-2 outline-none focus:border-charcoal transition-luxury font-medium text-[11px] placeholder:text-gray-200"
+                  placeholder="your@email.com" required
+                />
+            </div>
          </div>
-         <div className="space-y-2">
-            <label className="text-[9px] uppercase font-bold tracking-[0.2em] text-gray-400">Email</label>
-            <input 
-              type="email" value={email} onChange={e => setEmail(e.target.value)}
-              className="w-full bg-transparent border-b border-gray-100 py-3 outline-none focus:border-charcoal transition-luxury font-medium text-sm placeholder:text-gray-200"
-              placeholder="your@email.com" required
-            />
-         </div>
-         <div className="space-y-2">
-            <label className="text-[9px] uppercase font-bold tracking-[0.2em] text-gray-400">Phone Number</label>
+
+         <div className="space-y-1">
+            <label className="text-[8px] uppercase font-bold tracking-[0.2em] text-gray-400">Phone Number</label>
             <input 
               type="tel" value={phone} onChange={e => setPhone(e.target.value)}
-              className="w-full bg-transparent border-b border-gray-100 py-3 outline-none focus:border-charcoal transition-luxury font-medium text-sm placeholder:text-gray-200"
+              className="w-full bg-transparent border-b border-gray-100 py-2 outline-none focus:border-charcoal transition-luxury font-medium text-[11px] placeholder:text-gray-200"
               placeholder="+234..." required
             />
          </div>
-         <div className="space-y-2">
-            <label className="text-[9px] uppercase font-bold tracking-[0.2em] text-gray-400">Password</label>
-            <input 
-              type="password" value={password} onChange={e => setPassword(e.target.value)}
-              className="w-full bg-transparent border-b border-gray-100 py-3 outline-none focus:border-charcoal transition-luxury font-medium text-sm placeholder:text-gray-200"
-              placeholder="••••••••" required
-            />
+
+         <div className="space-y-1">
+            <label className="text-[8px] uppercase font-bold tracking-[0.2em] text-gray-400">Security Key</label>
+            <div className="relative group">
+              <input 
+                type={showPassword ? "text" : "password"} 
+                value={password} onChange={e => setPassword(e.target.value)}
+                className="w-full bg-transparent border-b border-gray-100 py-2 pr-10 outline-none focus:border-charcoal transition-luxury font-medium text-[11px] placeholder:text-gray-200"
+                placeholder="••••••••" required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-0 bottom-2 text-gray-300 hover:text-gold transition-luxury px-2"
+              >
+                {showPassword ? <ViewOffIcon size={14} /> : <EyeIcon size={14} />}
+              </button>
+            </div>
+            
+            {/* LIVE VALIDATION LEDGER - COMPACT */}
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 pt-2">
+               <div className={`flex items-center space-x-1.5 ${validation.length ? 'text-green-600' : 'text-gray-300'}`}>
+                  {validation.length ? <CheckmarkCircle01Icon size={10} /> : <div className="w-2.5 h-2.5 border border-gray-100 rounded-full" />}
+                  <span className="text-[7px] uppercase tracking-wider font-bold">6+ Chars</span>
+               </div>
+               <div className={`flex items-center space-x-1.5 ${validation.upper ? 'text-green-600' : 'text-gray-300'}`}>
+                  {validation.upper ? <CheckmarkCircle01Icon size={10} /> : <div className="w-2.5 h-2.5 border border-gray-100 rounded-full" />}
+                  <span className="text-[7px] uppercase tracking-wider font-bold">Uppercase</span>
+               </div>
+               <div className={`flex items-center space-x-1.5 ${validation.number ? 'text-green-600' : 'text-gray-300'}`}>
+                  {validation.number ? <CheckmarkCircle01Icon size={10} /> : <div className="w-2.5 h-2.5 border border-gray-100 rounded-full" />}
+                  <span className="text-[7px] uppercase tracking-wider font-bold">Number</span>
+               </div>
+               <div className={`flex items-center space-x-1.5 ${validation.special ? 'text-green-600' : 'text-gray-300'}`}>
+                  {validation.special ? <CheckmarkCircle01Icon size={10} /> : <div className="w-2.5 h-2.5 border border-gray-100 rounded-full" />}
+                  <span className="text-[7px] uppercase tracking-wider font-bold">Symbol</span>
+               </div>
+            </div>
          </div>
          
-         <div className="pt-4">
-           <Button type="submit" disabled={loading} className="w-full h-14" variant="primary">
-              {loading ? 'Creating your account...' : 'Create Account'}
+         <div className="pt-2">
+           <Button type="submit" disabled={loading || !isFormValid} className="w-full h-12 text-[10px] tracking-[0.2em]" variant="primary">
+              {loading ? 'INGESTING...' : 'INITIALIZE ACCOUNT'}
            </Button>
          </div>
       </form>

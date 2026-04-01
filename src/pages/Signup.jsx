@@ -37,9 +37,6 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-soft-bg px-6 py-24">
-      <div className="absolute inset-0 z-0 opacity-10">
-         <img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=1000&auto=format&fit=crop" className="w-full h-full object-cover grayscale" />
-      </div>
 
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}

@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import ProductCard from '../components/ui/ProductCard'
 import Skeleton from '../components/ui/Skeleton'
 import { useSearchParams } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
+import { getOptimizedImage } from '../utils/imageOptimizer'
 
 const CATEGORIES = ['All', 'Watches', 'Necklaces', 'Earrings', 'Rings']
 
@@ -70,13 +72,42 @@ const Products = () => {
 
   return (
     <div className="bg-white min-h-screen pt-24 lg:pt-32 pb-20 lg:pb-32">
+      <Helmet>
+        <title>{activeCategory === 'All' ? 'Shop Full Collection' : `Buy ${activeCategory}`} | Lustrax Jewelries Nigeria</title>
+        <meta name="description" content={`Explore our exclusive collection of ${activeCategory.toLowerCase()} at Lustrax. Premium handcrafted luxury jewelry delivered across Nigeria.`} />
+        <link rel="canonical" href={`https://lustrax-jewelries.com/products${activeCategory !== 'All' ? `?category=${activeCategory}` : ''}`} />
+        
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://lustrax-jewelries.com/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Collection",
+                "item": "https://lustrax-jewelries.com/products"
+              }
+            ]
+          })}
+        </script>
+      </Helmet>
+
       <div className="max-w-7xl mx-auto px-6">
         
         {/* Page Header & Filters */}
         <div className="mb-12 lg:mb-16">
           <div className="text-center mb-10">
-            <h1 className="text-h1 text-charcoal mb-4">The Collection</h1>
-            <p className="text-body text-gray-400 max-w-xl mx-auto">Explore our full repertoire of meticulously crafted fine jewelry, designed to elevate your personal narrative.</p>
+            <h1 className="text-h1 text-charcoal mb-4">
+              {activeCategory === 'All' ? 'The Lustrax Collection' : `Luxury ${activeCategory}`}
+            </h1>
+            <p className="text-body text-gray-400 max-w-xl mx-auto">Explore our full repertoire of meticulously handcrafted fine jewelry, designed to elevate your personal narrative in Nigeria.</p>
           </div>
           
           {/* Filter Bar */}

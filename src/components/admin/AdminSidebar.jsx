@@ -11,7 +11,8 @@ import {
   Settings02Icon,
   Logout01Icon,
   Menu01Icon,
-  Notification01Icon
+  Notification01Icon,
+  ConversationIcon
 } from 'hugeicons-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNotifications } from '../../context/NotificationContext'

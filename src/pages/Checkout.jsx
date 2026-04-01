@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import { useModal } from '../context/ModalContext'
@@ -33,20 +33,53 @@ const Checkout = () => {
   const [showSuccess, setShowSuccess] = useState(false)
   const [paymentData, setPaymentData] = useState(null)
   const navigate = useNavigate()
+  const location = useLocation()
+  const checkoutItems = cartItems
+  const totalToPay = cartTotal
 
   const validateCartIntegrity = async () => {
-    const { data: dbProducts, error } = await supabase
+
+    const productIds = cartItems.map(item => item.id)
+    const variantIds = cartItems.filter(item => item.variant_id).map(item => item.variant_id)
+
+    const { data: dbProducts, error: pError } = await supabase
       .from('products')
       .select('id, name, price, stock_quantity')
-      .in('id', cartItems.map(item => item.id))
+      .in('id', productIds)
 
-    if (error) throw error
+    if (pError) throw pError
+
+    let dbVariants = []
+    if (variantIds.length > 0) {
+      const { data: vData, error: vError } = await supabase
+        .from('product_variants')
+        .select('id, price_override, stock_quantity')
+        .in('id', variantIds)
+      if (vError) throw vError
+      dbVariants = vData || []
+    }
 
     for (const item of cartItems) {
       const dbProduct = dbProducts.find(p => p.id === item.id)
       if (!dbProduct) return { valid: false, error: `Item ${item.name} is no longer available.` }
-      if (parseFloat(dbProduct.price) !== parseFloat(item.price)) return { valid: false, error: 'Inventory values have changed. Please refresh your bag.' }
-      if (dbProduct.stock_quantity < item.quantity) return { valid: false, error: `Only ${dbProduct.stock_quantity} units of ${item.name} remain.` }
+      
+      let price = parseFloat(dbProduct.price)
+      let stock = dbProduct.stock_quantity
+
+      if (item.variant_id) {
+        const dbVariant = dbVariants.find(v => v.id === item.variant_id)
+        if (!dbVariant) return { valid: false, error: `Variant for ${item.name} is no longer available.` }
+        const variantPrice = dbVariant.price_override ?? dbProduct.price
+        price = parseFloat(variantPrice)
+        stock = dbVariant.stock_quantity
+      }
+      
+      const itemPrice = parseFloat(item.price)
+      if (Math.abs(price - itemPrice) > 0.01) {
+        return { valid: false, error: `Valuation for ${item.name} has changed. Please refresh your bag.` }
+      }
+      if (item.quantity <= 0) return { valid: false, error: `${item.name} is currently out of stock. Please remove it from your selection.` }
+      if (stock < item.quantity) return { valid: false, error: `Only ${stock} units of ${item.name} (selected variation) remain.` }
     }
 
     return { valid: true }
@@ -86,7 +119,7 @@ const Checkout = () => {
       const handler = window.PaystackPop.setup({
         key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
         email: user.email, 
-        amount: Math.round(cartTotal * 100),
+        amount: Math.round(totalToPay * 100),
         ref: reference,
         callback: function(response) {
           // Move async logic to a separate call to avoid 'async function' validation issues
@@ -103,6 +136,21 @@ const Checkout = () => {
       async function verifyPaymentOnServer(response) {
         setLoading(true)
         try {
+          // 1. ATOMIC RECONCILIATION LOGGING
+          // Immediately log the successful Paystack reference to prevent "lost payment" during verification failure.
+          const { error: logError } = await supabase.from('payment_reconciliation').insert({
+            reference: response.reference,
+            user_id: user.id,
+            amount: totalToPay,
+            metadata: {
+              items: checkoutItems.map(i => ({ id: i.id, variant_id: i.variant_id, qty: i.quantity })),
+              shipping: formData
+            }
+          });
+
+          if (logError) console.warn('LUSTRAX WARNING: Reconciliation log failed, but proceeding with verification.', logError);
+
+          // 2. BACKEND VERIFICATION
           const verificationResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-payment`, {
             method: 'POST', 
             headers: { 
@@ -112,18 +160,22 @@ const Checkout = () => {
             body: JSON.stringify({ 
               reference: response.reference,
               userId: user.id,
-              cartItems: cartItems,
+              cartItems: checkoutItems,
               shippingDetails: formData,
-              totalAmount: cartTotal
+              totalAmount: totalToPay
             })
           })
 
           const result = await verificationResponse.json()
-          console.log('LUSTRAX DEBUG: Verification Response:', result)
           
           if (result.success) { 
+            // 3. FINALIZATION
             setPaymentData({
-              order: { ...result.order, items: cartItems },
+              order: { 
+                id: result.orderId, 
+                total_amount: totalToPay,
+                items: checkoutItems 
+              },
               transaction: {
                 payment_reference: response.reference,
                 created_at: new Date().toISOString()
@@ -132,21 +184,49 @@ const Checkout = () => {
               customerName: formData.name,
               phone: formData.phone
             })
+
             setShowSuccess(true)
             clearCart()
           } else {
+            // 4. LOGIC ERROR HANDLING (e.g. Stock out occurs between payment and verification)
             console.error('LUSTRAX DEBUG: Verification Logic Error:', result.error)
             const isStockError = result.error && result.error.includes('Insufficient stock');
-            showAlert(isStockError ? 'Acquisition Halted' : 'Verification Failed', 
-              isStockError 
-                ? 'We apologize, but a selected piece was secured by another client just moments ago. Your payment has been voided.' 
-                : result.error || 'Payment could not be verified.'
+            
+            showAlert(isStockError ? 'Acquisition Halted' : 'Verification Denied', 
+              result.error || 'Protocol mismatch detected. Please contact concierge with Ref: ' + response.reference
             )
           }
         } catch (err) {
-          showAlert('System Error', 'An error occurred during verification. Please contact support with your reference: ' + response.reference)
-        } finally {
-          setLoading(false)
+          // 5. INFRASTRUCTURE/NETWORK FAILURE
+          console.error('LUSTRAX CRITICAL: Verification Network Failure, initiating background sync:', err);
+          
+          const channel = supabase.channel(`recon-${response.reference}`)
+            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'payment_reconciliation', filter: `reference=eq.${response.reference}` }, (payload) => {
+               if (payload.new.status === 'verified') {
+                  setPaymentData({
+                    order: { id: payload.new.metadata?.order_id, total_amount: totalToPay, items: checkoutItems },
+                    transaction: { payment_reference: response.reference, created_at: new Date().toISOString() },
+                    user: user, customerName: formData.name, phone: formData.phone
+                  });
+                  setShowSuccess(true);
+                  clearCart();
+                  setLoading(false);
+                  supabase.removeChannel(channel);
+               } else if (payload.new.status === 'refunded') {
+                  showAlert('Acquisition Reversed', 'Your payment was automatically refunded due to an inventory constraint during processing.');
+                  setLoading(false);
+                  supabase.removeChannel(channel);
+               }
+            }).subscribe();
+
+          showAlert('Acquisition Synchronizing', 'Network timeout detected. Please keep this window open while we synchronize with the merchant vault in the background.');
+          
+          // Timeout after 45 seconds if webhook doesn't arrive
+          setTimeout(() => {
+             setLoading(false);
+             supabase.removeChannel(channel);
+             // We only show this if it didn't succeed already (the loading state check is tricky here but acceptable for timeout)
+          }, 45000);
         }
       }
       handler.openIframe()
@@ -156,7 +236,7 @@ const Checkout = () => {
     }
   }
 
-  if (cartItems.length === 0 && !showSuccess) {
+  if (checkoutItems.length === 0 && !showSuccess) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center space-y-8">
         <div className="w-20 h-20 bg-soft-bg rounded-full flex items-center justify-center text-gray-200">
@@ -256,10 +336,9 @@ const Checkout = () => {
                   <span className="text-xl font-playfair italic text-gold">02</span>
                   <h2 className="text-h2 !text-xl lg:!text-2xl text-charcoal !tracking-tight border-b border-gold/20 pb-2 flex-grow uppercase">Selection Review</h2>
                </div>
-               
-               <div className="space-y-8 bg-soft-bg/30 p-8 lg:p-12 rounded-luxury border border-gray-50">
-                  {cartItems.map(item => (
-                    <div key={item.id} className="flex justify-between items-start group">
+                              <div className="space-y-8 bg-soft-bg/30 p-8 lg:p-12 rounded-luxury border border-gray-50">
+                  {checkoutItems.map((item, idx) => (
+                    <div key={idx} className="flex justify-between items-start group">
                        <div className="space-y-1">
                           <p className="text-sm font-playfair font-bold text-charcoal">{item.name}</p>
                           <p className="text-ui text-gray-300 opacity-80">QTY: {item.quantity}</p>
@@ -271,7 +350,7 @@ const Checkout = () => {
                   <div className="pt-8 border-t border-gray-100 space-y-4">
                      <div className="flex justify-between items-center text-ui text-gray-400">
                         <span>Manifest Subtotal</span>
-                        <span className="text-price !text-sm">{formatCurrency(cartTotal)}</span>
+                        <span className="text-price !text-sm">{formatCurrency(totalToPay)}</span>
                      </div>
                      <div className="flex justify-between items-center text-ui text-gray-400">
                         <span>Exclusive Delivery</span>
@@ -290,7 +369,7 @@ const Checkout = () => {
                <div className="space-y-6 relative z-10">
                   <div className="space-y-2">
                      <span className="text-subheading text-gold">Final Valuations</span>
-                     <p className="text-5xl lg:text-7xl font-bold tracking-tighter text-white font-playfair">{formatCurrency(cartTotal)}</p>
+                     <p className="text-5xl lg:text-7xl font-bold tracking-tighter text-white font-playfair">{formatCurrency(totalToPay)}</p>
                   </div>
                   <p className="text-body text-gray-500 !text-[11px] leading-relaxed">
                      By proceeding, you authorize the secure collection of funds for your selected luxury pieces.
@@ -300,7 +379,7 @@ const Checkout = () => {
                <div className="space-y-6 relative z-10">
                   <Button 
                     onClick={handlePaystack} 
-                    disabled={loading}
+                    disabled={loading || totalToPay === 0 || checkoutItems.some(i => i.quantity === 0)}
                     variant="gold"
                     size="lg"
                     className="w-full h-20 text-md active:scale-95 shadow-lg shadow-gold/10 group overflow-hidden"

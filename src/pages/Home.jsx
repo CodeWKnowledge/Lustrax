@@ -6,6 +6,10 @@ import Button from '../components/ui/Button'
 import ProductCard from '../components/ui/ProductCard'
 import Skeleton from '../components/ui/Skeleton'
 import { supabase } from '../lib/supabase'
+import { Helmet } from 'react-helmet-async'
+import { getOptimizedImage } from '../utils/imageOptimizer'
+import heroImg from '../assets/Images/hero.jpg'
+import advert from '../assets/Images/Chains.jpg'
 
 const ProductGrid = ({ products, loading }) => {
   if (loading) {
@@ -75,20 +79,29 @@ const Home = () => {
 
   return (
     <div className="bg-white">
+      <Helmet>
+        <title>Lustrax Jewelries | Fine Luxury Jewelry & Handcrafted Elegance in Nigeria</title>
+        <meta name="description" content="Elevate your aura with Lustrax Jewelries. Discover the finest selection of luxury rings, necklaces, and bespoke pieces handcrafted for royalty in Nigeria." />
+        <link rel="canonical" href="https://lustrax-jewelries.com" />
+      </Helmet>
+
       {/* Hero Section */}
-      <section className="relative h-[50vh] flex items-center justify-center overflow-hidden bg-black">
+      <section className="relative h-[60vh] lg:h-[80vh] flex items-center justify-center overflow-hidden ">
         <div className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden">
            <motion.div 
             initial={{ scale: 1.1, opacity: 0 }}
-            animate={{ scale: 1, opacity: 0.05 }}
+            animate={{ scale: 1, opacity:1 }}
             transition={{ duration: 2, ease: "easeOut" }}
-            className="w-full h-full"
+            className="w-full h-full opacity-50"
            >
+            
               <img 
-                src="https://images.unsplash.com/photo-1515562141207-7a18b5ce7142?q=80&w=2070&auto=format&fit=crop" 
-                alt="Brand Background"
-                className="w-full h-full object-cover grayscale"
+                src={getOptimizedImage(heroImg, 1920)} 
+                alt="Lustrax Luxury Jewelry Brand Background"
+                fetchPriority="high"
+                className="w-full h-full object-cover "
               />
+            
            </motion.div>
         </div>
 
@@ -97,28 +110,37 @@ const Home = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: "easeOut" }}
-            className="space-y-4 lg:space-y-6"
+            className="space-y-4 lg:space-y-6 py-16 px-4 lg:px-12 max-w-5xl mx-auto relative flex flex-col items-center justify-center"
           >
-            <div className="flex justify-center items-center space-x-4 lg:space-x-6 mb-6 mt-16">
+            {/* Smooth Radial Fade Background Effect */}
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-md [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_70%)] pointer-events-none rounded-full scale-125 lg:scale-150 -z-10"></div>
+            
+            <div className="flex justify-center items-center space-x-4 lg:space-x-6 mb-6 mt-2 lg:mt-6 relative z-10">
               <span className="w-8 lg:w-12 h-[1px] bg-gold/30"></span>
-              <span className="text-subheading text-gold">High-End Essentials</span>
+              <span className="text-subheading text-gold-dark">High-End Essentials</span>
               <span className="w-8 lg:w-12 h-[1px] bg-gold/30"></span>
             </div>
             
-            <h1 className="text-h1 text-gold leading-[1.1]">
-              LUSTRAX JEWELRIES
+            <h1 className="text-h1 text-gold leading-[1.1] uppercase tracking-tighter">
+              Lustrax Jewelries <br/> Luxury Redefined
             </h1>
+            <p className="text-body text-gray-400 max-w-2xl mx-auto italic">
+              Empowering your personal narrative through meticulously handcrafted fine jewelry. 
+              The premier destination to buy jewelry online in Nigeria.
+            </p>
+
+
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
-            className="flex flex-col sm:flex-row gap-6 justify-center"
+            className="flex flex-col sm:flex-row gap-6 justify-center relative z-10 -mt-20"
           >
             <Link to="/products">
               <Button variant="primary" size="lg" className="w-full sm:w-auto px-12">
-                Discover the Collection
+                Explore the Collection
               </Button>
             </Link>
           </motion.div>
@@ -132,10 +154,10 @@ const Home = () => {
             <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-12 lg:mb-16 space-y-4 lg:space-y-0">
                <div>
                  <span className="text-subheading text-gold block mb-2">Curated Selection</span>
-                 <h2 className="text-h2 text-charcoal">Featured Products</h2>
+                 <h2 className="text-h2 text-charcoal">Luxury Pieces & Accessories</h2>
                </div>
                <Link to="/products" className="group flex items-center space-x-2 text-ui text-charcoal hover:text-gold transition-luxury">
-                  <span>View All Features</span>
+                  <span>View All Collections</span>
                   <ArrowRight01Icon size={14} className="group-hover:translate-x-1 transition-luxury" />
                </Link>
             </div>
@@ -146,8 +168,14 @@ const Home = () => {
 
       {/* Promotional Banner */}
       <section className="py-20 bg-charcoal text-white relative overflow-hidden">
-         <div className="absolute inset-0 opacity-20">
-            <img src="https://images.unsplash.com/photo-1611085583191-a3b1a1a27e7?q=80&w=2070&auto=format&fit=crop" loading="lazy" decoding="async" className="w-full h-full object-cover" alt="Campaign Banner" />
+         <div className="absolute inset-0 opacity-40">
+            <img 
+              src={getOptimizedImage(advert, 1200)} 
+              loading="lazy" 
+              decoding="async" 
+              className="w-full h-full object-cover" 
+              alt="Lustrax Seasonal Luxury Jewelry Campaign" 
+            />
          </div>
          <div className="relative z-10 max-w-4xl mx-auto text-center px-6">
             <span className="text-subheading text-gold mb-4 inline-block">The Summer Campaign</span>

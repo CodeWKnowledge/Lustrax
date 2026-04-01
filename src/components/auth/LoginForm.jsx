@@ -2,6 +2,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useModal } from '../../context/ModalContext'
 import { useState } from 'react'
 import Button from '../ui/Button'
+import { EyeIcon, ViewOffIcon } from 'hugeicons-react'
 
 /**
  * LoginForm Component
@@ -13,6 +14,7 @@ const LoginForm = ({ onToggleMode, onComplete }) => {
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -26,8 +28,8 @@ const LoginForm = ({ onToggleMode, onComplete }) => {
   return (
     <div className="space-y-10">
       <div className="text-center space-y-2">
-         <h2 className="text-2xl font-bold tracking-tight text-charcoal">Sign In</h2>
-         <p className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">Sign in to your account</p>
+         <h2 className="text-2xl font-bold tracking-tight text-charcoal uppercase">Sign In</h2>
+         <p className="text-[9px] text-gray-400 uppercase tracking-widest font-medium">Protocol Access Required</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
@@ -41,11 +43,21 @@ const LoginForm = ({ onToggleMode, onComplete }) => {
          </div>
          <div className="space-y-2">
             <label className="text-[9px] uppercase font-bold tracking-[0.2em] text-gray-400">Password</label>
-            <input 
-              type="password" value={password} onChange={e => setPassword(e.target.value)}
-              className="w-full bg-transparent border-b border-gray-100 py-3 outline-none focus:border-charcoal transition-luxury font-medium text-sm placeholder:text-gray-200"
-              placeholder="••••••••" required
-            />
+            <div className="relative group">
+              <input 
+                type={showPassword ? "text" : "password"} 
+                value={password} onChange={e => setPassword(e.target.value)}
+                className="w-full bg-transparent border-b border-gray-100 py-3 pr-10 outline-none focus:border-charcoal transition-luxury font-medium text-sm placeholder:text-gray-200"
+                placeholder="••••••••" required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-0 bottom-3 text-gray-300 hover:text-gold transition-luxury px-2"
+              >
+                {showPassword ? <ViewOffIcon size={16} /> : <EyeIcon size={16} />}
+              </button>
+            </div>
          </div>
          
          <Button type="submit" disabled={loading} className="w-full h-14" variant="primary">

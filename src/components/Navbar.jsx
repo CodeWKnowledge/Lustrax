@@ -70,6 +70,7 @@ const Navbar = () => {
                   exit={{ width: 0, opacity: 0 }}
                   onSubmit={handleSearch}
                   className="absolute right-full mr-4 overflow-hidden"
+                  role="search"
                 >
                   <input 
                     type="text"
@@ -77,6 +78,7 @@ const Navbar = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="SEARCH..."
+                    aria-label="Search products"
                     className="w-full bg-soft-bg border-b border-gold/30 py-1 px-2 text-[9px] font-bold tracking-widest text-charcoal outline-none placeholder:text-gray-400"
                   />
                 </motion.form>
@@ -85,6 +87,7 @@ const Navbar = () => {
             <button 
               onClick={() => setIsSearchOpen(!isSearchOpen)}
               className="text-charcoal hover:text-gold transition-all"
+              aria-label={isSearchOpen ? "Close search" : "Open search"}
             >
               <Search01Icon size={18} className="sm:w-[20px] sm:h-[20px]" />
             </button>
@@ -92,7 +95,11 @@ const Navbar = () => {
           
           {user && (
             <>
-              <Link to="/dashboard/wishlist" className="relative text-charcoal hover:text-gold transition-all">
+              <Link 
+                to="/dashboard/wishlist" 
+                className="relative text-charcoal hover:text-gold transition-all"
+                aria-label={`View Wishlist (${wishlistCount} items)`}
+              >
                 <FavouriteIcon size={18} className="sm:w-[20px] sm:h-[20px]" />
                 {wishlistCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-gold text-white text-[7px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-bold font-inter">
@@ -101,7 +108,11 @@ const Navbar = () => {
                 )}
               </Link>
               
-              <Link to="/cart" className="relative text-charcoal hover:text-gold transition-all">
+              <Link 
+                to="/cart" 
+                className="relative text-charcoal hover:text-gold transition-all"
+                aria-label={`View Cart (${cartCount} items)`}
+              >
                 <ShoppingBag02Icon size={18} className="sm:w-[20px] sm:h-[20px]" />
                 {cartCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-gold text-white text-[7px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-bold font-inter">

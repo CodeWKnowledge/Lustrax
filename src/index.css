@@ -5,6 +5,7 @@
   src: url("./assets/fonts/Cinzel/Cinzel-VariableFont_wght.ttf") format("truetype");
   font-weight: 400 900;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -12,6 +13,7 @@
   src: url("./assets/fonts/Playfair_Display/PlayfairDisplay-VariableFont_wght.ttf") format("truetype");
   font-weight: 400 900;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -19,6 +21,7 @@
   src: url("./assets/fonts/Playfair_Display/PlayfairDisplay-Italic-VariableFont_wght.ttf") format("truetype");
   font-weight: 400 900;
   font-style: italic;
+  font-display: swap;
 }
 
 @font-face {
@@ -26,6 +29,7 @@
   src: url("./assets/fonts/Libre_Baskerville/LibreBaskerville-VariableFont_wght.ttf") format("truetype");
   font-weight: 400 700;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -33,6 +37,7 @@
   src: url("./assets/fonts/Inter/Inter-VariableFont_opsz,wght.ttf") format("truetype");
   font-weight: 100 900;
   font-style: normal;
+  font-display: swap;
 }
 
 @theme {
@@ -103,7 +108,7 @@
   /* Typography Scale */
   .text-h1 { font-family: var(--font-playfair); @apply text-3xl md:text-5xl lg:text-7xl font-bold tracking-tighter; }
   .text-h2 { font-family: var(--font-playfair); @apply text-2xl md:text-4xl lg:text-5xl font-bold tracking-tight; }
-  .text-subheading { font-family: var(--font-libre); @apply text-[10px] md:text-xs uppercase tracking-[0.4em] font-bold text-gray-400; }
+  .text-subheading { font-family: var(--font-libre); @apply text-[10px] md:text-xs uppercase tracking-[0.4em] font-bold; }
   .text-body { font-family: var(--font-inter); @apply text-sm md:text-base leading-relaxed; }
   .text-price { font-family: var(--font-libre); @apply text-lg md:text-xl font-bold tracking-tight; }
   .text-ui { font-family: var(--font-inter); @apply text-[9px] md:text-[10px] uppercase tracking-widest font-bold; }
@@ -140,6 +145,12 @@
 
   .no-scrollbar::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Core Web Vitals Optimization */
+  .cv-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 500px;
   }
 }
 

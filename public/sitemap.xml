@@ -2,24 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://lustrax-jewelries.com/</loc>
-    <lastmod>2026-03-29</lastmod>
+    <lastmod>2026-04-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://lustrax-jewelries.com/products</loc>
-    <lastmod>2026-03-29</lastmod>
+    <lastmod>2026-04-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://lustrax-jewelries.com/product/4b6907b6-b6fb-43d8-bc8b-5eea61c5af2b</loc>
-    <lastmod>2026-03-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://lustrax-jewelries.com/product/35e29217-3ca6-4582-8e3d-8b8fba4123d2</loc>
     <lastmod>2026-03-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -75,6 +69,42 @@
   <url>
     <loc>https://lustrax-jewelries.com/product/e8aaf6f3-4ac2-4ca8-8444-4b8666de043a</loc>
     <lastmod>2026-03-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://lustrax-jewelries.com/product/d48dc243-080f-4626-9090-db9883db5d37</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://lustrax-jewelries.com/product/38267341-6092-4980-89b1-d7a9da6154e2</loc>
+    <lastmod>2026-03-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://lustrax-jewelries.com/product/4235ea89-aceb-4ad3-9b85-282032312831</loc>
+    <lastmod>2026-03-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://lustrax-jewelries.com/product/1684634f-f9f9-40c9-905c-4b283e1beeb5</loc>
+    <lastmod>2026-03-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://lustrax-jewelries.com/product/881506e4-12e4-42e2-b3eb-c49468d7f1ed</loc>
+    <lastmod>2026-03-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://lustrax-jewelries.com/product/35e29217-3ca6-4582-8e3d-8b8fba4123d2</loc>
+    <lastmod>2026-04-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

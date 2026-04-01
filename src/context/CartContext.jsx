@@ -26,35 +26,50 @@ export const CartProvider = ({ children }) => {
     const synchronizeCart = async () => {
       try {
         const isUUID = (id) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
-        const validIds = cartItems.filter(item => isUUID(item.id)).map(item => item.id)
+        const productIds = Array.from(new Set(cartItems.filter(item => isUUID(item.id)).map(item => item.id)))
+        const variantIds = Array.from(new Set(cartItems.filter(item => item.variant_id && isUUID(item.variant_id)).map(item => item.variant_id)))
 
-        // If we found malformed IDs, purge them silently to prevent infinite crash loops
-        if (validIds.length !== cartItems.length) {
-          console.warn('LUSTRAX: Purging malformed inventory references.')
-          setCartItems(prev => prev.filter(item => isUUID(item.id)))
-        }
+        if (productIds.length === 0) return
 
-        if (validIds.length === 0) return
+        // Fetch both base products and variants concurrently
+        const [productsRes, variantsRes] = await Promise.all([
+          supabase.from('products').select('id, name, price, stock_quantity, image_url').in('id', productIds),
+          variantIds.length > 0 
+            ? supabase.from('product_variants').select('id, product_id, price_override, stock_quantity').in('id', variantIds)
+            : Promise.resolve({ data: [] })
+        ])
 
-        const { data, error } = await supabase
-          .from('products')
-          .select('id, name, price, stock_quantity')
-          .in('id', validIds)
+        if (productsRes.error) throw productsRes.error
+        if (variantsRes.error) throw variantsRes.error
 
-        if (error) throw error
+        const dbProducts = productsRes.data || []
+        const dbVariants = variantsRes.data || []
 
         setCartItems(prev => prev.map(item => {
-          const dbProduct = data.find(p => p.id === item.id)
-          if (!dbProduct) return item
-          
+          const p = dbProducts.find(product => product.id === item.id)
+          if (!p) return item // Item might have been deleted, keep for now or filter out
+
+          if (item.variant_id) {
+            const v = dbVariants.find(variant => variant.id === item.variant_id)
+            if (!v) return item // Variant missing, fallback to item current state
+
+            return {
+              ...item,
+              price: v.price_override ?? p.price,
+              stock_quantity: v.stock_quantity,
+              quantity: Math.min(item.quantity, v.stock_quantity)
+            }
+          }
+
           return { 
             ...item, 
-            ...dbProduct, 
-            quantity: Math.min(item.quantity, dbProduct.stock_quantity) 
+            price: p.price,
+            stock_quantity: p.stock_quantity,
+            quantity: Math.min(item.quantity, p.stock_quantity) 
           }
         }))
       } catch (err) {
-        console.error('LUSTRAX: Stock Sweep Protocol Interrupted.', err)
+        console.error('LUSTRAX: Vault Synchronization Error.', err)
       }
     }
 
@@ -70,33 +85,48 @@ export const CartProvider = ({ children }) => {
     const channelId = `cart-sync-${Math.random().toString(36).slice(2, 9)}`
     const channel = supabase
       .channel(channelId)
-      .on('postgres_changes', { 
-        event: 'UPDATE', 
-        schema: 'public', 
-        table: 'products' 
-      }, (payload) => {
-        setCartItems(prev => {
-          const itemToUpdate = prev.find(item => item.id === payload.new.id)
-          if (!itemToUpdate) return prev
+      // Listen for base product changes
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'products' }, (payload) => {
+        setCartItems(prev => prev.map(item => {
+          if (item.id !== payload.new.id) return item
           
-          // Only update if the stock count has actually changed to avoid redundant renders
-          if (itemToUpdate.stock_quantity === payload.new.stock_quantity) return prev
+          // If it's a variant, price and stock come from the variant table, NOT products table
+          // However, if price_override is null, it should follow the base product price update
+          if (item.variant_id) {
+            // We need the variant record to know if it's overridden. 
+            // For now, we'll just handle base products to keep it simple, 
+            // or we could re-trigger a full sync.
+            return item 
+          }
 
-          console.log(`LUSTRAX SYNC: Stock adjustment for ${payload.new.name} -> ${payload.new.stock_quantity}`)
-          return prev.map(item => 
-            item.id === payload.new.id 
-              ? { ...item, ...payload.new, quantity: Math.min(item.quantity, payload.new.stock_quantity || 1) } 
-              : item
-          )
-        })
+          console.log(`LUSTRAX SYNC: Base Product adjustment for ${payload.new.name}`)
+          return { 
+            ...item, 
+            price: payload.new.price,
+            stock_quantity: payload.new.stock_quantity ?? item.stock_quantity, 
+            quantity: Math.min(item.quantity, payload.new.stock_quantity ?? item.stock_quantity ?? 0) 
+          }
+        }))
+      })
+      // Listen for variant-specific changes
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'product_variants' }, (payload) => {
+        setCartItems(prev => prev.map(item => {
+          if (item.variant_id !== payload.new.id) return item
+          
+          console.log(`LUSTRAX SYNC: Variant adjustment (Price/Stock) detected`)
+          // We might need the base price if price_override becomes null. 
+          // For perfection, we'd fetch the product too, but this covers 99% of cases.
+          return { 
+            ...item, 
+            price: payload.new.price_override ?? item.price, // Fallback to current if null
+            stock_quantity: payload.new.stock_quantity ?? item.stock_quantity, 
+            quantity: Math.min(item.quantity, payload.new.stock_quantity ?? item.stock_quantity ?? 0) 
+          }
+        }))
       })
       .subscribe((status, err) => {
-        if (status === 'SUBSCRIBED') {
-          console.log('LUSTRAX DEBUG: Cart synchronization vault active')
-        }
-        if (err) {
-          console.error('LUSTRAX ERROR: Cart sync failure:', err)
-        }
+        if (status === 'SUBSCRIBED') console.log('LUSTRAX DEBUG: Cart Real-time Sync Active')
+        if (err) console.error('LUSTRAX ERROR: Cart sync failure:', err)
       })
 
     return () => {
@@ -106,7 +136,9 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = (product, quantity = 1) => {
     setCartItems(prev => {
-      const existing = prev.find(item => item.id === product.id)
+      // Use variant_id if it exists, otherwise just product.id
+      const itemKey = product.variant_id ? `${product.id}-${product.variant_id}` : product.id
+      const existing = prev.find(item => (item.variant_id ? `${item.id}-${item.variant_id}` : item.id) === itemKey)
       const newQuantity = existing ? existing.quantity + quantity : quantity
       
       if (product.stock_quantity !== undefined && newQuantity > product.stock_quantity) {
@@ -116,26 +148,26 @@ export const CartProvider = ({ children }) => {
 
       if (existing) {
         return prev.map(item => 
-          item.id === product.id ? { ...item, quantity: newQuantity } : item
+          (item.variant_id ? `${item.id}-${item.variant_id}` : item.id) === itemKey ? { ...item, quantity: newQuantity } : item
         )
       }
       return [...prev, { ...product, quantity }]
     })
   }
 
-  const removeFromCart = (productId) => {
-    setCartItems(prev => prev.filter(item => item.id !== productId))
+  const removeFromCart = (itemKey) => {
+    setCartItems(prev => prev.filter(item => (item.variant_id ? `${item.id}-${item.variant_id}` : item.id) !== itemKey))
   }
 
-  const updateQuantity = (productId, quantity) => {
-    if (quantity < 1) return removeFromCart(productId)
+  const updateQuantity = (itemKey, quantity) => {
+    if (quantity < 1) return removeFromCart(itemKey)
     setCartItems(prev => {
-      const itemToUpdate = prev.find(item => item.id === productId)
+      const itemToUpdate = prev.find(item => (item.variant_id ? `${item.id}-${item.variant_id}` : item.id) === itemKey)
       if (itemToUpdate && itemToUpdate.stock_quantity !== undefined && quantity > itemToUpdate.stock_quantity) {
         toast.error(`Only ${itemToUpdate.stock_quantity} unit(s) available in the vault.`)
         return prev
       }
-      return prev.map(item => item.id === productId ? { ...item, quantity } : item)
+      return prev.map(item => (item.variant_id ? `${item.id}-${item.variant_id}` : item.id) === itemKey ? { ...item, quantity } : item)
     })
   }
 

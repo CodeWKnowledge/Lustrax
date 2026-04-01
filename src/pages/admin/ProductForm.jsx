@@ -6,6 +6,15 @@ import { supabase } from '../../lib/supabase'
 import { useModal } from '../../context/ModalContext'
 import { toast } from 'react-hot-toast'
 import Button from '../../components/ui/Button'
+import AttributeInput from '../../components/admin/AttributeInput'
+
+const CATEGORY_ATTRIBUTES = {
+  'Necklaces': ['length', 'color'],
+  'Watches': ['color'],
+  'Rings': ['size'],
+  'Earrings': ['size'],
+  'Bracelets': ['length', 'color'],
+}
 
 
 const ProductForm = () => {
@@ -24,6 +33,8 @@ const ProductForm = () => {
     is_new_release: false,
     is_best_seller: false
   })
+  const [attributes, setAttributes] = useState({}) // { length: ['18', '20'], color: ['Gold'] }
+  const [variants, setVariants] = useState([]) // [{ attributes: { length: '18', color: 'Gold' }, price: 0, stock: 0 }]
   const [imageFile, setImageFile] = useState(null)
   const [additionalFiles, setAdditionalFiles] = useState([])
   const [existingImageUrl, setExistingImageUrl] = useState('')
@@ -61,6 +72,35 @@ const ProductForm = () => {
           setExistingImageUrl(data.image_url)
           setExistingAdditionalImages(data.additional_images || [])
           setPreviewUrl(data.image_url)
+
+          // Fetch existing variants
+          const { data: variantData, error: variantError } = await supabase
+            .from('product_variants')
+            .select('*')
+            .eq('product_id', id)
+          
+          if (variantData && variantData.length > 0) {
+            setVariants(variantData.map(v => ({
+              id: v.id,
+              attributes: v.attributes,
+              price: v.price_override || data.price,
+              stock: v.stock_quantity
+            })))
+
+            // Reconstruct attributes state from existing variants
+            const reconstructedAttributes = {}
+            variantData.forEach(v => {
+              Object.entries(v.attributes).forEach(([key, val]) => {
+                if (!reconstructedAttributes[key]) reconstructedAttributes[key] = new Set()
+                reconstructedAttributes[key].add(val)
+              })
+            })
+            const finalAttributes = {}
+            Object.entries(reconstructedAttributes).forEach(([key, set]) => {
+              finalAttributes[key] = Array.from(set)
+            })
+            setAttributes(finalAttributes)
+          }
         }
         setFetching(false)
       }
@@ -76,6 +116,72 @@ const ProductForm = () => {
       return () => URL.revokeObjectURL(url)
     }
   }, [imageFile])
+
+  // Cartesian Product Generator
+  const generateVariants = () => {
+    const keys = CATEGORY_ATTRIBUTES[formData.category] || []
+    if (keys.length === 0) return
+
+    const selectedAttributes = keys.reduce((acc, key) => {
+      if (attributes[key] && attributes[key].length > 0) {
+        acc[key] = attributes[key]
+      }
+      return acc
+    }, {})
+
+    const combinations = cartesianProduct(selectedAttributes)
+    
+    // Merge with existing variants to preserve IDs/data if possible
+    const newVariants = combinations.map(combo => {
+      const existing = variants.find(v => 
+        Object.keys(combo).every(key => v.attributes[key] === combo[key])
+      )
+      return {
+        id: existing?.id,
+        attributes: combo,
+        price: existing?.price || formData.price || 0,
+        stock: existing?.stock || 1
+      }
+    })
+
+    setVariants(newVariants)
+    toast.success(`${newVariants.length} Variants Orchestrated`)
+  }
+
+  const cartesianProduct = (obj) => {
+    const keys = Object.keys(obj)
+    if (keys.length === 0) return []
+
+    const combinations = [ {} ]
+    for (const key of keys) {
+      const values = obj[key]
+      const newCombinations = []
+      for (const combination of combinations) {
+        for (const value of values) {
+          newCombinations.push({ ...combination, [key]: value })
+        }
+      }
+      combinations.splice(0, combinations.length, ...newCombinations)
+    }
+    return combinations
+  }
+
+  const updateVariant = (index, field, value) => {
+    const newVariants = [...variants]
+    newVariants[index][field] = value
+    setVariants(newVariants)
+  }
+
+  const applyBulkAdjustment = (attrName, attrValue, amount) => {
+    const newVariants = variants.map(v => {
+      if (v.attributes[attrName] === attrValue) {
+        return { ...v, price: (parseFloat(v.price) || 0) + parseFloat(amount) }
+      }
+      return v
+    })
+    setVariants(newVariants)
+    toast.success(`Bulk valuation updated: ₦${amount} added to ${attrValue}`)
+  }
 
   // Safe UUID generator for production environments
   const generateUUID = () => {
@@ -143,6 +249,40 @@ const ProductForm = () => {
         : await supabase.from('products').insert([payload])
 
       if (dbError) throw dbError
+
+      // 4. Synchronize Variants
+      const productId = isEdit ? id : (await supabase.from('products').select('id').eq('name', payload.name).order('created_at', { ascending: false }).limit(1).single()).data.id
+
+      if (variants.length > 0) {
+        // Fetch current variants in DB to handle deletions
+        const { data: dbVariants } = await supabase.from('product_variants').select('id').eq('product_id', productId)
+        const dbIds = dbVariants?.map(v => v.id) || []
+        const currentIds = variants.filter(v => v.id).map(v => v.id)
+        const toDelete = dbIds.filter(id => !currentIds.includes(id))
+
+        if (toDelete.length > 0) {
+          await supabase.from('product_variants').delete().in('id', toDelete)
+        }
+
+        const basePrice = parseFloat(formData.price) || 0
+        const variantPayloads = variants.map(v => {
+          const vPrice = parseFloat(v.price) || 0
+          const isOverridden = Math.abs(vPrice - basePrice) > 0.01 // Only override if different
+
+          const variantObj = {
+            product_id: productId,
+            attributes: v.attributes,
+            price_override: isOverridden ? vPrice : null,
+            stock_quantity: parseInt(v.stock) || 0,
+            is_overridden: isOverridden
+          }
+          if (v.id) variantObj.id = v.id
+          return variantObj
+        })
+
+        const { error: variantError } = await supabase.from('product_variants').upsert(variantPayloads)
+        if (variantError) throw variantError
+      }
 
       toast.success(isEdit ? 'Collection updated successfully' : 'Inventory state successfully synchronized')
       navigate('/admin/products')
@@ -382,7 +522,125 @@ const ProductForm = () => {
                    required
                  />
               </div>
-           </div>           <div className="pt-6 border-t border-gray-50">
+           </div>
+
+           {/* Variant Intelligence Integration */}
+           {formData.category && CATEGORY_ATTRIBUTES[formData.category] && (
+             <div className="space-y-12 border-t border-gray-50 pt-12">
+               <div className="flex flex-col space-y-2">
+                 <span className="text-[10px] uppercase font-bold tracking-[0.6em] text-gold italic">Variant Orchestration</span>
+                 <p className="text-[9px] text-gray-400 uppercase tracking-widest">Define attributes to manifest unique combinations</p>
+               </div>
+
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                 {CATEGORY_ATTRIBUTES[formData.category].map(attr => (
+                   <AttributeInput
+                     key={attr}
+                     label={`${attr} Matrix`}
+                     values={attributes[attr] || []}
+                     onChange={(newValues) => setAttributes({ ...attributes, [attr]: newValues })}
+                     placeholder={`e.g. ${attr === 'color' ? 'Gold, Silver' : '18, 20, 22'}`}
+                   />
+                 ))}
+               </div>
+
+               <Button 
+                type="button" 
+                variant="outline" 
+                onClick={generateVariants}
+                className="w-full lg:w-fit px-12 border-dashed border-gray-200 hover:border-gold hover:text-gold"
+               >
+                 Manifest Variant Matrix
+               </Button>
+
+               {variants.length > 0 && (
+                 <div className="space-y-10">
+                   {/* Bulk Tooling */}
+                   <div className="p-8 bg-soft-bg/30 rounded-2xl border border-gray-50 space-y-6">
+                      <span className="text-[8px] uppercase font-bold tracking-[0.4em] text-gray-400 block pb-4 border-b border-gray-100">Bulk Financial Adjustments</span>
+                      <div className="flex flex-wrap gap-6 items-end">
+                        {CATEGORY_ATTRIBUTES[formData.category].map(attr => (
+                          <div key={attr} className="flex flex-col space-y-4">
+                            <label className="text-[8px] uppercase font-bold tracking-[0.3em] text-gray-300">Target {attr}</label>
+                            <div className="flex space-x-4">
+                              <select 
+                                id={`bulk-val-${attr}`}
+                                className="bg-white border-b border-gray-100 text-[10px] uppercase font-bold tracking-widest p-2 outline-none"
+                              >
+                                {attributes[attr]?.map(v => <option key={v} value={v}>{v}</option>)}
+                              </select>
+                              <div className="flex items-center space-x-2 border-b border-gray-100">
+                                <span className="text-[10px] font-bold text-gray-400">+₦</span>
+                                <input 
+                                  id={`bulk-amt-${attr}`}
+                                  type="number" 
+                                  className="w-20 bg-transparent text-[10px] font-bold outline-none"
+                                  placeholder="0"
+                                />
+                              </div>
+                              <button 
+                                type="button"
+                                onClick={() => {
+                                  const val = document.getElementById(`bulk-val-${attr}`).value
+                                  const amt = document.getElementById(`bulk-amt-${attr}`).value
+                                  if (val && amt) applyBulkAdjustment(attr, val, amt)
+                                }}
+                                className="text-[9px] text-gold font-bold uppercase tracking-widest border border-gold/20 px-4 py-2 hover:bg-gold hover:text-white transition-luxury"
+                              >
+                                Apply
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                   </div>
+
+                   <div className="overflow-x-auto">
+                     <table className="w-full text-left">
+                       <thead>
+                         <tr className="border-b border-gray-50">
+                           {CATEGORY_ATTRIBUTES[formData.category].map(attr => (
+                             <th key={attr} className="py-4 text-[9px] uppercase font-bold tracking-[0.4em] text-gray-400">{attr}</th>
+                           ))}
+                           <th className="py-4 text-[9px] uppercase font-bold tracking-[0.4em] text-gray-400">Valuation (₦)</th>
+                           <th className="py-4 text-[9px] uppercase font-bold tracking-[0.4em] text-gray-400">Allocation</th>
+                         </tr>
+                       </thead>
+                       <tbody className="divide-y divide-gray-50">
+                         {variants.map((v, i) => (
+                           <tr key={i} className="group hover:bg-soft-bg/20 transition-luxury">
+                             {CATEGORY_ATTRIBUTES[formData.category].map(attr => (
+                               <td key={attr} className="py-6 text-[10px] font-bold uppercase tracking-widest text-charcoal">{v.attributes[attr]}</td>
+                             ))}
+                             <td className="py-6">
+                               <input 
+                                 type="number" 
+                                 value={v.price} 
+                                 onChange={e => updateVariant(i, 'price', e.target.value)}
+                                 className="w-24 bg-transparent border-b border-gray-100 py-1 outline-none focus:border-gold transition-luxury font-bold text-[10px] tracking-widest text-charcoal"
+                                 required
+                               />
+                             </td>
+                             <td className="py-6">
+                               <input 
+                                 type="number" 
+                                 value={v.stock} 
+                                 onChange={e => updateVariant(i, 'stock', e.target.value)}
+                                 className="w-16 bg-transparent border-b border-gray-100 py-1 outline-none focus:border-gold transition-luxury font-bold text-[10px] tracking-widest text-charcoal"
+                                 required
+                               />
+                             </td>
+                           </tr>
+                         ))}
+                       </tbody>
+                     </table>
+                   </div>
+                 </div>
+               )}
+             </div>
+           )}
+
+           <div className="pt-6 border-t border-gray-50">
               <Button 
                 type="submit" 
                 disabled={loading || (!isEdit && !imageFile)} 

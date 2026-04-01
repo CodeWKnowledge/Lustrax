@@ -73,12 +73,26 @@ export const AuthProvider = ({ children }) => {
       email, 
       password,
       options: {
+        emailRedirectTo: window.location.origin,
         data: { 
           full_name: fullName,
           phone: phone
         }
       }
     })
+
+    if (error) {
+       // Clean up the "messy" password requirement message from Supabase
+       if (error.message.includes('Password should contain at least one character')) {
+          return { 
+            data: null, 
+            error: { 
+              message: 'Password must be at least 6 characters and include a mixture of uppercase letters, numbers, and symbols for maximum security.' 
+            } 
+          }
+       }
+    }
+
     return { data, error }
   }
 

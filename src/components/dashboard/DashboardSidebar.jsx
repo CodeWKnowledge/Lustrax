@@ -7,7 +7,8 @@ import {
   UserSettings01Icon,
   Logout01Icon,
   Archive01Icon,
-  Invoice01Icon
+  Invoice01Icon,
+  ConversationIcon
 } from 'hugeicons-react'
 import { motion, AnimatePresence } from 'framer-motion'
 

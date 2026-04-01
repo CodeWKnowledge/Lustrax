@@ -243,6 +243,15 @@ const Orders = () => {
                              <h5 className="text-[10px] font-bold text-charcoal uppercase tracking-widest truncate">
                                {item.products?.name || item.product_name || 'Product Unavailable'}
                              </h5>
+                             {item.attributes && Object.keys(item.attributes).length > 0 && (
+                               <div className="flex flex-wrap gap-2 mt-2">
+                                 {Object.entries(item.attributes).map(([key, val]) => (
+                                   <span key={key} className="text-[7px] font-bold uppercase tracking-widest text-gold bg-gold/5 px-2 py-1 rounded-sm border border-gold/10">
+                                     {key}: {val}
+                                   </span>
+                                 ))}
+                               </div>
+                             )}
                              <p className="text-[8px] text-gray-400 uppercase tracking-tighter mt-1">
                                {item.products?.description?.slice(0, 30) || 'This piece is no longer in the catalogue'}...
                              </p>

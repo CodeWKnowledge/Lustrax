@@ -110,9 +110,19 @@ const PaymentSuccessModal = ({ isOpen, onClose, data }) => {
                      <div key={idx} className="flex justify-between items-start animate-in slide-in-from-left duration-500" style={{ animationDelay: `${idx * 100}ms` }}>
                         <div className="flex-grow max-w-[70%]">
                           <p className="text-sm font-playfair font-bold text-charcoal truncate">{item.product_name || item.name}</p>
-                          <p className="text-ui !text-[8px] text-gray-400">Qty: {item.quantity} · ₦{item.price?.toLocaleString()}</p>
+                          {/* Variant Attributes (Size, Color, etc.) */}
+                          {item.selected_attributes && Object.keys(item.selected_attributes).length > 0 && (
+                            <div className="flex flex-wrap gap-1.5 mt-1.5 mb-2">
+                              {Object.entries(item.selected_attributes).map(([key, val]) => (
+                                <span key={key} className="text-[6px] font-bold uppercase tracking-widest text-gold bg-gold/5 px-2 py-0.5 rounded-sm border border-gold/10">
+                                  {key}: {val}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          <p className="text-ui !text-[8px] text-gray-400">Qty: {item.quantity} · ₦{(item.price || 0).toLocaleString()}</p>
                         </div>
-                        <p className="text-price !text-xs text-charcoal/80">₦{(item.price * item.quantity).toLocaleString()}</p>
+                        <p className="text-price !text-xs text-charcoal/80">₦{((item.price || 0) * (item.quantity || 1)).toLocaleString()}</p>
                      </div>
                   ))}
                   
@@ -136,7 +146,7 @@ const PaymentSuccessModal = ({ isOpen, onClose, data }) => {
                       <span className="text-ui !text-[8px] text-green-600">Verified Payment</span>
                    </div>
                 </div>
-                <p className="text-h2 !text-3xl text-charcoal !tracking-tighter">₦{order.total_amount.toLocaleString()}</p>
+                <p className="text-h2 !text-3xl text-charcoal !tracking-tighter">₦{(order.total_amount || 0).toLocaleString()}</p>
              </div>
 
             <div className="space-y-3">

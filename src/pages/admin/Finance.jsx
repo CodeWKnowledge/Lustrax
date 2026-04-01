@@ -6,8 +6,11 @@ import DetailsModal from '../../components/admin/ui/DetailsModal'
 import { motion } from 'framer-motion'
 import { 
   Payment02Icon,
-  ViewIcon
+  ViewIcon,
+  Alert01Icon,
+  CheckmarkCircle01Icon
 } from 'hugeicons-react'
+import { toast } from 'react-hot-toast'
 
 const PAGE_SIZE = 10
 
@@ -19,8 +22,12 @@ const Finance = () => {
   const [selectedPayment, setSelectedPayment] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
+  const [reconciliations, setReconciliations] = useState([])
+  const [activeTab, setActiveTab] = useState('settlements') // 'settlements' or 'reconciliation'
+
   useEffect(() => {
     fetchPayments()
+    fetchReconciliations()
   }, [page])
 
   const fetchPayments = async () => {
@@ -37,6 +44,47 @@ const Finance = () => {
       setHasMore(data.length === PAGE_SIZE)
     }
     setLoading(false)
+  }
+
+  const fetchReconciliations = async () => {
+    const { data } = await supabase
+      .from('payment_reconciliation')
+      .select('*, profiles(email, full_name)')
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false })
+    
+    if (data) setReconciliations(data)
+  }
+
+  const handleForceVerify = async (recon) => {
+    const loadingToast = toast.loading('Rescuing Protocol...')
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-payment`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}` 
+        },
+        body: JSON.stringify({ 
+          reference: recon.reference,
+          userId: recon.user_id,
+          cartItems: recon.metadata.items,
+          shippingDetails: recon.metadata.shipping,
+          totalAmount: recon.amount
+        })
+      })
+
+      const result = await response.json()
+      if (result.success) {
+        toast.success('Settlement Manually Verified', { id: loadingToast })
+        fetchPayments()
+        fetchReconciliations()
+      } else {
+        toast.error(`Protocol Rejected: ${result.error}`, { id: loadingToast })
+      }
+    } catch (err) {
+      toast.error('Verification Engine Timeout', { id: loadingToast })
+    }
   }
 
   const handleViewDetails = (payment) => {
@@ -94,10 +142,26 @@ const Finance = () => {
            <span className="text-[10px] uppercase tracking-[0.6em] font-bold text-gold italic">Financial Intelligence</span>
            <h1 className="text-2xl md:text-3xl lg:text-4xl font-serif text-charcoal uppercase tracking-tighter">Settlement Ledger</h1>
         </div>
-        <span className="text-[8px] lg:text-[9px] text-gray-300 font-bold uppercase tracking-[0.3em]">{payments.length} Verified Transactions</span>
+        
+        <div className="flex items-center space-x-8 bg-soft-bg p-1 rounded-luxury border border-gray-100">
+           <button 
+             onClick={() => setActiveTab('settlements')}
+             className={`px-6 py-2 text-[9px] font-bold uppercase tracking-widest rounded-lg transition-luxury ${activeTab === 'settlements' ? 'bg-white text-charcoal shadow-sm' : 'text-gray-300 hover:text-charcoal'}`}
+           >
+             Verified ({payments.length})
+           </button>
+           <button 
+             onClick={() => setActiveTab('reconciliation')}
+             className={`px-6 py-2 text-[9px] font-bold uppercase tracking-widest rounded-lg transition-luxury flex items-center space-x-2 ${activeTab === 'reconciliation' ? 'bg-white text-gold shadow-sm' : 'text-gray-300 hover:text-gold'}`}
+           >
+             {reconciliations.length > 0 && <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse mr-1"></span>}
+             <span>RECONCILIATION ({reconciliations.length})</span>
+           </button>
+        </div>
       </div>
 
-      <AdminTable 
+      {activeTab === 'settlements' ? (
+        <AdminTable 
         headers={[
           { label: 'Settlement Ref' },
           { label: 'Client Identity' },
@@ -145,6 +209,55 @@ const Finance = () => {
           </tr>
         ))}
       </AdminTable>
+      ) : (
+        <AdminTable 
+          headers={[
+            { label: 'Ghost Reference' },
+            { label: 'Customer' },
+            { label: 'Amount' },
+            { label: 'Issue', align: 'center' },
+            { label: 'Protocol', align: 'right' }
+          ]}
+        >
+          {reconciliations.map(recon => (
+            <tr key={recon.id} className="text-sm border-b border-gray-50 hover:bg-red-50/20 transition-luxury group">
+              <td className="px-10 py-6 font-mono text-[9px] text-gray-400 group-hover:text-charcoal">
+                 <div className="flex items-center space-x-4">
+                   <Alert01Icon size={14} className="text-red-400" />
+                   <span>{recon.reference?.toUpperCase()}</span>
+                 </div>
+              </td>
+              <td className="px-10 py-6 text-[10px] font-bold uppercase tracking-widest text-charcoal">
+                 {recon.profiles?.email}
+              </td>
+              <td className="px-10 py-6 text-[10px] font-bold text-charcoal tracking-widest">
+                 ₦{recon.amount.toLocaleString()}
+              </td>
+              <td className="px-10 py-6 text-center">
+                 <span className="text-[8px] font-bold px-3 py-1 bg-red-50 text-red-500 rounded-full border border-red-100 uppercase tracking-widest">
+                   UNVERIFIED ACQUISITION
+                 </span>
+              </td>
+              <td className="px-10 py-6 text-right">
+                 <button 
+                  onClick={() => handleForceVerify(recon)}
+                  className="flex items-center space-x-2 ml-auto text-[9px] font-black uppercase tracking-[0.2em] text-gold hover:text-charcoal transition-luxury bg-gold/5 px-4 py-2 rounded-lg border border-gold/10"
+                 >
+                   <CheckmarkCircle01Icon size={14} />
+                   <span>Force Protocol</span>
+                 </button>
+              </td>
+            </tr>
+          ))}
+          {reconciliations.length === 0 && (
+            <tr>
+              <td colSpan={5} className="py-24 text-center">
+                 <p className="text-[10px] text-gray-300 font-bold uppercase tracking-widest italic">All ghost transactions have been exorcised/reconciled.</p>
+              </td>
+            </tr>
+          )}
+        </AdminTable>
+      )}
 
       <div className="flex items-center justify-between pt-8 border-t border-gray-50">
          <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-gray-300">

@@ -54,14 +54,16 @@ const Cart = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 lg:gap-32">
           {/* Order List */}
           <div className="lg:col-span-2 space-y-12 lg:space-y-16">
-            {cartItems.map((item, i) => (
-              <motion.div 
-                 key={item.id}
-                 initial={{ opacity: 0, y: 20 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 transition={{ delay: i * 0.1 }}
-                 className="flex flex-col sm:flex-row gap-8 lg:gap-12 pb-12 lg:pb-16 border-b border-gray-50 group last:border-0"
-              >
+              {cartItems.map((item, i) => {
+                const itemKey = item.variant_id ? `${item.id}-${item.variant_id}` : item.id
+                return (
+                  <motion.div 
+                    key={itemKey}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                    className="flex flex-col sm:flex-row gap-8 lg:gap-12 pb-12 lg:pb-16 border-b border-gray-50 group last:border-0"
+                  >
                 <Link to={`/product/${item.id}`} className="w-full sm:w-40 lg:w-48 aspect-[4/5] overflow-hidden rounded-luxury bg-soft-bg border-subtle flex-shrink-0">
                   <img 
                     src={item.image_url} 
@@ -74,20 +76,31 @@ const Cart = () => {
                   <div className="space-y-6 lg:space-y-8">
                     <div className="flex justify-between items-start">
                       <div className="space-y-1 lg:space-y-2">
-                         <h3 className="text-base lg:text-lg font-playfair font-bold text-charcoal">{item.name}</h3>
-                         <p className="text-subheading !tracking-widest !text-[8px] text-gray-400 italic">Lustrax Collection</p>
-                          {/* C-3: Show remaining stock inline */}
-                          {item.stock_quantity != null && (
-                            <p className={`text-[8px] font-bold uppercase tracking-widest ${
-                              item.stock_quantity > 3 ? 'text-gray-300' : item.stock_quantity > 0 ? 'text-orange-400' : 'text-red-400'
-                            }`}>
-                              {item.stock_quantity > 0 ? `${item.stock_quantity} units available` : 'Out of stock'}
-                            </p>
-                          )}
+                        <h3 className="text-base lg:text-lg font-playfair font-bold text-charcoal">{item.name}</h3>
+                        <p className="text-subheading !tracking-widest !text-[8px] text-gray-400 italic">Lustrax Collection</p>
+                        
+                        {/* Selected Variant Attributes */}
+                        {item.selected_attributes && Object.keys(item.selected_attributes).length > 0 && (
+                          <div className="flex flex-wrap gap-2 pt-2">
+                            {Object.entries(item.selected_attributes).map(([key, val]) => (
+                              <span key={key} className="text-[7px] uppercase font-bold tracking-widest text-gold bg-gold/5 px-2 py-1 rounded-sm">
+                                {key}: {val}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {item.stock_quantity != null && (
+                          <p className={`text-[8px] font-bold uppercase tracking-widest pt-2 ${
+                            item.stock_quantity > 3 ? 'text-gray-300' : item.stock_quantity > 0 ? 'text-orange-400' : 'text-red-400'
+                          }`}>
+                            {item.stock_quantity > 0 ? `${item.stock_quantity} units available` : 'Out of stock'}
+                          </p>
+                        )}
                       </div>
                       <button 
                         aria-label={`Remove ${item.name} from bag`}
-                        onClick={() => removeFromCart(item.id)}
+                        onClick={() => removeFromCart(itemKey)}
                         className="text-gray-300 hover:text-red-500 transition-luxury p-2"
                       >
                         <Delete02Icon size={18} />
@@ -98,17 +111,16 @@ const Cart = () => {
                        <div className="flex items-center bg-soft-bg rounded-luxury border-subtle h-11 lg:h-12">
                           <button 
                             aria-label={`Decrease quantity of ${item.name}`}
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)} 
+                            onClick={() => updateQuantity(itemKey, item.quantity - 1)} 
                             className="w-11 lg:w-12 h-full hover:bg-white transition-luxury text-sm"
                           >—</button>
                           <span className="w-10 lg:w-12 text-center font-bold text-[10px] lg:text-[11px] tracking-widest">{item.quantity}</span>
-                           {/* C-3: Cap increment at stock_quantity */}
-                           <button 
-                             aria-label={`Increase quantity of ${item.name}`}
-                             onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                             disabled={item.stock_quantity != null && item.quantity >= item.stock_quantity}
-                             className="w-11 lg:w-12 h-full hover:bg-white transition-luxury text-sm disabled:opacity-30 disabled:cursor-not-allowed"
-                           >+</button>
+                          <button 
+                            aria-label={`Increase quantity of ${item.name}`}
+                            onClick={() => updateQuantity(itemKey, item.quantity + 1)}
+                            disabled={item.stock_quantity != null && item.quantity >= item.stock_quantity}
+                            className="w-11 lg:w-12 h-full hover:bg-white transition-luxury text-sm disabled:opacity-30 disabled:cursor-not-allowed"
+                          >+</button>
                        </div>
                        <p className="text-price text-charcoal">
                           ₦{(item.price * item.quantity).toLocaleString()}
@@ -117,7 +129,7 @@ const Cart = () => {
                   </div>
                 </div>
               </motion.div>
-            ))}
+            )})}
           </div>
 
           {/* Investment Summary */}

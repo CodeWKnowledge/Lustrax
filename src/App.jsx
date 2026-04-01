@@ -131,8 +131,30 @@ function App() {
       <AuthProvider>
         <HelmetProvider>
           <Helmet>
-            <title>Lustrax Jewelries | Handcrafted Luxury & Elegance</title>
-            <meta name="description" content="Discover the world's most exquisite handcrafted jewelry. Custom pieces designed for royalty." />
+            <title>Lustrax Jewelries | Handcrafted Luxury & Elegance in Nigeria</title>
+            <meta name="description" content="Discover the world's most exquisite handcrafted jewelry. Custom pieces designed for royalty. Buy gold, diamonds, and luxury jewelry in Nigeria." />
+            
+            {/* Structured Data: Organization */}
+            <script type="application/ld+json">
+              {JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                "name": "Lustrax Jewelries",
+                "url": "https://lustrax-jewelries.com",
+                "logo": "https://lustrax-jewelries.com/favicon.png",
+                "sameAs": [
+                  "https://instagram.com/lustrax_jewelries",
+                  "https://facebook.com/lustrax_jewelries"
+                ],
+                "contactPoint": {
+                  "@type": "ContactPoint",
+                  "telephone": "+234-800-LUSTRAX",
+                  "contactType": "Customer Service",
+                  "areaServed": "NG",
+                  "availableLanguage": "English"
+                }
+              })}
+            </script>
           </Helmet>
           <ModalProvider>
             <CartProvider>

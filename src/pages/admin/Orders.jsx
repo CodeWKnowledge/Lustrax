@@ -157,9 +157,20 @@ const Orders = () => {
         value: (
           <div className="mt-2 space-y-3 border-t border-gray-50 pt-4">
             {order.order_items?.map(item => (
-              <div key={item.id} className="flex justify-between items-center text-[10px] tracking-[0.2em] uppercase border-b border-gray-50/50 pb-2 last:border-0 last:pb-0">
-                <span className="text-gray-500">{item.quantity}x <span className="text-charcoal font-bold ml-2">{item.product_name}</span></span>
-                <span className="font-bold text-charcoal">{formatCurrency(item.price * item.quantity)}</span>
+              <div key={item.id} className="flex flex-col space-y-2 border-b border-gray-50/50 pb-3 last:border-0 last:pb-0 pt-3 first:pt-0">
+                <div className="flex justify-between items-center text-[10px] tracking-[0.2em] uppercase">
+                  <span className="text-gray-500">{item.quantity}x <span className="text-charcoal font-bold ml-2">{item.product_name}</span></span>
+                  <span className="font-bold text-charcoal">{formatCurrency(item.price * item.quantity)}</span>
+                </div>
+                {item.attributes && Object.keys(item.attributes).length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {Object.entries(item.attributes).map(([key, val]) => (
+                      <span key={key} className="text-[7px] font-bold uppercase tracking-widest text-gold bg-gold/5 px-2 py-1 rounded-sm border border-gold/10">
+                        {key}: {val}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>
