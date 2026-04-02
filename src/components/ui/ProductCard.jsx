@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ShoppingBag02Icon, FavouriteIcon } from 'hugeicons-react'
@@ -25,6 +25,15 @@ const ProductCard = ({ product }) => {
   const { user, openAuthModal } = useAuth()
   const { addToCart } = useCart()
   const { toggleWishlist, isInWishlist } = useWishlist()
+  
+  const [imgLoaded, setImgLoaded] = useState(false)
+  const imgRef = useRef(null)
+  
+  useEffect(() => {
+    if (imgRef.current?.complete) {
+      setImgLoaded(true)
+    }
+  }, [])
 
   const handleAction = (e, callback) => {
     e.preventDefault()
@@ -42,12 +51,16 @@ const ProductCard = ({ product }) => {
     >
       <Link to={`/product/${product.id}`}>
         <div className="relative aspect-[4/5] overflow-hidden bg-soft-bg rounded-luxury mb-4 transition-luxury border border-transparent group-hover:border-black/5">
+          {/* Elegant Loading Skeleton/Placeholder */}
+          <div className="absolute inset-0 bg-gray-100 animate-pulse"></div>
           <img 
+            ref={imgRef}
             src={getOptimizedImage(product.image_url, 600)} 
             alt={`Lustrax Luxury ${product.name} - Handcrafted High-End Jewelry`}
             loading="lazy"
             decoding="async"
-            className="w-full h-full object-cover transition-luxury duration-1000 group-hover:scale-105"
+            onLoad={() => setImgLoaded(true)}
+            className={`w-full h-full object-cover transition-all duration-500 ease-out group-hover:!scale-105 relative z-10 ${imgLoaded ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-110 blur-sm'}`}
           />
           
           {product.stock_quantity === 0 && (

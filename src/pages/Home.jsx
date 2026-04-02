@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight01Icon } from 'hugeicons-react'
@@ -8,7 +8,7 @@ import Skeleton from '../components/ui/Skeleton'
 import { supabase } from '../lib/supabase'
 import { Helmet } from 'react-helmet-async'
 import { getOptimizedImage } from '../utils/imageOptimizer'
-import heroImg from '../assets/Images/hero.jpg'
+import heroImg from '../assets/Images/hero2.jpeg'
 import advert from '../assets/Images/Chains.jpg'
 
 const ProductGrid = ({ products, loading }) => {
@@ -39,8 +39,16 @@ const Home = () => {
   const [newReleases, setNewReleases] = useState([])
   const [bestSellers, setBestSellers] = useState([])
   const [loading, setLoading] = useState(true)
+  
+  const [heroLoaded, setHeroLoaded] = useState(false)
+  const [advertLoaded, setAdvertLoaded] = useState(false)
+  const heroRef = useRef(null)
+  const advertRef = useRef(null)
 
   useEffect(() => {
+    if (heroRef.current?.complete) setHeroLoaded(true)
+    if (advertRef.current?.complete) setAdvertLoaded(true)
+    
     // C-6: Use parallel Promise.all instead of 3 sequential queries
     const fetchProducts = async () => {
       setLoading(true)
@@ -86,7 +94,7 @@ const Home = () => {
       </Helmet>
 
       {/* Hero Section */}
-      <section className="relative h-[60vh] lg:h-[80vh] flex items-center justify-center overflow-hidden ">
+      <section className="relative h-[60vh] lg:h-[80vh] flex items-center justify-center overflow-hidden mt-10">
         <div className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden">
            <motion.div 
             initial={{ scale: 1.1, opacity: 0 }}
@@ -95,38 +103,40 @@ const Home = () => {
             className="w-full h-full opacity-50"
            >
             
+              <div className="absolute inset-0 bg-charcoal animate-pulse"></div>
               <img 
+                ref={heroRef}
                 src={getOptimizedImage(heroImg, 1920)} 
                 alt="Lustrax Luxury Jewelry Brand Background"
                 fetchPriority="high"
-                className="w-full h-full object-cover "
+                onLoad={() => setHeroLoaded(true)}
+                className={`w-full h-full object-cover transition-all duration-500 ease-out relative z-10 ${heroLoaded ? 'opacity-100 blur-0' : 'opacity-0 blur-md'}`}
               />
             
            </motion.div>
         </div>
 
-        <div className="relative z-10 text-center space-y-10 max-w-4xl px-6">
+        <div className="relative z-10 text-center space-y-10 max-w-4xl px-6 -mt-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: "easeOut" }}
-            className="space-y-4 lg:space-y-6 py-16 px-4 lg:px-12 max-w-5xl mx-auto relative flex flex-col items-center justify-center"
+            className="space-y-9 lg:space-y-6 py-16 px-4 lg:px-12 max-w-5xl mx-auto relative flex flex-col items-center justify-center"
           >
             {/* Smooth Radial Fade Background Effect */}
-            <div className="absolute inset-0 bg-black/50 backdrop-blur-md [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_70%)] pointer-events-none rounded-full scale-125 lg:scale-150 -z-10"></div>
+            <div className="absolute inset-0 bg-white/70 backdrop-blur-sm [mask-image:radial-gradient(ellipse_at_center,white_4%,transparent_70%)] pointer-events-none rounded-full scale-125 lg:scale-150 -z-10"></div>
             
             <div className="flex justify-center items-center space-x-4 lg:space-x-6 mb-6 mt-2 lg:mt-6 relative z-10">
-              <span className="w-8 lg:w-12 h-[1px] bg-gold/30"></span>
-              <span className="text-subheading text-gold-dark">High-End Essentials</span>
-              <span className="w-8 lg:w-12 h-[1px] bg-gold/30"></span>
+              <span className="w-10 lg:w-12 h-[2px] bg-gold"></span>
+              <span className="text-lg text-gray-700 font-bold font-libre">High-End Essentials</span>
+              <span className="w-10 lg:w-12 h-[2px] bg-gold"></span>
             </div>
             
-            <h1 className="text-h1 text-gold leading-[1.1] uppercase tracking-tighter">
-              Lustrax Jewelries <br/> Luxury Redefined
+            <h1 className="text-h1 text-black leading-[1.1] uppercase tracking-tighter">
+              Lustrax Jewelries 
             </h1>
-            <p className="text-body text-gray-400 max-w-2xl mx-auto italic">
-              Empowering your personal narrative through meticulously handcrafted fine jewelry. 
-              The premier destination to buy jewelry online in Nigeria.
+            <p className="text-body text-black max-w-2xl mx-auto italic relative z-10">
+              Shop Luxury Jewelry designed for durability, elegance and everyday confidence.
             </p>
 
 
@@ -136,10 +146,10 @@ const Home = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
-            className="flex flex-col sm:flex-row gap-6 justify-center relative z-10 -mt-20"
+            className="flex flex-col sm:flex-row gap-6 justify-center relative z-10 -mt-10"
           >
             <Link to="/products">
-              <Button variant="primary" size="lg" className="w-full sm:w-auto px-12">
+              <Button variant="primary"  className="bg-gold border-gold text-black sm:w-auto px-2 hover:bg-gold/80 hover:border-gold/80">
                 Explore the Collection
               </Button>
             </Link>
@@ -169,11 +179,14 @@ const Home = () => {
       {/* Promotional Banner */}
       <section className="py-20 bg-charcoal text-white relative overflow-hidden">
          <div className="absolute inset-0 opacity-40">
+          <div className="absolute inset-0 bg-black animate-pulse"></div>
             <img 
+              ref={advertRef}
               src={getOptimizedImage(advert, 1200)} 
               loading="lazy" 
               decoding="async" 
-              className="w-full h-full object-cover" 
+              onLoad={() => setAdvertLoaded(true)}
+              className={`w-full h-full object-cover transition-all duration-500 ease-out relative z-10 ${advertLoaded ? 'opacity-100 blur-0' : 'opacity-0 blur-md'}`}
               alt="Lustrax Seasonal Luxury Jewelry Campaign" 
             />
          </div>
