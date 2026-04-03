@@ -20,6 +20,12 @@ const ProductDetails = () => {
   const [variants, setVariants] = useState([])
   const [selectedAttributes, setSelectedAttributes] = useState({})
   const [selectedVariant, setSelectedVariant] = useState(null)
+  const [selectedImage, setSelectedImage] = useState(null)
+  const [mainImgLoaded, setMainImgLoaded] = useState(false)
+  
+  useEffect(() => {
+    setMainImgLoaded(false)
+  }, [selectedImage, product?.id])
   const { addToCart } = useCart()
   const { user, openAuthModal } = useAuth()
   const { toggleWishlist, isInWishlist } = useWishlist()
@@ -80,6 +86,7 @@ const ProductDetails = () => {
       if (!silent) navigate('/products')
     } else {
       setProduct(data)
+      if (!silent) setSelectedImage(null)
       setQuantity(currentQty => Math.min(currentQty, data.stock_quantity ?? 0))
 
       // Fetch variants
@@ -108,6 +115,8 @@ const ProductDetails = () => {
   )
 
   if (!product) return null
+  
+  const activeImage = selectedImage || product.image_url
 
   return (
     <div className="bg-white min-h-screen pt-24 lg:pt-40 pb-20 lg:pb-32 overflow-hidden">
@@ -186,27 +195,37 @@ const ProductDetails = () => {
             className="space-y-8"
           >
             <div className="aspect-[4/5] overflow-hidden rounded-luxury bg-soft-bg relative border-subtle group">
+               <div className="absolute inset-0 bg-gray-100 animate-pulse"></div>
                <img 
-                 src={getOptimizedImage(product.image_url, 1200)} 
+                 key={activeImage}
+                 src={getOptimizedImage(activeImage, 1200)} 
                  alt={`Lustrax Jewelries: ${product.name} Detailed View`}
                  fetchPriority="high"
-                 className="w-full h-full object-cover transition-luxury duration-[2000ms] group-hover:scale-110" 
+                 onLoad={() => setMainImgLoaded(true)}
+                 className={`w-full h-full object-cover transition-all duration-500 ease-out group-hover:scale-110 relative z-10 ${mainImgLoaded ? 'opacity-100 blur-0 scale-100' : 'opacity-0 blur-md scale-105'}`} 
                />
-               <div className="absolute inset-0 bg-black/5 pointer-events-none"></div>
+               <div className="absolute inset-0 bg-black/5 pointer-events-none z-20"></div>
             </div>
 
             {/* Gallery Thumbnails */}
             {product.additional_images?.length > 0 && (
               <div className="grid grid-cols-4 gap-4">
                  <div 
-                   className="aspect-square rounded-lg overflow-hidden border-2 border-gold cursor-pointer"
+                   onClick={() => setSelectedImage(product.image_url)}
+                   className={`aspect-square rounded-lg overflow-hidden border-2 cursor-pointer transition-all duration-300 relative ${activeImage === product.image_url ? 'border-gold shadow-md' : 'border-transparent hover:border-gold/50'}`}
                    aria-label="View primary angle"
                  >
-                    <img src={getOptimizedImage(product.image_url, 400)} className="w-full h-full object-cover" alt="Primary view" />
+                    <div className="absolute inset-0 bg-gray-100 animate-pulse"></div>
+                    <img onLoad={(e) => { e.target.classList.remove('opacity-0'); e.target.classList.add('opacity-100') }} src={getOptimizedImage(product.image_url, 400)} className="w-full h-full object-cover relative z-10 opacity-0 transition-opacity duration-300" alt="Primary view" />
                  </div>
                  {product.additional_images.map((img, idx) => (
-                   <div key={idx} className="aspect-square rounded-lg overflow-hidden border border-gray-100 hover:border-gold transition-luxury cursor-pointer" aria-label={`View detail angle ${idx + 1}`}>
-                      <img src={getOptimizedImage(img, 400)} className="w-full h-full object-cover" alt={`Detail angle ${idx + 1}`} />
+                   <div 
+                     key={idx} 
+                     onClick={() => setSelectedImage(img)}
+                     className={`aspect-square rounded-lg overflow-hidden border-2 cursor-pointer transition-all duration-300 relative ${activeImage === img ? 'border-gold shadow-md' : 'border-transparent hover:border-gold/50'}`} aria-label={`View detail angle ${idx + 1}`}
+                   >
+                      <div className="absolute inset-0 bg-gray-100 animate-pulse"></div>
+                      <img onLoad={(e) => { e.target.classList.remove('opacity-0'); e.target.classList.add('opacity-100') }} src={getOptimizedImage(img, 400)} className="w-full h-full object-cover relative z-10 opacity-0 transition-opacity duration-300" alt={`Detail angle ${idx + 1}`} />
                    </div>
                  ))}
               </div>
