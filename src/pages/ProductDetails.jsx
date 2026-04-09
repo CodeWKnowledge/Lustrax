@@ -142,7 +142,43 @@ const ProductDetails = () => {
               "url": `https://lustrax-jewelries.com/product/${product.id}`,
               "priceCurrency": "NGN",
               "price": getEffectivePrice(product, selectedVariant),
-              "availability": (selectedVariant ? selectedVariant.stock_quantity : product.stock_quantity) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+              "availability": (selectedVariant ? selectedVariant.stock_quantity : product.stock_quantity) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+              "itemCondition": "https://schema.org/NewCondition",
+              "shippingDetails": {
+                "@type": "OfferShippingDetails",
+                "shippingRate": {
+                  "@type": "MonetaryAmount",
+                  "value": 2000,
+                  "currency": "NGN"
+                },
+                "shippingDestination": {
+                  "@type": "DefinedRegion",
+                  "addressCountry": "NG"
+                },
+                "deliveryTime": {
+                  "@type": "ShippingDeliveryTime",
+                  "handlingTime": {
+                    "@type": "QuantitativeValue",
+                    "minValue": 1,
+                    "maxValue": 2,
+                    "unitCode": "d"
+                  },
+                  "transitTime": {
+                    "@type": "QuantitativeValue",
+                    "minValue": 2,
+                    "maxValue": 5,
+                    "unitCode": "d"
+                  }
+                }
+              },
+              "hasMerchantReturnPolicy": {
+                "@type": "MerchantReturnPolicy",
+                "applicableCountry": "NG",
+                "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                "merchantReturnDays": 7,
+                "returnMethod": "https://schema.org/ReturnByMail",
+                "returnFees": "https://schema.org/ReturnShippingFees"
+              }
             }
           })}
         </script>

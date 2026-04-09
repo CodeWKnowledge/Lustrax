@@ -1,9 +1,18 @@
 import { jsPDF } from 'jspdf';
+import logoSrc from '../assets/Logo.png';
+
+const loadImageNode = (src) => new Promise((resolve, reject) => {
+  const img = new Image();
+  img.crossOrigin = "Anonymous";
+  img.onload = () => resolve(img);
+  img.onerror = (e) => reject(e);
+  img.src = src;
+});
 
 /**
  * Generates an expanded, professional PDF receipt for Lustrax Jewelries.
  */
-export const generateReceipt = (data) => {
+export const generateReceipt = async (data) => {
   const { order, transaction, user } = data;
   const doc = new jsPDF({
     unit: 'mm',
@@ -13,112 +22,137 @@ export const generateReceipt = (data) => {
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
 
-  // 1. REPEATED WATERMARK
-  doc.setTextColor(245, 245, 245);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(8);
-  
-  const stepX = 40;
-  const stepY = 30;
-  for (let x = 0; x < pageWidth; x += stepX) {
-    for (let y = 0; y < pageHeight; y += stepY) {
-      doc.text('LUSTRAX', x, y, { 
-        angle: 45 
-      });
-    }
+  // Load Logo
+  let logoHeight = 20;
+  try {
+    const img = await loadImageNode(logoSrc);
+    const aspect = img.height / img.width;
+    const logoWidth = 30;
+    logoHeight = logoWidth * aspect;
+    doc.addImage(img, 'PNG', pageWidth/2 - logoWidth/2, 12, logoWidth, logoHeight);
+  } catch (e) {
+    console.warn("Could not load logo into PDF", e);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.setTextColor(30, 30, 30);
+    doc.text('LUSTRAX', pageWidth/2, 20, { align: 'center' });
+    logoHeight = 10;
   }
 
-  // 2. PAID STAMP (Subtle)
-  doc.setDrawColor(34, 197, 94);
-  doc.setTextColor(34, 197, 94);
-  doc.setGState(new doc.GState({ opacity: 0.1 }));
-  doc.rect(pageWidth - 40, 10, 30, 12);
-  doc.setFontSize(7);
-  doc.text('PAID', pageWidth - 25, 16, { align: 'center' });
-  doc.setFontSize(3);
-  doc.text('OFFICIAL RECORD', pageWidth - 25, 19, { align: 'center' });
-  doc.setGState(new doc.GState({ opacity: 1 }));
+  const startYBase = 15 + logoHeight;
 
-  // 3. HEADER
-  doc.setTextColor(30, 30, 30);
+  // Title
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);
-  doc.text('LUSTRAX', 15, 15);
-  doc.setFontSize(5);
-  doc.text('PREMIUM JEWELRY ACQUISITION', 15, 18);
+  doc.setTextColor(30, 30, 30);
+  doc.text('OFFICIAL RECEIPT', pageWidth/2, startYBase + 5, { align: 'center' });
+  
+  doc.setDrawColor(220);
+  doc.line(15, startYBase + 10, pageWidth - 15, startYBase + 10);
 
-  // 4. METADATA SECTION
+  // Metadata Section
+  const boxY = startYBase + 18;
+  
+  doc.setFontSize(7);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(120);
+  doc.text('REFERENCE', 15, boxY);
+  doc.text('RECIPIENT', pageWidth/2 + 5, boxY);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(40);
+  doc.text(String(transaction.payment_reference || 'N/A').toUpperCase(), 15, boxY + 5);
+  doc.text((user.full_name || 'VALUED CURATOR').toUpperCase(), pageWidth/2 + 5, boxY + 5);
+
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(120);
+  doc.text('DATE', 15, boxY + 12);
+  doc.text('IDENTIFICATION', pageWidth/2 + 5, boxY + 12);
+  
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(40);
+  doc.text(new Date(transaction.created_at || Date.now()).toLocaleDateString().toUpperCase(), 15, boxY + 17);
+  doc.text((user.email || '').toUpperCase(), pageWidth/2 + 5, boxY + 17);
+
+  // Table Headers
+  let tableY = boxY + 28;
+  doc.setFillColor(248, 248, 248);
   doc.setDrawColor(240);
-  doc.line(15, 25, pageWidth - 15, 25);
+  doc.rect(15, tableY, pageWidth - 30, 8, 'F');
   
+  doc.setFont('helvetica', 'bold');
   doc.setFontSize(6);
-  doc.setTextColor(150);
-  doc.text('REFERENCE', 15, 30);
-  doc.text('RECIPIENT', pageWidth / 2 + 5, 30);
-  
-  doc.setTextColor(30, 30, 30);
-  doc.setFont('helvetica', 'bold');
-  doc.text(transaction.payment_reference, 15, 33);
-  doc.text((user.full_name || 'VALUED CURATOR').toUpperCase(), pageWidth / 2 + 5, 33);
+  doc.setTextColor(80);
+  doc.text('ITEM DESCRIPTION', 18, tableY + 5);
+  doc.text('QTY', pageWidth - 55, tableY + 5, { align: 'center' });
+  doc.text('PRICE', pageWidth - 35, tableY + 5, { align: 'center' });
+  doc.text('AMOUNT', pageWidth - 18, tableY + 5, { align: 'right' });
 
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(150);
-  doc.text('DATE', 15, 38);
-  doc.text('IDENTIFICATION', pageWidth / 2 + 5, 38);
-  
-  doc.setTextColor(30, 30, 30);
-  doc.text(new Date(transaction.created_at).toLocaleDateString().toUpperCase(), 15, 41);
-  doc.text((user.email || '').toUpperCase(), pageWidth / 2 + 5, 41);
+  // Table Items
+  let currentY = tableY + 14;
 
-  // 5. ITEM TABLE (Compact)
-  const startY = 55;
-  doc.setDrawColor(245);
-  doc.setFillColor(252, 252, 252);
-  doc.rect(15, startY, pageWidth - 30, 6, 'F');
-  
-  doc.setFontSize(5);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(150);
-  doc.text('ITEM DESCRIPTION', 18, startY + 4);
-  doc.text('QTY', pageWidth - 50, startY + 4, { align: 'right' });
-  doc.text('PRICE', pageWidth - 35, startY + 4, { align: 'right' });
-  doc.text('AMOUNT', pageWidth - 18, startY + 4, { align: 'right' });
-  
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(30, 30, 30);
-  let currentY = startY + 12;
-
-  if (order.items?.length > 0) {
+  if (order.items && order.items.length > 0) {
     order.items.forEach(item => {
       const name = (item.product_name || item.name || 'ITEM').toUpperCase();
+      const variantDisplay = item.selected_attributes ? Object.values(item.selected_attributes).join(' / ') : '';
+      
       doc.setFont('helvetica', 'bold');
+      doc.setTextColor(40);
       doc.text(name, 18, currentY);
+      
+      if (variantDisplay) {
+         doc.setFontSize(5);
+         doc.setFont('helvetica', 'italic');
+         doc.setTextColor(120);
+         doc.text(variantDisplay.toUpperCase(), 18, currentY + 4);
+         doc.setFontSize(6);
+      }
+      
       doc.setFont('helvetica', 'normal');
-      doc.text(item.quantity?.toString() || '1', pageWidth - 50, currentY, { align: 'right' });
-      doc.text(`₦${(item.price || 0).toLocaleString()}`, pageWidth - 35, currentY, { align: 'right' });
-      doc.text(`₦${((item.price || 0) * (item.quantity || 1)).toLocaleString()}`, pageWidth - 18, currentY, { align: 'right' });
-      currentY += 6;
+      doc.setTextColor(40);
+      doc.text(String(item.quantity || 1), pageWidth - 55, currentY, { align: 'center' });
+      doc.text(`N${(parseFloat(item.price) || 0).toLocaleString()}`, pageWidth - 35, currentY, { align: 'center' });
+      doc.text(`N${((parseFloat(item.price) || 0) * (parseInt(item.quantity) || 1)).toLocaleString()}`, pageWidth - 18, currentY, { align: 'right' });
+      
+      currentY += variantDisplay ? 10 : 8;
     });
   } else {
-    doc.text('BOUTIQUE ORDER', 18, currentY);
-    doc.text('1', pageWidth - 50, currentY, { align: 'right' });
-    doc.text(`₦${order.total_amount.toLocaleString()}`, pageWidth - 18, currentY, { align: 'right' });
-    currentY += 6;
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(40);
+    doc.text('BOUTIQUE PURCHASE', 18, currentY);
+    doc.setFont('helvetica', 'normal');
+    doc.text('1', pageWidth - 55, currentY, { align: 'center' });
+    doc.text(`N${(parseFloat(order.total_amount) || 0).toLocaleString()}`, pageWidth - 35, currentY, { align: 'center' });
+    doc.text(`N${(parseFloat(order.total_amount) || 0).toLocaleString()}`, pageWidth - 18, currentY, { align: 'right' });
+    currentY += 8;
   }
 
-  // 6. TOTAL
-  doc.line(15, currentY + 4, pageWidth - 15, currentY + 4);
+  // Details Divider
+  doc.setDrawColor(220);
+  doc.line(15, currentY, pageWidth - 15, currentY);
+  
+  // Total Section
+  currentY += 8;
+  doc.setFontSize(9);
   doc.setFont('helvetica', 'bold');
+  doc.setTextColor(20);
+  doc.text('GRAND TOTAL', pageWidth - 45, currentY, { align: 'right' });
+  doc.text(`N${(parseFloat(order.total_amount) || 0).toLocaleString()}`, pageWidth - 18, currentY, { align: 'right' });
+
+  // Paid Stamp
+  doc.setTextColor(200, 160, 50); // Gold-ish
   doc.setFontSize(10);
-  doc.text(`TOTAL PAID: ₦${order.total_amount.toLocaleString()}`, pageWidth - 18, currentY + 12, { align: 'right' });
-
-  // 7. FOOTER
-  const footerY = pageHeight - 15;
-  doc.setTextColor(180);
-  doc.setFontSize(4);
   doc.setFont('helvetica', 'italic');
-  doc.text('LUSTRAX VERIFIED PROTOCOL • CERTIFIED ACQUISITION RECORD', pageWidth / 2, footerY, { align: 'center' });
+  doc.text('LUSTRAX VERIFIED PROTOCOL', pageWidth/2, currentY + 20, { align: 'center' });
 
-  // 8. SAVE
+  // Footer
+  const footerY = pageHeight - 15;
+  doc.setTextColor(150);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(5);
+  doc.text('THANK YOU FOR SHOPPING WITH LUSTRAX JEWELRIES.', pageWidth / 2, footerY, { align: 'center' });
+  doc.text('LUSTRAX-JEWELRIES.COM', pageWidth / 2, footerY + 4, { align: 'center' });
+
+  // Save
   doc.save(`Lustrax-Receipt-${transaction.payment_reference}.pdf`);
 };
