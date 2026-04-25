@@ -17,6 +17,8 @@ import Products from './pages/Products'
 import ProductDetails from './pages/ProductDetails'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
+import TermsAndConditions from './pages/TermsAndConditions'
+import RefundPolicy from './pages/RefundPolicy'
 
 // Dashboard Suite (Personalized)
 import DashboardLayout from './components/dashboard/DashboardLayout'
@@ -89,6 +91,8 @@ const GlobalApp = () => {
             <Checkout />
           </ProtectedRoute>
         } />
+        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+        <Route path="/refund-policy" element={<RefundPolicy />} />
         
         {/* Personalized Dashboard Architecture */}
         <Route path="/dashboard" element={

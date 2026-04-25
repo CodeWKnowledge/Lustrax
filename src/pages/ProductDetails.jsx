@@ -409,6 +409,13 @@ const ProductDetails = () => {
                   </div>
                </div>
 
+                <div className="flex items-center space-x-4 pt-4">
+                  <div className="w-1.5 h-1.5 bg-gold rounded-full"></div>
+                  <p className="text-[9px] uppercase tracking-[0.2em] font-bold text-gray-400">
+                    Returns accepted within 3 days. <Link to="/refund-policy" className="text-gold hover:underline">View Refund Policy</Link>
+                  </p>
+                </div>
+
             </div>
           </motion.div>
         </div>

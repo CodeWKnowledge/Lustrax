@@ -177,8 +177,11 @@ const PaymentSuccessModal = ({ isOpen, onClose, data }) => {
                 </div>
             </div>
 
-             <div className="pt-2 text-center">
+             <div className="pt-2 text-center space-y-2">
                 <p className="text-ui !text-[8px] text-gray-300 italic opacity-60">Lustrax Verified Portfolio Report</p>
+                <p className="text-[7px] text-gray-300 uppercase tracking-widest opacity-40">
+                  By completing this acquisition, you agreed to our Terms & Conditions and Refund Policy.
+                </p>
              </div>
           </div>
         </div>

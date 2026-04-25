@@ -19,6 +19,8 @@ import PaymentSuccessModal from '../components/ui/PaymentSuccessModal'
 import { formatCurrency } from '../utils/formatters'
 import { toast } from 'react-hot-toast'
 import locationData from '../data/nigeria-locations.json'
+import PolicyModal from '../components/ui/PolicyModal'
+import { TermsContent, RefundContent } from '../data/legal-content'
 
 const Checkout = () => {
   const { cartItems, cartTotal, clearCart } = useCart()
@@ -38,6 +40,8 @@ const Checkout = () => {
   })
   const [showSuccess, setShowSuccess] = useState(false)
   const [paymentData, setPaymentData] = useState(null)
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
+  const [policyModal, setPolicyModal] = useState({ isOpen: false, title: '', content: null })
   const navigate = useNavigate()
   const location = useLocation()
   const checkoutItems = cartItems
@@ -118,6 +122,11 @@ const Checkout = () => {
     if (!formData.street.trim() || formData.street.length < 5) return toast.error('Please provide a detailed Residency Address')
     if (!formData.landmark.trim()) return toast.error('Please specify a recognizable Landmark')
 
+    if (!agreedToTerms) {
+      toast.error('Protocol Error: You must agree to the Terms & Conditions and Refund Policy to proceed.')
+      return
+    }
+
     setLoading(true)
     
     try {
@@ -188,7 +197,11 @@ const Checkout = () => {
               userId: user.id,
               cartItems: checkoutItems,
               shippingDetails: addrMeta,
-              totalAmount: totalToPay
+              totalAmount: totalToPay,
+              legalAgreement: { 
+                agreedAt: new Date().toISOString(),
+                version: '1.0'
+              }
             })
           })
 
@@ -450,6 +463,15 @@ const Checkout = () => {
                </div>
                
                <div className="space-y-6 relative z-10">
+                  <div className="flex items-start space-x-4 group cursor-pointer" onClick={() => setAgreedToTerms(!agreedToTerms)}>
+                    <div className={`mt-1 w-5 h-5 rounded border flex items-center justify-center transition-all duration-300 ${agreedToTerms ? 'bg-gold border-gold' : 'border-white/20 bg-transparent group-hover:border-white/40'}`}>
+                      {agreedToTerms && <CheckmarkCircle01Icon size={12} className="text-charcoal" />}
+                    </div>
+                    <p className="text-[10px] text-gray-400 leading-relaxed uppercase tracking-widest select-none">
+                      I agree to the <button onClick={(e) => { e.stopPropagation(); setPolicyModal({ isOpen: true, title: 'Terms & Conditions', content: <TermsContent /> }) }} className="text-gold hover:underline">Terms & Conditions</button> and <button onClick={(e) => { e.stopPropagation(); setPolicyModal({ isOpen: true, title: 'Refund Policy', content: <RefundContent /> }) }} className="text-gold hover:underline">Refund Policy</button>
+                    </p>
+                  </div>
+
                   <Button 
                     onClick={handlePaystack} 
                     disabled={loading || totalToPay === 0 || checkoutItems.some(i => i.quantity === 0)}
@@ -501,6 +523,14 @@ const Checkout = () => {
         </div>
       </div>
       
+      <PolicyModal 
+        isOpen={policyModal.isOpen} 
+        onClose={() => setPolicyModal({ ...policyModal, isOpen: false })} 
+        title={policyModal.title}
+      >
+        {policyModal.content}
+      </PolicyModal>
+
       <PaymentSuccessModal 
         isOpen={showSuccess} 
         onClose={() => setShowSuccess(false)} 
