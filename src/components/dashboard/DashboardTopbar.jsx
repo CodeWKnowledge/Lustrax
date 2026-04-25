@@ -45,3 +45,5 @@ const DashboardTopbar = ({ title, onMenuClick }) => {
 }
 
 export default DashboardTopbar
+
+

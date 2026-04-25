@@ -14,7 +14,7 @@ const Footer = () => {
           </Link>
           
           <div className="flex space-x-8">
-            <Link to="/products" className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-400 hover:text-charcoal transition-luxury">
+            <Link to="/" className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-400 hover:text-charcoal transition-luxury">
               Shop Collection
             </Link>
           </div>
@@ -22,7 +22,7 @@ const Footer = () => {
           <div className="w-12 h-[1px] bg-gray-100"></div>
 
           <p className="text-[9px] text-gray-300 uppercase tracking-widest font-medium">
-            © {new Date().getFullYear()} LUSTRAX JEWELRIES. ALL RIGHTS RESERVED.
+            Â© {new Date().getFullYear()} LUSTRAX JEWELRIES. ALL RIGHTS RESERVED.
           </p>
         </div>
       </div>
@@ -31,3 +31,5 @@ const Footer = () => {
 }
 
 export default Footer
+
+

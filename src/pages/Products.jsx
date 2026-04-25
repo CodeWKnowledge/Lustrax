@@ -7,7 +7,7 @@ import { useSearchParams } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { getOptimizedImage } from '../utils/imageOptimizer'
 
-const CATEGORIES = ['All', 'Watches', 'Necklaces', 'Earrings', 'Rings']
+const CATEGORIES = ['All', 'Watches', 'Necklaces', 'Earrings', 'Rings', 'Bracelets', 'Collections']
 
 const Products = () => {
   const [products, setProducts] = useState([])
@@ -75,7 +75,7 @@ const Products = () => {
       <Helmet>
         <title>{activeCategory === 'All' ? 'Shop Full Collection' : `Buy ${activeCategory}`} | Lustrax Jewelries Nigeria</title>
         <meta name="description" content={`Explore our exclusive collection of ${activeCategory.toLowerCase()} at Lustrax. Premium handcrafted luxury jewelry delivered across Nigeria.`} />
-        <link rel="canonical" href={`https://lustrax-jewelries.com/products${activeCategory !== 'All' ? `?category=${activeCategory}` : ''}`} />
+        <link rel="canonical" href={`https://lustrax-jewelries.com/${activeCategory !== 'All' ? `?category=${activeCategory}` : ''}`} />
         
         <script type="application/ld+json">
           {JSON.stringify({
@@ -92,7 +92,7 @@ const Products = () => {
                 "@type": "ListItem",
                 "position": 2,
                 "name": "Collection",
-                "item": "https://lustrax-jewelries.com/products"
+                "item": "https://lustrax-jewelries.com/"
               }
             ]
           })}
@@ -105,7 +105,7 @@ const Products = () => {
         <div className="mb-12 lg:mb-16">
           <div className="text-center mb-10">
             <h1 className="text-h1 text-charcoal mb-4">
-              {activeCategory === 'All' ? 'The Lustrax Collection' : `Luxury ${activeCategory}`}
+              {activeCategory === 'All' ? 'The Lustrax Collection' : `Luxury ${activeCategory === 'Collections' ? 'Collections' : activeCategory}`}
             </h1>
             <p className="text-body text-gray-400 max-w-xl mx-auto">Explore our full repertoire of meticulously handcrafted fine jewelry, designed to elevate your personal narrative in Nigeria.</p>
           </div>
@@ -118,7 +118,7 @@ const Products = () => {
                  onClick={() => setActiveCategory(cat)}
                  className={`relative py-2 px-2 text-ui transition-luxury ${activeCategory === cat ? 'text-charcoal' : 'text-gray-400 hover:text-charcoal'}`}
                >
-                 {cat}
+                 {cat === 'Collections' ? 'Special Collections' : cat}
                  {activeCategory === cat && (
                    <motion.div 
                      layoutId="activeFilter"

@@ -1,6 +1,8 @@
+import { motion, AnimatePresence } from 'framer-motion'
 import React from 'react'
-import { motion } from 'framer-motion'
+
 import { WhatsappIcon } from 'hugeicons-react'
+
 
 const WhatsAppConcierge = () => {
   // Replace with the business's actual WhatsApp number
@@ -31,3 +33,7 @@ const WhatsAppConcierge = () => {
 }
 
 export default WhatsAppConcierge
+
+
+
+

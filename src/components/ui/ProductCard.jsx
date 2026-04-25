@@ -47,9 +47,8 @@ const ProductCard = ({ product }) => {
       initial={{ opacity: 0, y: 15 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="group"
     >
-      <Link to={`/product/${product.id}`}>
+      <Link to={`/product/${product.id}`} className="group block">
         <div className="relative aspect-[4/5] overflow-hidden bg-soft-bg rounded-luxury mb-4 transition-luxury border border-transparent group-hover:border-black/5">
           {/* Elegant Loading Skeleton/Placeholder */}
           <div className="absolute inset-0 bg-gray-100 animate-pulse"></div>
@@ -60,7 +59,7 @@ const ProductCard = ({ product }) => {
             loading="lazy"
             decoding="async"
             onLoad={() => setImgLoaded(true)}
-            className={`w-full h-full object-cover transition-all duration-500 ease-out group-hover:!scale-105 relative z-10 ${imgLoaded ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-110 blur-sm'}`}
+            className={`w-full h-full object-cover transition-transform duration-700 ease-out relative z-10 group-hover:scale-110 ${imgLoaded ? 'opacity-100 blur-0' : 'opacity-0 blur-sm'}`}
           />
           
           {product.stock_quantity === 0 && (
@@ -70,7 +69,7 @@ const ProductCard = ({ product }) => {
           )}
           
           {/* Quick Actions (Accessible) */}
-          <div className="absolute top-4 right-4 translate-x-10 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-luxury flex flex-col space-y-3">
+          <div className="absolute top-4 right-4 translate-x-10 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-luxury flex flex-col space-y-3 z-30">
              <button 
                aria-label={`Add ${product.name} to Wishlist`}
                onClick={(e) => handleAction(e, () => toggleWishlist(product))}
@@ -90,7 +89,7 @@ const ProductCard = ({ product }) => {
              </button>
           </div>
 
-          <div className="absolute inset-x-0 bottom-0 p-6 translate-y-full group-hover:translate-y-0 transition-luxury bg-gradient-to-t from-white/90 to-transparent backdrop-blur-[2px]">
+          <div className="absolute inset-x-0 bottom-0 p-6 translate-y-full group-hover:translate-y-0 transition-luxury bg-gradient-to-t from-white/90 to-transparent backdrop-blur-[2px] z-20">
              <span className="text-ui text-charcoal opacity-70">Quick View</span>
           </div>
         </div>

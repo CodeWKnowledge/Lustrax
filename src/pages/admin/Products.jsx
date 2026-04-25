@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useModal } from '../../context/ModalContext'
 import { supabase } from '../../lib/supabase'
 import AdminTable from '../../components/admin/ui/AdminTable'
@@ -7,6 +7,7 @@ import DetailsModal from '../../components/admin/ui/DetailsModal'
 import Button from '../../components/ui/Button'
 import { motion, AnimatePresence } from 'framer-motion'
 import { formatCurrency, formatLuxuryDate } from '../../utils/formatters'
+import { useDebounce } from '../../hooks/useDebounce'
 import { toast } from 'react-hot-toast'
 import { 
   PlusSignIcon, 
@@ -18,6 +19,9 @@ import {
 } from 'hugeicons-react'
 
 const PAGE_SIZE = 10
+const CATEGORIES = ['Watches', 'Necklaces', 'Earrings', 'Rings', 'Bracelets', 'Collections']
+
+const isValidUUID = (uuid) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(uuid)
 
 const Products = () => {
   const navigate = useNavigate()
@@ -25,7 +29,11 @@ const Products = () => {
   const [products, setProducts] = useState([])
   const [filteredProducts, setFilteredProducts] = useState([])
   const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
+  const [searchParams] = useSearchParams()
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '')
+  const debouncedSearchTerm = useDebounce(searchTerm, 500)
+  const [selectedCategories, setSelectedCategories] = useState([])
+  const [totalCount, setTotalCount] = useState(0)
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
   const [selectedProductIds, setSelectedProductIds] = useState([])
@@ -35,21 +43,36 @@ const Products = () => {
 
   const fetchProducts = useCallback(async () => {
     setLoading(true)
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1)
-    
-    if (error) {
-      toast.error('Inventory retrieval failed')
-    } else {
+    try {
+      let query = supabase
+        .from('products')
+        .select('*', { count: 'exact' })
+
+      if (debouncedSearchTerm) {
+        const uuidFilter = isValidUUID(debouncedSearchTerm) ? `,id.eq.${debouncedSearchTerm}` : ''
+        query = query.or(`name.ilike.%${debouncedSearchTerm}%,category.ilike.%${debouncedSearchTerm}%${uuidFilter}`)
+      }
+      
+      if (selectedCategories.length > 0) {
+        query = query.in('category', selectedCategories)
+      }
+
+      const { data, error, count } = await query
+        .order('created_at', { ascending: false })
+        .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1)
+
+      if (error) throw error
+      
       setProducts(data || [])
-      setFilteredProducts(data || [])
+      setTotalCount(count || 0)
       setHasMore(data?.length === PAGE_SIZE)
+    } catch (err) {
+      console.error('Fetch products error:', err)
+      toast.error('Inventory retrieval failed')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
-  }, [page])
+  }, [page, debouncedSearchTerm, selectedCategories])
 
   useEffect(() => {
     fetchProducts()
@@ -73,19 +96,11 @@ const Products = () => {
     }
   }, [fetchProducts])
 
-  useEffect(() => {
-    const term = searchTerm.toLowerCase()
-    const result = products.filter(p => 
-      p.name.toLowerCase().includes(term) || 
-      (p.category && p.category.toLowerCase().includes(term)) ||
-      p.id.toLowerCase().includes(term)
-    )
-    setFilteredProducts(result)
-  }, [searchTerm, products])
+  // Removed client-side filteredProducts effect, now handled server-side
 
   const handleSelectAll = (checked) => {
     if (checked) {
-      setSelectedProductIds(filteredProducts.map(p => p.id))
+      setSelectedProductIds(products.map(p => p.id))
     } else {
       setSelectedProductIds([])
     }
@@ -139,7 +154,6 @@ const Products = () => {
   const togglePlacement = async (id, field, currentValue) => {
     try {
       setProducts(prev => prev.map(p => p.id === id ? { ...p, [field]: !currentValue } : p))
-      setFilteredProducts(prev => prev.map(p => p.id === id ? { ...p, [field]: !currentValue } : p))
       
       const { error } = await supabase.from('products').update({ [field]: !currentValue }).eq('id', id)
       if (error) throw error
@@ -254,21 +268,44 @@ const Products = () => {
         </div>
         
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-4 lg:gap-6 w-full md:w-auto">
-          <div className="flex items-center space-x-4 bg-soft-bg px-4 py-3 rounded-luxury border border-gray-50 focus-within:border-gold/30 transition-luxury min-w-[320px]">
-            <Search01Icon size={14} className="text-gray-300" />
-            <input 
-              type="text"
-              placeholder="SEARCH BY NAME, CATEGORY, ID..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-transparent text-[10px] uppercase font-bold tracking-[0.2em] text-charcoal outline-none w-full placeholder:text-gray-200"
-            />
+          <div className="flex flex-col space-y-3">
+             <div className="flex items-center space-x-4 bg-soft-bg px-4 py-3 rounded-luxury border border-gray-50 focus-within:border-gold/30 transition-luxury min-w-[320px]">
+               <Search01Icon size={14} className="text-gray-300" />
+               <input 
+                 type="text"
+                 placeholder="SEARCH BY NAME, CATEGORY, ID..."
+                 value={searchTerm}
+                 onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
+                 className="bg-transparent text-[10px] uppercase font-bold tracking-[0.2em] text-charcoal outline-none w-full placeholder:text-gray-200"
+               />
+             </div>
+             
+             {/* Category Pills */}
+             <div className="flex flex-wrap items-center gap-2">
+                {CATEGORIES.map(cat => {
+                   const isSelected = selectedCategories.includes(cat)
+                   return (
+                     <button
+                       key={cat}
+                       onClick={() => {
+                         setSelectedCategories(prev => 
+                           isSelected ? prev.filter(c => c !== cat) : [...prev, cat]
+                         )
+                         setPage(1)
+                       }}
+                       className={`px-3 py-1.5 text-[8px] font-bold uppercase tracking-widest rounded-full transition-luxury border ${isSelected ? 'bg-charcoal text-gold border-charcoal' : 'bg-transparent text-gray-400 border-gray-100 hover:border-gold/30'}`}
+                     >
+                       {cat === 'Collections' ? 'Special Collections' : cat}
+                     </button>
+                   )
+                })}
+             </div>
           </div>
 
           <Button 
             onClick={() => navigate('/admin/products/add')}
             variant="primary" 
-            className="px-8 h-12 group"
+            className="px-8 h-12 group self-start lg:self-auto"
           >
             <PlusSignIcon size={16} className="mr-3 group-hover:rotate-90 transition-luxury" /> 
             <span>Add Products</span>
@@ -277,9 +314,15 @@ const Products = () => {
         </div>
       </div>
 
+      <div className="flex items-center justify-between py-4">
+         <span className="text-[10px] font-bold uppercase tracking-widest text-charcoal bg-soft-bg px-4 py-2 rounded-luxury border border-gray-50">
+            Total Products: <span className="text-gold ml-2">{totalCount}</span>
+         </span>
+      </div>
+
       <AdminTable 
         onSelectAll={handleSelectAll}
-        isAllSelected={selectedProductIds.length === filteredProducts.length && filteredProducts.length > 0}
+        isAllSelected={selectedProductIds.length === products.length && products.length > 0}
         headers={[
           { label: 'Product Manifest' },
           { label: 'Valuation', align: 'center' },
@@ -288,7 +331,7 @@ const Products = () => {
           { label: 'Actions', align: 'right' }
         ]}
       >
-        {filteredProducts.map(p => (
+        {products.map(p => (
           <tr key={p.id} className={`block lg:table-row text-sm border border-gray-100 lg:border-t-0 lg:border-l-0 lg:border-r-0 lg:border-b lg:border-gray-50 rounded-xl mb-4 lg:mb-0 lg:rounded-none lg:last:border-b-0 group transition-luxury p-5 lg:p-0 ${selectedProductIds.includes(p.id) ? 'bg-gold/5' : 'hover:bg-soft-bg/20'}`}>
             <td className="px-3 py-3 lg:px-6 lg:py-4 w-12 hidden lg:table-cell">
                <input 
@@ -345,7 +388,7 @@ const Products = () => {
             </td>
           </tr>
         ))}
-        {filteredProducts.length === 0 && (
+        {products.length === 0 && (
           <tr>
             <td colSpan={6} className="py-20 text-center">
                <p className="text-[10px] text-gray-300 font-bold uppercase tracking-[0.4em] italic">No matching pieces found in the inventory ledger.</p>

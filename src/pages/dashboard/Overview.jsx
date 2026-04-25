@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import { formatCurrency } from '../../utils/formatters';
+﻿import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { supabase } from '../../lib/supabase'
@@ -9,7 +10,7 @@ import {
   ArrowRight01Icon,
   Activity04Icon
 } from 'hugeicons-react'
-import { motion } from 'framer-motion'
+
 import Button from '../../components/ui/Button'
 
 const StatCard = ({ title, value, icon, color }) => (
@@ -112,7 +113,7 @@ const Overview = () => {
           </p>
         </div>
         <div className="flex items-center space-x-3 lg:space-x-4 w-full md:w-auto">
-           <Link to="/products" className="flex-1 md:flex-none">
+           <Link to="/" className="flex-1 md:flex-none">
               <Button size="sm" variant="outline" className="text-[9px] lg:text-[10px] w-full">Storefront</Button>
            </Link>
            <Link to="/dashboard/wishlist" className="flex-1 md:flex-none">
@@ -184,7 +185,7 @@ const Overview = () => {
                         </span>
                       </td>
                       <td className="block lg:table-cell px-0 lg:px-8 py-1 lg:py-6">
-                        <p className="text-sm font-bold text-charcoal">₦{order.total_amount.toLocaleString()}</p>
+                        <p className="text-sm font-bold text-charcoal">â‚¦{order.total_amount.toLocaleString()}</p>
                       </td>
                       <td className="block lg:table-cell px-0 lg:px-8 py-4 lg:py-6 lg:text-right">
                         <div className="flex items-center justify-between lg:justify-end">
@@ -234,3 +235,5 @@ const Overview = () => {
 }
 
 export default Overview
+
+

@@ -36,19 +36,37 @@ const LoginForm = ({ onToggleMode, onComplete }) => {
          <div className="space-y-2">
             <label className="text-[9px] uppercase font-bold tracking-[0.2em] text-gray-400">Email or Phone Number</label>
             <input 
-              type="text" value={identifier} onChange={e => setIdentifier(e.target.value)}
+              id="login-identifier"
+              type="email"
+              name="email"
+              value={identifier}
+              onChange={e => setIdentifier(e.target.value)}
               className="w-full bg-transparent border-b border-gray-100 py-3 outline-none focus:border-charcoal transition-luxury font-medium text-sm placeholder:text-gray-200"
-              placeholder="your@email.com or +234..." required
+              placeholder="your@email.com"
+              required
+              autoComplete="email"
+              autoCorrect="off"
+              autoCapitalize="none"
+              spellCheck="false"
+              inputMode="email"
             />
          </div>
          <div className="space-y-2">
             <label className="text-[9px] uppercase font-bold tracking-[0.2em] text-gray-400">Password</label>
             <div className="relative group">
               <input 
+                id="login-password"
                 type={showPassword ? "text" : "password"} 
-                value={password} onChange={e => setPassword(e.target.value)}
+                name="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
                 className="w-full bg-transparent border-b border-gray-100 py-3 pr-10 outline-none focus:border-charcoal transition-luxury font-medium text-sm placeholder:text-gray-200"
-                placeholder="••••••••" required
+                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                required
+                autoComplete="current-password"
+                autoCorrect="off"
+                autoCapitalize="none"
+                spellCheck="false"
               />
               <button
                 type="button"
@@ -78,3 +96,5 @@ const LoginForm = ({ onToggleMode, onComplete }) => {
 }
 
 export default LoginForm
+
+

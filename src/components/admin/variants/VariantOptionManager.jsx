@@ -1,8 +1,10 @@
-import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import React from 'react'
+
 import { PlusSignIcon, Delete02Icon, Settings02Icon } from 'hugeicons-react'
 import TagInput from './TagInput'
 import { CATEGORY_VARIANTS } from '../../../constants/variantConfig'
+
 
 const VariantOptionManager = ({ category, options, setOptions, onGenerate }) => {
   const suggestedVariants = CATEGORY_VARIANTS[category] || []
@@ -143,3 +145,7 @@ const VariantOptionManager = ({ category, options, setOptions, onGenerate }) => 
 }
 
 export default VariantOptionManager
+
+
+
+

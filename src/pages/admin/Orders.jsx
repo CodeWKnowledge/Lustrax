@@ -1,5 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { useDebounce } from '../../hooks/useDebounce'
 import { supabase } from '../../lib/supabase'
+
+const isValidUUID = (uuid) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(uuid)
 import AdminTable from '../../components/admin/ui/AdminTable'
 import StatusBadge from '../../components/admin/ui/StatusBadge'
 import DetailsModal from '../../components/admin/ui/DetailsModal'
@@ -13,17 +17,20 @@ import {
   CheckmarkCircle01Icon,
   Cancel01Icon,
   PackageIcon,
-  TruckDeliveryIcon
+  TruckDeliveryIcon,
+  Copy01Icon
 } from 'hugeicons-react'
 
 const PAGE_SIZE = 10
 
 const Orders = () => {
   const [orders, setOrders] = useState([])
-  const [filteredOrders, setFilteredOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState('all')
-  const [searchTerm, setSearchTerm] = useState('')
+  const [searchParams] = useSearchParams()
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '')
+  const debouncedSearchTerm = useDebounce(searchTerm, 500)
+  const [totalCount, setTotalCount] = useState(0)
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
   const [selectedOrderIds, setSelectedOrderIds] = useState([])
@@ -33,21 +40,48 @@ const Orders = () => {
 
   const fetchOrders = useCallback(async () => {
     setLoading(true)
-    const { data, error } = await supabase
-      .from('orders')
-      .select('*, profiles(email, full_name, phone), order_items(*)')
-      .order('created_at', { ascending: false })
-      .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1)
-    
-    if (error) {
-      toast.error('Failed to retrieve order intelligence')
-    } else {
+    try {
+      let orderQuery = supabase
+        .from('orders')
+        .select('*, profiles(email, full_name, phone), order_items(*)', { count: 'exact' })
+
+      if (statusFilter !== 'all') {
+        orderQuery = orderQuery.eq('status', statusFilter)
+      }
+
+      if (debouncedSearchTerm) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id')
+          .or(`full_name.ilike.%${debouncedSearchTerm}%,email.ilike.%${debouncedSearchTerm}%`)
+          .limit(20)
+        
+        const profileIds = profiles?.map(p => p.id) || []
+        const uuidFilter = isValidUUID(debouncedSearchTerm) ? `,id.eq.${debouncedSearchTerm}` : ''
+        const orFilter = `payment_reference.ilike.%${debouncedSearchTerm}%${uuidFilter}`
+
+        if (profileIds.length > 0) {
+          orderQuery = orderQuery.or(`user_id.in.(${profileIds.join(',')}),${orFilter}`)
+        } else {
+          orderQuery = orderQuery.or(orFilter)
+        }
+      }
+
+      const { data, error, count } = await orderQuery
+        .order('created_at', { ascending: false })
+        .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1)
+      
+      if (error) throw error
+      
       setOrders(data || [])
-      setFilteredOrders(data || [])
+      setTotalCount(count || 0)
       setHasMore(data?.length === PAGE_SIZE)
+    } catch (err) {
+      toast.error('Failed to retrieve order intelligence')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
-  }, [page])
+  }, [page, statusFilter, debouncedSearchTerm])
 
   useEffect(() => {
     fetchOrders()
@@ -65,28 +99,11 @@ const Orders = () => {
     }
   }, [fetchOrders, page])
 
-  useEffect(() => {
-    let result = orders
-    if (statusFilter !== 'all') {
-      result = result.filter(order => order.status === statusFilter)
-    }
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase()
-      result = result.filter(order => 
-        order.id.toLowerCase().includes(term) || 
-        order.profiles?.full_name?.toLowerCase().includes(term) ||
-        order.profiles?.email?.toLowerCase().includes(term) ||
-        order.payment_reference?.toLowerCase().includes(term)
-      )
-    }
-    setFilteredOrders(result)
-    // Clear selection if filtered items don't include them
-    setSelectedOrderIds(prev => prev.filter(id => result.some(o => o.id === id)))
-  }, [statusFilter, searchTerm, orders])
+  // Removed client-side filtering effect, now handled server-side
 
   const handleSelectAll = (checked) => {
     if (checked) {
-      setSelectedOrderIds(filteredOrders.map(o => o.id))
+      setSelectedOrderIds(orders.map(o => o.id))
     } else {
       setSelectedOrderIds([])
     }
@@ -151,6 +168,75 @@ const Orders = () => {
       { label: 'Total Amount', value: formatCurrency(order.total_amount) },
       { label: 'Reference', value: order.payment_reference || 'MANUAL' },
       { label: 'Current Status', value: <StatusBadge status={order.status} /> },
+      { 
+        label: 'Logistics Coordinates', 
+        fullWidth: true,
+        value: (
+          <div className="mt-4 p-6 bg-soft-bg/30 rounded-luxury border border-gray-50 space-y-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-[9px] uppercase tracking-wider font-bold">
+              <div className="flex flex-col space-y-1">
+                <span className="text-gray-400">State</span>
+                <span className="text-charcoal">{order.state || 'N/A'}</span>
+              </div>
+              <div className="flex flex-col space-y-1">
+                <span className="text-gray-400">City/Town</span>
+                <span className="text-charcoal">{order.city || 'N/A'}</span>
+              </div>
+              <div className="flex flex-col space-y-1">
+                <span className="text-gray-400">LGA</span>
+                <span className="text-charcoal">{order.lga || 'N/A'}</span>
+              </div>
+              <div className="flex flex-col space-y-1">
+                <span className="text-gray-400">Area</span>
+                <span className="text-charcoal">{order.area || 'N/A'}</span>
+              </div>
+            </div>
+            
+            <div className="pt-4 border-t border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-2">
+                <span className="text-gray-400 text-[8px] uppercase font-bold tracking-[0.2em]">Residency Address</span>
+                <p className="text-[11px] font-medium text-charcoal leading-relaxed">{order.street_address || order.shipping_address || 'N/A'}</p>
+              </div>
+              <div className="space-y-2">
+                <span className="text-gold text-[8px] uppercase font-bold tracking-[0.3em]">Critical Landmark</span>
+                <p className="text-[11px] font-bold text-charcoal border-l-2 border-gold/20 pl-4">{order.landmark || 'N/A'}</p>
+              </div>
+            </div>
+
+            <div className="pt-4 flex flex-wrap items-center justify-between gap-4 border-t border-gray-100/50">
+              <div className="flex items-center space-x-2 text-[8px] text-gray-300 font-bold uppercase truncate max-w-[70%]">
+                <span className="w-1 h-1 bg-gray-200 rounded-full"></span>
+                <span>Full: {order.full_address || 'N/A'}</span>
+              </div>
+              
+              {order.full_address && (
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText(order.full_address)
+                    toast.success('Protocol: Address copied to clipboard')
+                  }}
+                  className="inline-flex items-center space-x-2 text-[8px] font-black uppercase tracking-[0.2em] text-gold hover:text-charcoal transition-luxury group"
+                >
+                  <Copy01Icon size={12} className="group-hover:scale-110 transition-luxury" />
+                  <span>Copy Full Address</span>
+                </button>
+              )}
+
+              {order.latitude && order.longitude && (
+                <a 
+                  href={`https://www.google.com/maps?q=${order.latitude},${order.longitude}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center space-x-3 text-[9px] font-black uppercase tracking-[0.2em] text-white bg-charcoal hover:bg-gold transition-luxury px-6 py-3 rounded-sm shadow-lg shadow-charcoal/10"
+                >
+                  <TruckDeliveryIcon size={14} />
+                  <span>View on Satellite Map</span>
+                </a>
+              )}
+            </div>
+          </div>
+        )
+      },
       { 
         label: 'Order Manifest', 
         fullWidth: true,
@@ -263,7 +349,7 @@ const Orders = () => {
                 type="text"
                 placeholder="SEARCH BY NAME, EMAIL, ID..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
                 className="bg-transparent text-[10px] uppercase font-bold tracking-[0.2em] text-charcoal outline-none w-full placeholder:text-gray-200"
               />
            </div>
@@ -272,7 +358,7 @@ const Orders = () => {
               <FilterIcon size={14} className="text-gray-300" />
               <select 
                 value={statusFilter} 
-                onChange={(e) => setStatusFilter(e.target.value)}
+                onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
                 className="bg-transparent text-[10px] uppercase font-bold tracking-[0.2em] text-charcoal outline-none cursor-pointer"
               >
                  <option value="all">ALL STATUSES</option>
@@ -285,14 +371,14 @@ const Orders = () => {
            </div>
            
            <span className="hidden lg:block text-[9px] text-gray-300 font-bold uppercase tracking-[0.3em] pl-4 border-l border-gray-50 h-6 leading-6">
-             {filteredOrders.length} DISCOVERED
+             {totalCount} DISCOVERED
            </span>
         </div>
       </div>
 
       <AdminTable 
         onSelectAll={handleSelectAll}
-        isAllSelected={selectedOrderIds.length === filteredOrders.length && filteredOrders.length > 0}
+        isAllSelected={selectedOrderIds.length === orders.length && orders.length > 0}
         headers={[
           { label: 'Customer' },
           { label: 'Total Value' },
@@ -301,7 +387,7 @@ const Orders = () => {
         ]}
         className="overflow-x-auto"
       >
-        {filteredOrders.map(order => (
+        {orders.map(order => (
           <tr key={order.id} className={`block lg:table-row text-sm border-b border-gray-50 last:border-0 group transition-luxury p-4 lg:p-0 ${selectedOrderIds.includes(order.id) ? 'bg-gold/5' : 'hover:bg-soft-bg/20'}`}>
             <td className="px-6 py-5 lg:px-10 lg:py-8 w-12 hidden lg:table-cell">
                <input 
@@ -349,7 +435,7 @@ const Orders = () => {
             </td>
           </tr>
         ))}
-        {filteredOrders.length === 0 && (
+        {orders.length === 0 && (
           <tr>
             <td colSpan={6} className="py-20 text-center">
                <p className="text-[10px] text-gray-300 font-bold uppercase tracking-[0.4em] italic">No matching orders found in the luxury ledger.</p>

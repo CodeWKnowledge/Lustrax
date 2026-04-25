@@ -80,7 +80,6 @@ export const NotificationProvider = ({ children }) => {
           'postgres_changes', 
           { event: 'INSERT', schema: 'public', table: 'notifications' },
           (payload) => {
-            console.log('New notification received:', payload);
             setNotifications(prev => [payload.new, ...prev]);
             setUnreadCount(prev => prev + 1);
             toast.success(`New Alert: ${payload.new.title}`, {
@@ -92,7 +91,6 @@ export const NotificationProvider = ({ children }) => {
 
       channel.subscribe((status, err) => {
         if (status === 'SUBSCRIBED') {
-          console.log('Successfully subscribed to notifications');
         }
         if (status === 'CHANNEL_ERROR') {
           console.error('Notification subscription error:', err);

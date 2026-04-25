@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Environment variables — NEVER commit these
+.env
+.env.*
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -23,3 +28,9 @@ dist-ssr
 *.sln
 *.sw?
 
+# Diagnostic Logs & Lint Reports
+*.txt
+eslint-report.json
+
+# Generated Assets
+public/sitemap.xml

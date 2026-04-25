@@ -72,7 +72,7 @@ const Wishlist = () => {
           <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.3em] mb-12">
             Save your favorite products here to find them later.
           </p>
-          <Link to="/products">
+          <Link to="/">
             <Button variant="outline" className="text-[10px] h-12 px-10">Explore Collection</Button>
           </Link>
         </div>

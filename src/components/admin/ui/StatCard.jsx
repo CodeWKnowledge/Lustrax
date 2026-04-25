@@ -25,3 +25,5 @@ const StatCard = ({ label, value, icon, trend, trendValue, color = 'gold' }) => 
 }
 
 export default StatCard
+
+

@@ -1,3 +1,4 @@
+import { motion, AnimatePresence } from 'framer-motion'
 import React, { useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { supabase } from '../../lib/supabase'
@@ -8,8 +9,9 @@ import {
   CheckmarkCircle02Icon,
   Alert01Icon
 } from 'hugeicons-react'
-import { motion, AnimatePresence } from 'framer-motion'
+
 import Button from '../../components/ui/Button'
+
 
 const Settings = () => {
   const { user, profile, refreshProfile } = useAuth()
@@ -108,22 +110,35 @@ const Settings = () => {
          
          <form onSubmit={handleUpdateProfile} className="grid grid-cols-1 md:grid-cols-2 gap-10">
             <div className="space-y-3">
-               <label className="text-[9px] uppercase font-bold tracking-[0.4em] text-gray-400">Full Name</label>
+               <label className="text-[9px] uppercase font-bold tracking-[0.4em] text-gray-400" htmlFor="settings-name">Full Name</label>
                <input 
-                 type="text" 
+                 id="settings-name"
+                 type="text"
+                 name="name"
                  value={fullName}
                  onChange={(e) => setFullName(e.target.value)}
                  placeholder="Your full name"
                  className="w-full bg-white border-b border-gray-100 py-3 outline-none font-bold text-[11px] text-charcoal focus:border-gold transition-all"
+                 autoComplete="name"
+                 autoCorrect="on"
+                 autoCapitalize="words"
+                 spellCheck="true"
+                 inputMode="text"
                />
             </div>
             <div className="space-y-3">
                <label className="text-[9px] uppercase font-bold tracking-[0.4em] text-gray-400">Email Address</label>
                <input 
-                 type="text" 
+                 id="settings-email"
+                 type="email"
                  value={user?.email || ''} 
                  readOnly
+                 tabIndex={-1}
                  className="w-full bg-transparent border-b border-gray-100 py-3 outline-none font-bold text-[11px] text-gray-300 cursor-not-allowed"
+                 autoComplete="off"
+                 autoCorrect="off"
+                 autoCapitalize="none"
+                 spellCheck="false"
                />
             </div>
             <div className="md:col-span-2 pt-4">
@@ -143,30 +158,42 @@ const Settings = () => {
 
          <form onSubmit={handleUpdatePassword} className="space-y-10 max-w-xl">
             <div className="space-y-3">
-               <label className="text-[9px] uppercase font-bold tracking-[0.4em] text-gray-400">New Password</label>
+               <label className="text-[9px] uppercase font-bold tracking-[0.4em] text-gray-400" htmlFor="settings-new-password">New Password</label>
                <div className="relative">
                   <Key01Icon size={14} className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-200" />
                   <input 
-                    type="password" 
+                    id="settings-new-password"
+                    type="password"
+                    name="new-password"
                     value={passwords.new}
                     onChange={(e) => setPasswords({...passwords, new: e.target.value})}
                     placeholder="Min 6 characters"
                     className="w-full bg-white border-b border-gray-100 py-3 pl-8 outline-none font-bold text-[11px] text-charcoal focus:border-gold transition-all"
                     required
+                    autoComplete="new-password"
+                    autoCorrect="off"
+                    autoCapitalize="none"
+                    spellCheck="false"
                   />
                </div>
             </div>
             <div className="space-y-3">
-               <label className="text-[9px] uppercase font-bold tracking-[0.4em] text-gray-400">Confirm New Password</label>
+               <label className="text-[9px] uppercase font-bold tracking-[0.4em] text-gray-400" htmlFor="settings-confirm-password">Confirm New Password</label>
                <div className="relative">
                   <Key01Icon size={14} className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-200" />
                   <input 
-                    type="password" 
+                    id="settings-confirm-password"
+                    type="password"
+                    name="new-password"
                     value={passwords.confirm}
                     onChange={(e) => setPasswords({...passwords, confirm: e.target.value})}
                     placeholder="Verify new password"
                     className="w-full bg-white border-b border-gray-100 py-3 pl-8 outline-none font-bold text-[11px] text-charcoal focus:border-gold transition-all"
                     required
+                    autoComplete="new-password"
+                    autoCorrect="off"
+                    autoCapitalize="none"
+                    spellCheck="false"
                   />
                </div>
             </div>
@@ -182,3 +209,7 @@ const Settings = () => {
 }
 
 export default Settings
+
+
+
+

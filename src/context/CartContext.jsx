@@ -99,7 +99,6 @@ export const CartProvider = ({ children }) => {
             return item 
           }
 
-          console.log(`LUSTRAX SYNC: Base Product adjustment for ${payload.new.name}`)
           return { 
             ...item, 
             price: payload.new.price,
@@ -113,7 +112,6 @@ export const CartProvider = ({ children }) => {
         setCartItems(prev => prev.map(item => {
           if (item.variant_id !== payload.new.id) return item
           
-          console.log(`LUSTRAX SYNC: Variant adjustment (Price/Stock) detected`)
           // We might need the base price if price_override becomes null. 
           // For perfection, we'd fetch the product too, but this covers 99% of cases.
           return { 
@@ -125,7 +123,9 @@ export const CartProvider = ({ children }) => {
         }))
       })
       .subscribe((status, err) => {
-        if (status === 'SUBSCRIBED') console.log('LUSTRAX DEBUG: Cart Real-time Sync Active')
+        if (status === 'SUBSCRIBED') {
+          // Sync Active
+        }
         if (err) console.error('LUSTRAX ERROR: Cart sync failure:', err)
       })
 

@@ -1,6 +1,8 @@
-import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import React from 'react'
+
 import { Cancel01Icon } from 'hugeicons-react'
+
 
 const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl' }) => {
   if (!isOpen) return null
@@ -48,3 +50,7 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl' }) => 
 }
 
 export default Modal
+
+
+
+

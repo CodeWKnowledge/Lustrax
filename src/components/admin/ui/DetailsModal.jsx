@@ -17,3 +17,5 @@ const DetailsModal = ({ isOpen, onClose, title, sections, maxWidth = 'max-w-2xl'
 }
 
 export default DetailsModal
+
+

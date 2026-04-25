@@ -18,6 +18,7 @@ import Button from '../components/ui/Button'
 import PaymentSuccessModal from '../components/ui/PaymentSuccessModal'
 import { formatCurrency } from '../utils/formatters'
 import { toast } from 'react-hot-toast'
+import locationData from '../data/nigeria-locations.json'
 
 const Checkout = () => {
   const { cartItems, cartTotal, clearCart } = useCart()
@@ -26,9 +27,14 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: profile?.full_name || '',
-    address: '',
+    phone: profile?.phone || '',
+    state: '',
     city: '',
-    phone: profile?.phone || ''
+    area: '',
+    customArea: '',
+    street: '',
+    landmark: '',
+    coordinates: { lat: null, lng: null }
   })
   const [showSuccess, setShowSuccess] = useState(false)
   const [paymentData, setPaymentData] = useState(null)
@@ -36,6 +42,12 @@ const Checkout = () => {
   const location = useLocation()
   const checkoutItems = cartItems
   const totalToPay = cartTotal
+
+  const stats = {
+    states: Object.keys(locationData),
+    cities: formData.state ? Object.keys(locationData[formData.state] || {}) : [],
+    areas: (formData.state && formData.city) ? locationData[formData.state][formData.city] || [] : []
+  }
 
   const validateCartIntegrity = async () => {
 
@@ -87,22 +99,24 @@ const Checkout = () => {
 
   const handlePaystack = async (e) => {
     e.preventDefault()
-    // 1. Validation
+    
+    // 1. Basic Identity Validation
     if (!formData.name.trim() || formData.name.trim().split(' ').length < 2) {
        toast.error('Please provide your full legal name (First & Last).')
        return
     }
     
-    if (!formData.address.trim() || formData.address.length < 10) {
-       toast.error('Please provide a complete shipping address.')
-       return
-    }
-
     if (!formData.phone.trim() || formData.phone.length < 10) {
        toast.error('Please provide a valid phone number.')
        return
     }
 
+    // 2. Strict Hierarchical Address Validation
+    if (!formData.state) return toast.error('Please select your State')
+    if (!formData.city) return toast.error('Please select your City')
+    if (!formData.area && !formData.customArea) return toast.error('Please select your delivery area')
+    if (!formData.street.trim() || formData.street.length < 5) return toast.error('Please provide a detailed Residency Address')
+    if (!formData.landmark.trim()) return toast.error('Please specify a recognizable Landmark')
 
     setLoading(true)
     
@@ -116,41 +130,53 @@ const Checkout = () => {
 
       const reference = `LST-${Math.floor(Math.random() * 1000000000)}`
 
+      // Logistics-grade address construction
+      const structuredAddress = {
+        name: formData.name,
+        phone: formData.phone,
+        state: formData.state,
+        city: formData.city,
+        area: formData.area === 'Other' ? formData.customArea : formData.area,
+        street_address: formData.street,
+        landmark: formData.landmark,
+        full_address: `${formData.street}, ${formData.area === 'Other' ? formData.customArea : formData.area}, ${formData.city}, ${formData.state}`,
+        coordinates: formData.coordinates,
+        // Fallbacks for legacy/system compatibility
+        address: formData.street,
+        city_system: formData.city
+      }
+
       const handler = window.PaystackPop.setup({
         key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
         email: user.email, 
         amount: Math.round(totalToPay * 100),
         ref: reference,
         callback: function(response) {
-          // Move async logic to a separate call to avoid 'async function' validation issues
-          verifyPaymentOnServer(response);
+          verifyPaymentOnServer(response, structuredAddress);
         },
         onSuccess: function(response) {
-          verifyPaymentOnServer(response);
+          verifyPaymentOnServer(response, structuredAddress);
         },
         onClose: () => {
           setLoading(false)
         }
       })
 
-      async function verifyPaymentOnServer(response) {
+      async function verifyPaymentOnServer(response, addrMeta) {
         setLoading(true)
         try {
-          // 1. ATOMIC RECONCILIATION LOGGING
-          // Immediately log the successful Paystack reference to prevent "lost payment" during verification failure.
           const { error: logError } = await supabase.from('payment_reconciliation').insert({
             reference: response.reference,
             user_id: user.id,
             amount: totalToPay,
             metadata: {
               items: checkoutItems.map(i => ({ id: i.id, variant_id: i.variant_id, qty: i.quantity })),
-              shipping: formData
+              shipping_details: addrMeta
             }
           });
 
-          if (logError) console.warn('LUSTRAX WARNING: Reconciliation log failed, but proceeding with verification.', logError);
 
-          // 2. BACKEND VERIFICATION
+
           const verificationResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-payment`, {
             method: 'POST', 
             headers: { 
@@ -161,7 +187,7 @@ const Checkout = () => {
               reference: response.reference,
               userId: user.id,
               cartItems: checkoutItems,
-              shippingDetails: formData,
+              shippingDetails: addrMeta,
               totalAmount: totalToPay
             })
           })
@@ -169,64 +195,21 @@ const Checkout = () => {
           const result = await verificationResponse.json()
           
           if (result.success) { 
-            // 3. FINALIZATION
             setPaymentData({
-              order: { 
-                id: result.orderId, 
-                total_amount: totalToPay,
-                items: checkoutItems 
-              },
-              transaction: {
-                payment_reference: response.reference,
-                created_at: new Date().toISOString()
-              },
-              user: user,
-              customerName: formData.name,
-              phone: formData.phone
+              order: { id: result.orderId, total_amount: totalToPay, items: checkoutItems },
+              transaction: { payment_reference: response.reference, created_at: new Date().toISOString() },
+              user: user, customerName: formData.name, phone: formData.phone
             })
-
             setShowSuccess(true)
             clearCart()
           } else {
-            // 4. LOGIC ERROR HANDLING (e.g. Stock out occurs between payment and verification)
-            console.error('LUSTRAX DEBUG: Verification Logic Error:', result.error)
             const isStockError = result.error && result.error.includes('Insufficient stock');
-            
             showAlert(isStockError ? 'Acquisition Halted' : 'Verification Denied', 
-              result.error || 'Protocol mismatch detected. Please contact concierge with Ref: ' + response.reference
+              result.error || 'Protocol mismatch. Ref: ' + response.reference
             )
           }
         } catch (err) {
-          // 5. INFRASTRUCTURE/NETWORK FAILURE
-          console.error('LUSTRAX CRITICAL: Verification Network Failure, initiating background sync:', err);
-          
-          const channel = supabase.channel(`recon-${response.reference}`)
-            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'payment_reconciliation', filter: `reference=eq.${response.reference}` }, (payload) => {
-               if (payload.new.status === 'verified') {
-                  setPaymentData({
-                    order: { id: payload.new.metadata?.order_id, total_amount: totalToPay, items: checkoutItems },
-                    transaction: { payment_reference: response.reference, created_at: new Date().toISOString() },
-                    user: user, customerName: formData.name, phone: formData.phone
-                  });
-                  setShowSuccess(true);
-                  clearCart();
-                  setLoading(false);
-                  supabase.removeChannel(channel);
-               } else if (payload.new.status === 'refunded') {
-                  showAlert('Acquisition Reversed', 'Your payment was automatically refunded due to an inventory constraint during processing.');
-                  setLoading(false);
-                  supabase.removeChannel(channel);
-               }
-            }).subscribe();
-
-          showAlert('Acquisition Synchronizing', 'Network timeout detected. Please keep this window open while we synchronize with the merchant vault in the background.');
-          
-          // Timeout after 45 seconds if webhook doesn't arrive
-          setTimeout(() => {
-             setLoading(false);
-             supabase.removeChannel(channel);
-             // We only show this if it didn't succeed already (the loading state check is tricky here but acceptable for timeout)
-          }, 45000);
+          showAlert('Connection Issue', 'Network latency detected. Your payment may still be processing — please check your orders before retrying.')
         }
       }
       handler.openIframe()
@@ -288,43 +271,133 @@ const Checkout = () => {
                
                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
                   <div className="space-y-3">
-                    <label className="text-ui text-gray-400">Recipient Name</label>
+                    <label className="text-ui text-gray-400" htmlFor="checkout-name">Recipient Name</label>
                     <input 
-                      type="text" 
+                      id="checkout-name"
+                      type="text"
+                      name="name"
                       value={formData.name} 
                       onChange={e => setFormData({...formData, name: e.target.value})}
                       className="w-full bg-transparent border-b border-gray-100 py-3 outline-none focus:border-gold transition-luxury font-medium text-sm placeholder:text-gray-100 font-inter"
-                      placeholder="THE HONORABLE..."
+                      placeholder="e.g. John Doe"
+                      autoComplete="name"
+                      autoCorrect="on"
+                      autoCapitalize="words"
+                      spellCheck="true"
                     />
                   </div>
                   <div className="space-y-3">
-                    <label className="text-ui text-gray-400">Contact Number</label>
+                    <label className="text-ui text-gray-400" htmlFor="checkout-phone">Contact Number</label>
                     <input 
-                      type="tel" 
+                      id="checkout-phone"
+                      type="tel"
+                      name="tel"
                       value={formData.phone} 
                       onChange={e => setFormData({...formData, phone: e.target.value})}
                       className="w-full bg-transparent border-b border-gray-100 py-3 outline-none focus:border-gold transition-luxury font-medium text-sm placeholder:text-gray-100 font-inter"
-                      placeholder="+234..."
+                      placeholder="e.g. 08012345678"
+                      autoComplete="tel"
+                      autoCorrect="off"
+                      autoCapitalize="none"
+                      spellCheck="false"
+                      inputMode="tel"
                     />
                   </div>
-                  <div className="md:col-span-2 space-y-3">
-                    <label className="text-ui text-gray-400">Residency Address</label>
-                    <input 
-                      type="text" 
-                      value={formData.address} 
-                      onChange={e => setFormData({...formData, address: e.target.value})}
-                      className="w-full bg-transparent border-b border-gray-100 py-3 outline-none focus:border-gold transition-luxury font-medium text-sm font-inter"
-                      placeholder="AVENUE / ESTATE / HOUSE NO."
-                    />
-                  </div>
+                  {/* Hierarchical Selectors */}
                   <div className="space-y-3">
-                    <label className="text-ui text-gray-400">City / State</label>
+                    <label className="text-ui text-gray-400">State</label>
+                    <div className="relative">
+                      <select 
+                        value={formData.state}
+                        onChange={e => setFormData({...formData, state: e.target.value, city: '', area: ''})}
+                        className="w-full bg-transparent border-b border-gray-100 py-3 outline-none focus:border-gold transition-luxury font-medium text-sm font-inter appearance-none cursor-pointer"
+                      >
+                        <option value="">SELECT STATE</option>
+                        {stats.states.map(s => <option key={s} value={s}>{s.toUpperCase()}</option>)}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className={`text-ui transition-luxury ${!formData.state ? 'text-gray-100' : 'text-gray-400'}`}>City / Major Town</label>
+                    <select 
+                      disabled={!formData.state}
+                      value={formData.city}
+                      onChange={e => setFormData({...formData, city: e.target.value, area: ''})}
+                      className="w-full bg-transparent border-b border-gray-100 py-3 outline-none focus:border-gold transition-luxury font-medium text-sm font-inter appearance-none disabled:opacity-30 cursor-pointer"
+                    >
+                      <option value="">SELECT CITY</option>
+                      {stats.cities.map(c => <option key={c} value={c}>{c.toUpperCase()}</option>)}
+                    </select>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className={`text-ui transition-luxury ${!formData.city ? 'text-gray-100' : 'text-gray-400'}`}>Delivery Area</label>
+                    <select 
+                      disabled={!formData.city}
+                      value={formData.area}
+                      onChange={e => setFormData({...formData, area: e.target.value})}
+                      className="w-full bg-transparent border-b border-gray-100 py-3 outline-none focus:border-gold transition-luxury font-medium text-sm font-inter appearance-none disabled:opacity-30 cursor-pointer"
+                    >
+                      <option value="">SELECT AREA</option>
+                      {stats.areas.map(a => <option key={a} value={a}>{a.toUpperCase()}</option>)}
+                      <option value="Other">OTHER (SPECIFY BELOW)</option>
+                    </select>
+                  </div>
+
+                  {formData.area === 'Other' && (
+                    <div className="md:col-span-2 space-y-3">
+                      <label className="text-ui text-gold" htmlFor="checkout-custom-area">Specify Your Area / Neighborhood</label>
+                      <input 
+                        id="checkout-custom-area"
+                        type="text"
+                        name="address-level3"
+                        value={formData.customArea} 
+                        onChange={e => setFormData({...formData, customArea: e.target.value})}
+                        className="w-full bg-transparent border-b border-gold py-3 outline-none transition-luxury font-medium text-sm font-inter"
+                        placeholder="e.g. Lekki Phase 3, Chevron Drive"
+                        autoComplete="address-level3"
+                        autoCorrect="on"
+                        autoCapitalize="words"
+                        spellCheck="true"
+                        inputMode="text"
+                      />
+                    </div>
+                  )}
+
+                  <div className="md:col-span-2 space-y-3">
+                    <label className="text-ui text-gray-400" htmlFor="checkout-street">Detailed Street Address (House No, Street Name)</label>
                     <input 
-                      type="text" 
-                      value={formData.city} 
-                      onChange={e => setFormData({...formData, city: e.target.value})}
+                      id="checkout-street"
+                      type="text"
+                      name="street-address"
+                      value={formData.street} 
+                      onChange={e => setFormData({...formData, street: e.target.value})}
                       className="w-full bg-transparent border-b border-gray-100 py-3 outline-none focus:border-gold transition-luxury font-medium text-sm font-inter"
-                      placeholder="LAGOS, NIGERIA"
+                      placeholder="e.g. 24B Allen Avenue, Opebi"
+                      autoComplete="street-address"
+                      autoCorrect="on"
+                      autoCapitalize="words"
+                      spellCheck="true"
+                      inputMode="text"
+                    />
+                  </div>
+
+                  <div className="md:col-span-2 space-y-3">
+                    <label className="text-ui text-gray-400" htmlFor="checkout-landmark">Closest Landmark (Required)</label>
+                    <input 
+                      id="checkout-landmark"
+                      type="text"
+                      name="landmark"
+                      value={formData.landmark} 
+                      onChange={e => setFormData({...formData, landmark: e.target.value})}
+                      className="w-full bg-transparent border-b border-gray-100 py-3 outline-none focus:border-gold transition-luxury font-medium text-sm font-inter"
+                      placeholder="e.g. Opposite GTBank / Near Opebi Junction"
+                      autoComplete="off"
+                      autoCorrect="on"
+                      autoCapitalize="sentences"
+                      spellCheck="true"
+                      inputMode="text"
                     />
                   </div>
                </div>

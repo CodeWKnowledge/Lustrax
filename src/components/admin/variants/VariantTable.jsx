@@ -1,7 +1,9 @@
-import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import React from 'react'
+
 import { Delete02Icon, InformationCircleIcon, CheckmarkCircle01Icon, Alert01Icon } from 'hugeicons-react'
 import { calculateAutoPrice } from '../../../utils/variantEditor'
+
 
 const VariantTable = ({ variants, setVariants, basePrice, priceRules }) => {
   const attributeNames = variants.length > 0 ? Object.keys(variants[0].attributes) : []
@@ -126,7 +128,7 @@ const VariantTable = ({ variants, setVariants, basePrice, priceRules }) => {
                 {attributeNames.map(name => (
                   <th key={name} className="px-6 py-4 text-[9px] font-bold uppercase tracking-widest text-gray-400">{name}</th>
                 ))}
-                <th className="px-6 py-4 text-[9px] font-bold uppercase tracking-widest text-gray-400">Price (₦)</th>
+                <th className="px-6 py-4 text-[9px] font-bold uppercase tracking-widest text-gray-400">Price (â‚¦)</th>
                 <th className="px-6 py-4 text-[9px] font-bold uppercase tracking-widest text-gray-400">Stock</th>
                 <th className="px-6 py-4 text-[9px] font-bold uppercase tracking-widest text-gray-400 text-center w-20">Actions</th>
               </tr>
@@ -224,3 +226,7 @@ const VariantTable = ({ variants, setVariants, basePrice, priceRules }) => {
 }
 
 export default VariantTable
+
+
+
+

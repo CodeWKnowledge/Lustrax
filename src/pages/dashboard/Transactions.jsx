@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { formatCurrency } from '../../utils/formatters';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { useModal } from '../../context/ModalContext';
@@ -51,6 +52,7 @@ const Transactions = () => {
   };
 
   const handleDownloadReceipt = (transaction) => {
+    const name = user.user_metadata?.full_name || user.email || 'Valued Customer';
     const receiptData = {
       order: {
         ...transaction.order,
@@ -58,9 +60,10 @@ const Transactions = () => {
       },
       transaction: transaction,
       user: {
-        full_name: user.user_metadata?.full_name || 'Valued Customer',
+        full_name: name,
         email: user.email
-      }
+      },
+      customerName: name
     };
     generateReceipt(receiptData);
   };
@@ -132,7 +135,7 @@ const Transactions = () => {
                     <span className="text-[11px] font-bold text-charcoal tracking-wider font-mono">{trx.payment_reference}</span>
                   </td>
                   <td className="px-8 py-6">
-                    <span className="text-sm font-bold text-gold">₦{trx.amount.toLocaleString()}</span>
+                    <span className="text-sm font-bold text-gold">â‚¦{trx.amount.toLocaleString()}</span>
                   </td>
                   <td className="px-8 py-6">
                     <span className={`text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full ${
@@ -161,3 +164,5 @@ const Transactions = () => {
 };
 
 export default Transactions;
+
+

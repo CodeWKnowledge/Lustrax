@@ -40,6 +40,8 @@ import AdminProductForm from './pages/admin/ProductForm'
 
 import AdminSettings from './pages/admin/Settings'
 import AdminNotifications from './pages/admin/Notifications'
+import NotFound from './pages/NotFound'
+import ErrorBoundary from './components/ErrorBoundary'
 import { useEffect } from 'react'
 
 
@@ -77,8 +79,9 @@ const GlobalApp = () => {
   return (
     <Layout>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/products" element={<Products />} />
+        <Route path="/" element={<Products />} />
+        <Route path="/products" element={<Navigate to="/" replace />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={
@@ -119,6 +122,8 @@ const GlobalApp = () => {
           <Route path="settings" element={<AdminSettings />} />
           <Route path="notifications" element={<AdminNotifications />} />
         </Route>
+        {/* 404 â€” Catch-all for unknown routes */}
+        <Route path="*" element={<NotFound />} />
 
       </Routes>
     </Layout>
@@ -160,8 +165,9 @@ function App() {
             <CartProvider>
               <WishlistProvider>
                 <NotificationProvider>
-                  <GlobalApp />
-                  <GlobalModal />
+                  <ErrorBoundary>
+                    <GlobalApp />
+                    <GlobalModal />
                   
                   <Toaster 
                     position="top-right"
@@ -185,6 +191,7 @@ function App() {
                       },
                     }}
                   />
+                  </ErrorBoundary>
                 </NotificationProvider>
               </WishlistProvider>
             </CartProvider>
@@ -196,3 +203,5 @@ function App() {
 }
 
 export default App
+
+

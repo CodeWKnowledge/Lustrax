@@ -13,7 +13,7 @@ const loadImageNode = (src) => new Promise((resolve, reject) => {
  * Generates an expanded, professional PDF receipt for Lustrax Jewelries.
  */
 export const generateReceipt = async (data) => {
-  const { order, transaction, user } = data;
+  const { order, transaction, user, customerName } = data;
   const doc = new jsPDF({
     unit: 'mm',
     format: 'a5' 
@@ -62,7 +62,7 @@ export const generateReceipt = async (data) => {
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(40);
   doc.text(String(transaction.payment_reference || 'N/A').toUpperCase(), 15, boxY + 5);
-  doc.text((user.full_name || 'VALUED CURATOR').toUpperCase(), pageWidth/2 + 5, boxY + 5);
+  doc.text((customerName || user.full_name || 'VALUED CURATOR').toUpperCase(), pageWidth/2 + 5, boxY + 5);
 
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(120);

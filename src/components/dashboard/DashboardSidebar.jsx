@@ -1,6 +1,9 @@
+import { motion, AnimatePresence } from 'framer-motion'
 import React from 'react'
-import { Link, useLocation } from 'react-router-dom'
 import { 
+Link, useLocation } from 'react-router-dom'
+import { 
+
   Home01Icon, 
   ShoppingBag02Icon, 
   FavouriteIcon, 
@@ -10,7 +13,7 @@ import {
   Invoice01Icon,
   ConversationIcon
 } from 'hugeicons-react'
-import { motion, AnimatePresence } from 'framer-motion'
+
 
 const DashboardSidebar = ({ isCollapsed, isSidebarOpen, onClose }) => {
   const location = useLocation()
@@ -111,3 +114,7 @@ const DashboardSidebar = ({ isCollapsed, isSidebarOpen, onClose }) => {
 }
 
 export default DashboardSidebar
+
+
+
+

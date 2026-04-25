@@ -1,0 +1,551 @@
+{
+  "Abia": {
+    "Umuahia": [
+      "Umuahia GRA",
+      "Ibeku",
+      "BCA Road",
+      "Akanu Ibiam Way",
+      "Umuwaya Road"
+    ],
+    "Aba": [
+      "Ariaria",
+      "Faulks Road",
+      "Ngwa Road",
+      "Ogbor Hill",
+      "Asa Road",
+      "Ikot Ekpene Road"
+    ]
+  },
+  "Adamawa": {
+    "Yola": [
+      "Jimeta",
+      "Yola Town",
+      "Karewa GRA",
+      "Bekaji Estate",
+      "Doubeli"
+    ]
+  },
+  "Akwa Ibom": {
+    "Uyo": [
+      "Ewet Housing Estate",
+      "Shelter Afrique",
+      "Uyo City Centre",
+      "Aka Road",
+      "Abak Road",
+      "Oron Road"
+    ],
+    "Eket": [
+      "Mobil Estate",
+      "Eket City Centre"
+    ]
+  },
+  "Anambra": {
+    "Awka": [
+      "Awka GRA",
+      "Ifite",
+      "Amawbia",
+      "Ziks Avenue",
+      "Okpuno"
+    ],
+    "Onitsha": [
+      "Onitsha GRA",
+      "Inland Town",
+      "Upper Iweka",
+      "Fegge",
+      "Omagba Phase 1 & 2"
+    ],
+    "Nnewi": [
+      "Otolo",
+      "Uruagu",
+      "Umudim",
+      "Ichi"
+    ]
+  },
+  "Bauchi": {
+    "Bauchi": [
+      "Bauchi GRA",
+      "Yelwa",
+      "Kobi",
+      "Federal Lowcost",
+      "Wunti Area"
+    ]
+  },
+  "Bayelsa": {
+    "Yenagoa": [
+      "Amarata",
+      "Etegwe (Tombia Junction)",
+      "Opolo",
+      "Ekeki",
+      "Kpansia",
+      "Yenizue-Epie"
+    ]
+  },
+  "Benue": {
+    "Makurdi": [
+      "High Level",
+      "Wadata",
+      "North Bank",
+      "Wurukum",
+      "Low Level"
+    ]
+  },
+  "Borno": {
+    "Maiduguri": [
+      "Maiduguri GRA",
+      "University Road",
+      "Post Office Area",
+      "Yerwa",
+      "Bolori"
+    ]
+  },
+  "Cross River": {
+    "Calabar": [
+      "Marian Road",
+      "MCC Road",
+      "Calabar South",
+      "Watt Market",
+      "Independence Layout",
+      "State Housing"
+    ]
+  },
+  "Delta": {
+    "Asaba": [
+      "Asaba GRA",
+      "Okpanam Road",
+      "Nnebisi Road",
+      "Summit",
+      "Cable Point"
+    ],
+    "Warri": [
+      "Effurun",
+      "Enerhen",
+      "Airport Road",
+      "Jakpa Road",
+      "Ekpan"
+    ]
+  },
+  "Ebonyi": {
+    "Abakaliki": [
+      "Water Works",
+      "Presco",
+      "Azuiyiokwu",
+      "Kpirikpiri",
+      "Mile 50"
+    ]
+  },
+  "Edo": {
+    "Benin City": [
+      "GRA Phase 1 & 2",
+      "Airport Road",
+      "Ugbowo",
+      "Sapele Road",
+      "Akpakpava",
+      "Ekenwan Road",
+      "New Benin"
+    ]
+  },
+  "Ekiti": {
+    "Ado-Ekiti": [
+      "Okesha",
+      "Fajuyi",
+      "Ajilosun",
+      "Basiri",
+      "Adeebayo Area"
+    ]
+  },
+  "Enugu": {
+    "Enugu City": [
+      "Independence Layout",
+      "Enugu GRA",
+      "New Haven",
+      "Achara Layout",
+      "Abakpa Nike",
+      "Trans Ekulu",
+      "Uwani"
+    ]
+  },
+  "FCT (Abuja)": {
+    "Central Business District": [
+      "Central Area",
+      "Maitama",
+      "Asokoro",
+      "Wuse 2",
+      "Wuse Zone 1-7",
+      "Garki Area 1-11",
+      "Guzape"
+    ],
+    "Gwarinpa/Life Camp": [
+      "Gwarinpa Estate",
+      "Life Camp",
+      "Dawaki",
+      "Katampe"
+    ],
+    "Jabi/Utako": [
+      "Jabi",
+      "Utako",
+      "Wuye",
+      "Mbora",
+      "Dakibiiu"
+    ],
+    "Lugbe/Airport Road": [
+      "Lugbe (Main)",
+      "River Park",
+      "Karsana",
+      "Galadimawa",
+      "Pyakasa"
+    ],
+    "Lokogoma/Apo": [
+      "Lokogoma Estate",
+      "Apo Resettlement",
+      "Apo Legislative Quarters",
+      "Kabusa"
+    ],
+    "Kubwa/Dutse": [
+      "Kubwa",
+      "Dutse Alhaji",
+      "Bwari Town"
+    ],
+    "Karu/Nyanya": [
+      "Karu",
+      "Nyanya",
+      "Jikwoyi"
+    ]
+  },
+  "Gombe": {
+    "Gombe": [
+      "Gombe GRA",
+      "Pantami",
+      "Bolari",
+      "Federal Lowcost",
+      "Ashaka Road"
+    ]
+  },
+  "Imo": {
+    "Owerri": [
+      "Ikenegbu",
+      "Aladinma Estate",
+      "World Bank Housing Estate",
+      "Control Post",
+      "Nekede",
+      "Naze"
+    ]
+  },
+  "Jigawa": {
+    "Dutse": [
+      "Dutse GRA",
+      "Takur",
+      "Dan-Masara",
+      "Kazaure Road Area"
+    ]
+  },
+  "Kaduna": {
+    "Kaduna City": [
+      "Kaduna GRA",
+      "Barnawa",
+      "Unguwan Rimi",
+      "Sabon Tasha",
+      "Malali",
+      "Kawo"
+    ],
+    "Zaria": [
+      "Samaru",
+      "Sabon Gari",
+      "Zaria City"
+    ]
+  },
+  "Kano": {
+    "Kano City": [
+      "Nassarawa GRA",
+      "Sabon Gari",
+      "Tarauni",
+      "Fagge",
+      "Bompai",
+      "Hotoro",
+      "Kwalli"
+    ]
+  },
+  "Katsina": {
+    "Katsina": [
+      "Katsina GRA",
+      "Nagogo",
+      "Kofar Kaura",
+      "Kofar Sarki"
+    ]
+  },
+  "Kebbi": {
+    "Birnin Kebbi": [
+      "Birnin Kebbi GRA",
+      "Gwadangaji",
+      "Badariya"
+    ]
+  },
+  "Kogi": {
+    "Lokoja": [
+      "Lokoja GRA",
+      "Phase 1 & 2",
+      "Ganaja",
+      "Adankolo"
+    ]
+  },
+  "Kwara": {
+    "Ilorin": [
+      "Ilorin GRA",
+      "Tanke",
+      "Adewole",
+      "Fate",
+      "Taiwo Road"
+    ]
+  },
+  "Lagos": {
+    "Ikeja": [
+      "Ikeja GRA",
+      "Allen Avenue",
+      "Opebi",
+      "Maryland",
+      "Toyin Street",
+      "Alausa",
+      "Oregun",
+      "Agidingbi",
+      "Ojodu",
+      "Anifowoshe"
+    ],
+    "Lekki Phase 1": [
+      "Lekki Phase 1",
+      "Ikate Elegushi",
+      "Osapa London",
+      "Agungi",
+      "Ologolo",
+      "Idado",
+      "Chevy View"
+    ],
+    "Ajah": [
+      "VGC",
+      "Abraham Adesanya",
+      "Ajah Town",
+      "Badore",
+      "Sangotedo",
+      "Awoyaya",
+      "Lakowe",
+      "Thomas Estate"
+    ],
+    "Victoria Island": [
+      "Victoria Island (Main)",
+      "Oniru Estate",
+      "Ahmadu Bello Way",
+      "Adetokunbo Ademola",
+      "Akin Adesola"
+    ],
+    "Ikoyi": [
+      "Old Ikoyi",
+      "Banana Island",
+      "Parkview Estate",
+      "Dolphin Estate",
+      "Bourdillon Road",
+      "Kingsway Road"
+    ],
+    "Surulere": [
+      "Adeniran Ogunsanya",
+      "Bode Thomas",
+      "Ogunlana Drive",
+      "Aguda",
+      "Ijesha",
+      "Masha",
+      "Lawanson",
+      "Ojuelegba"
+    ],
+    "Magodo": [
+      "Magodo Phase 1",
+      "Magodo Phase 2",
+      "Shangisha",
+      "Omole Phase 1",
+      "Omole Phase 2"
+    ],
+    "Gbagada": [
+      "Gbagada Phase 1",
+      "Gbagada Phase 2",
+      "Ifako-Gbagada",
+      "Anthony Village"
+    ],
+    "Lagos Island": [
+      "Marina",
+      "Broad Street",
+      "Central Business District",
+      "Lafiaji"
+    ],
+    "Yaba/Mainland": [
+      "Yaba (Central)",
+      "Ebute Metta",
+      "Sabo",
+      "Akoka",
+      "Oyingbo",
+      "Surulere Extension"
+    ],
+    "Festac/Amuwo": [
+      "Festac Town",
+      "Amuwo Odofin",
+      "Mile 2",
+      "Apple Junction"
+    ],
+    "Ikorodu": [
+      "Ikorodu Town",
+      "Ikorodu GRA",
+      "Agric",
+      "Benson"
+    ],
+    "Apapa": [
+      "Apapa GRA",
+      "Wharf Road",
+      "Liverpool"
+    ]
+  },
+  "Nasarawa": {
+    "Lafia": [
+      "Lafia GRA",
+      "Bukan Sidi",
+      "Jos Road Area"
+    ],
+    "Karu": [
+      "Mararaba",
+      "One Man Village",
+      "New Nyanya",
+      "Masaka"
+    ]
+  },
+  "Niger": {
+    "Minna": [
+      "Minna GRA",
+      "Bosso",
+      "Tunga",
+      "Kpakungu",
+      "Maitumbi"
+    ]
+  },
+  "Ogun": {
+    "Abeokuta": [
+      "Abeokuta GRA",
+      "Oke-Ilewo",
+      "Ibara",
+      "Kuto",
+      "Sapon"
+    ],
+    "Ota": [
+      "Sango Ota",
+      "Agbara Estate",
+      "Canaanland"
+    ],
+    "Ijebu-Ode": [
+      "Ijebu-Ode GRA",
+      "Imepe"
+    ]
+  },
+  "Osun": {
+    "Osogbo": [
+      "Oke-Fia",
+      "Alekuwodo",
+      "Ayetoro",
+      "Isale Osun"
+    ],
+    "Ile-Ife": [
+      "OAU Campus Area",
+      "Lagere",
+      "Moore",
+      "Ibadan Road Area"
+    ]
+  },
+  "Oyo": {
+    "Ibadan": [
+      "Bodija",
+      "Challenge",
+      "Ring Road",
+      "Oluyole Estate",
+      "Akobo",
+      "Iwo Road",
+      "Dugbe",
+      "Samonda",
+      "University of Ibadan",
+      "Agodi GRA",
+      "Mokola"
+    ]
+  },
+  "Plateau": {
+    "Jos": [
+      "Rayfield",
+      "Bukuru",
+      "Anglo Jos",
+      "Zaria Road",
+      "Jos City Centre"
+    ]
+  },
+  "Rivers": {
+    "Port Harcourt City": [
+      "Old GRA",
+      "New GRA",
+      "D-Line",
+      "Borokiri",
+      "Moscow Road",
+      "Aggrey Road",
+      "Mile 1",
+      "Mile 2",
+      "Mile 3",
+      "Mile 4",
+      "Diobu",
+      "Town (Main)",
+      "Amadi Flat",
+      "Silverbird / Aba Road",
+      "Marine Base",
+      "Creek Road"
+    ],
+    "Obio-Akpor": [
+      "Rumuokoro",
+      "Eliozu",
+      "Woji",
+      "Elelenwo",
+      "Trans-Amadi",
+      "Rumuola",
+      "Peter Odili Road",
+      "Aba Road",
+      "Rumuigbo",
+      "Rumuodara",
+      "Elimgbu",
+      "Rumuomasi",
+      "Choba (UNIPORT)",
+      "Aluu",
+      "Rukpokwu",
+      "Eneka",
+      "Ozuoba",
+      "Iwofe",
+      "Ada George",
+      "Mgbuoba",
+      "Eligbolo"
+    ]
+  },
+  "Sokoto": {
+    "Sokoto": [
+      "Sokoto GRA",
+      "Mabera",
+      "Runjin Sambo",
+      "Sokoto City Centre"
+    ]
+  },
+  "Taraba": {
+    "Jalingo": [
+      "Jalingo GRA",
+      "Magami",
+      "Mile Six"
+    ]
+  },
+  "Yobe": {
+    "Damaturu": [
+      "Damaturu GRA",
+      "Obasanjo Way",
+      "Custom Area"
+    ]
+  },
+  "Zamfara": {
+    "Gusau": [
+      "Gusau GRA",
+      "Tudun Wada",
+      "Samaru"
+    ]
+  }
+}

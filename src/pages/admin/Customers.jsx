@@ -1,13 +1,20 @@
+import { motion, AnimatePresence } from 'framer-motion'
 import React, { useEffect, useState, useCallback } from 'react'
-import { supabase } from '../../lib/supabase'
-import { useAuth } from '../../context/AuthContext'
-import { useModal } from '../../context/ModalContext'
+import { 
+supabase } from '../../lib/supabase'
+import { 
+useAuth } from '../../context/AuthContext'
+import { 
+useModal } from '../../context/ModalContext'
 import AdminTable from '../../components/admin/ui/AdminTable'
 import DetailsModal from '../../components/admin/ui/DetailsModal'
-import { motion, AnimatePresence } from 'framer-motion'
-import { formatLuxuryDate } from '../../utils/formatters'
-import { toast } from 'react-hot-toast'
+
 import { 
+formatLuxuryDate } from '../../utils/formatters'
+import { 
+toast } from 'react-hot-toast'
+import { 
+
   ChampionIcon, 
   Shield01Icon,
   UserCircleIcon,
@@ -303,3 +310,9 @@ const Customers = () => {
 }
 
 export default Customers
+
+
+
+
+
+

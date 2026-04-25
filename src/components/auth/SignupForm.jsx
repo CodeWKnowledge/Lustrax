@@ -64,17 +64,37 @@ const SignupForm = ({ onToggleMode, onComplete }) => {
             <div className="space-y-1">
                 <label className="text-[8px] uppercase font-bold tracking-[0.2em] text-gray-400">Full Name</label>
                 <input 
-                  type="text" value={fullName} onChange={e => setFullName(e.target.value)}
+                  id="signup-name"
+                  type="text"
+                  name="name"
+                  value={fullName}
+                  onChange={e => setFullName(e.target.value)}
                   className="w-full bg-transparent border-b border-gray-100 py-2 outline-none focus:border-charcoal transition-luxury font-medium text-[11px] placeholder:text-gray-200"
-                  placeholder="Julian Blackwood" required
+                  placeholder="Julian Blackwood"
+                  required
+                  autoComplete="name"
+                  autoCorrect="on"
+                  autoCapitalize="words"
+                  spellCheck="true"
+                  inputMode="text"
                 />
             </div>
             <div className="space-y-1">
                 <label className="text-[8px] uppercase font-bold tracking-[0.2em] text-gray-400">Email</label>
                 <input 
-                  type="email" value={email} onChange={e => setEmail(e.target.value)}
+                  id="signup-email"
+                  type="email"
+                  name="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
                   className="w-full bg-transparent border-b border-gray-100 py-2 outline-none focus:border-charcoal transition-luxury font-medium text-[11px] placeholder:text-gray-200"
-                  placeholder="your@email.com" required
+                  placeholder="your@email.com"
+                  required
+                  autoComplete="email"
+                  autoCorrect="off"
+                  autoCapitalize="none"
+                  spellCheck="false"
+                  inputMode="email"
                 />
             </div>
          </div>
@@ -82,9 +102,19 @@ const SignupForm = ({ onToggleMode, onComplete }) => {
          <div className="space-y-1">
             <label className="text-[8px] uppercase font-bold tracking-[0.2em] text-gray-400">Phone Number</label>
             <input 
-              type="tel" value={phone} onChange={e => setPhone(e.target.value)}
+              id="signup-phone"
+              type="tel"
+              name="phone"
+              value={phone}
+              onChange={e => setPhone(e.target.value)}
               className="w-full bg-transparent border-b border-gray-100 py-2 outline-none focus:border-charcoal transition-luxury font-medium text-[11px] placeholder:text-gray-200"
-              placeholder="+234..." required
+              placeholder="e.g. 08012345678"
+              required
+              autoComplete="tel"
+              autoCorrect="off"
+              autoCapitalize="none"
+              spellCheck="false"
+              inputMode="tel"
             />
          </div>
 
@@ -92,10 +122,18 @@ const SignupForm = ({ onToggleMode, onComplete }) => {
             <label className="text-[8px] uppercase font-bold tracking-[0.2em] text-gray-400">Security Key</label>
             <div className="relative group">
               <input 
+                id="signup-password"
                 type={showPassword ? "text" : "password"} 
-                value={password} onChange={e => setPassword(e.target.value)}
+                name="new-password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
                 className="w-full bg-transparent border-b border-gray-100 py-2 pr-10 outline-none focus:border-charcoal transition-luxury font-medium text-[11px] placeholder:text-gray-200"
-                placeholder="••••••••" required
+                placeholder="••••••••"
+                required
+                autoComplete="new-password"
+                autoCorrect="off"
+                autoCapitalize="none"
+                spellCheck="false"
               />
               <button
                 type="button"

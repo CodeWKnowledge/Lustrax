@@ -32,7 +32,7 @@ export const getOptimizedImage = (url, width = 800) => {
                        urlObj.hostname.includes('unsplash.com') ||
                        urlObj.hostname.includes('lustrax-jewelries.com');
      if (!isTrusted) return url; // Bypass proxy for arbitrary domains
-  } catch (e) {
+  } catch {
      return url;
   }
 
@@ -50,7 +50,7 @@ export const getOptimizedImage = (url, width = 800) => {
     // Cloudinary will re-apply formatting and quality automatically.
     const cleanUrl = url.includes('unsplash.com') ? url.split('?')[0] : url;
     return `https://res.cloudinary.com/${CLOUD_NAME}/image/fetch/${params}/${encodeURIComponent(cleanUrl)}`;
-  } catch (e) {
+  } catch {
     return url;
   }
 };

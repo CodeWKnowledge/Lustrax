@@ -83,7 +83,7 @@ const ProductDetails = () => {
     if (!silent) setLoading(true)
     const { data, error } = await supabase.from('products').select('*').eq('id', id).single()
     if (error) {
-      if (!silent) navigate('/products')
+      if (!silent) navigate('/')
     } else {
       setProduct(data)
       if (!silent) setSelectedImage(null)
@@ -199,7 +199,7 @@ const ProductDetails = () => {
                 "@type": "ListItem",
                 "position": 2,
                 "name": "Collection",
-                "item": "https://lustrax-jewelries.com/products"
+                "item": "https://lustrax-jewelries.com/"
               },
               {
                 "@type": "ListItem",
@@ -252,7 +252,7 @@ const ProductDetails = () => {
                    aria-label="View primary angle"
                  >
                     <div className="absolute inset-0 bg-gray-100 animate-pulse"></div>
-                    <img onLoad={(e) => { e.target.classList.remove('opacity-0'); e.target.classList.add('opacity-100') }} src={getOptimizedImage(product.image_url, 400)} className="w-full h-full object-cover relative z-10 opacity-0 transition-opacity duration-300" alt="Primary view" />
+                    <img onLoad={({ target }) => { target.classList.remove('opacity-0'); target.classList.add('opacity-100') }} src={getOptimizedImage(product.image_url, 400)} className="w-full h-full object-cover relative z-10 opacity-0 transition-opacity duration-300" alt="Primary view" />
                  </div>
                  {product.additional_images.map((img, idx) => (
                    <div 
@@ -261,7 +261,7 @@ const ProductDetails = () => {
                      className={`aspect-square rounded-lg overflow-hidden border-2 cursor-pointer transition-all duration-300 relative ${activeImage === img ? 'border-gold shadow-md' : 'border-transparent hover:border-gold/50'}`} aria-label={`View detail angle ${idx + 1}`}
                    >
                       <div className="absolute inset-0 bg-gray-100 animate-pulse"></div>
-                      <img onLoad={(e) => { e.target.classList.remove('opacity-0'); e.target.classList.add('opacity-100') }} src={getOptimizedImage(img, 400)} className="w-full h-full object-cover relative z-10 opacity-0 transition-opacity duration-300" alt={`Detail angle ${idx + 1}`} />
+                      <img onLoad={({ target }) => { target.classList.remove('opacity-0'); target.classList.add('opacity-100') }} src={getOptimizedImage(img, 400)} className="w-full h-full object-cover relative z-10 opacity-0 transition-opacity duration-300" alt={`Detail angle ${idx + 1}`} />
                    </div>
                  ))}
               </div>

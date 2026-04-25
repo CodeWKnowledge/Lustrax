@@ -1,6 +1,8 @@
-import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import React from 'react'
+
 import { PlusSignIcon, Delete02Icon } from 'hugeicons-react'
+
 
 const PriceRulesEditor = ({ options, priceRules, setPriceRules }) => {
   const handleAddRule = (variantName, value) => {
@@ -87,3 +89,7 @@ const PriceRulesEditor = ({ options, priceRules, setPriceRules }) => {
 }
 
 export default PriceRulesEditor
+
+
+
+

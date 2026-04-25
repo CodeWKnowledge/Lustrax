@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useCallback } from 'react'
 
 const ModalContext = createContext()
@@ -82,3 +83,6 @@ export const ModalProvider = ({ children }) => {
     </ModalContext.Provider>
   )
 }
+
+
+

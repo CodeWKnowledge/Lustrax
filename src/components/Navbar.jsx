@@ -34,7 +34,7 @@ const Navbar = () => {
   const handleSearch = (e) => {
     e.preventDefault()
     if (searchQuery.trim()) {
-      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`)
+      navigate(`/?search=${encodeURIComponent(searchQuery.trim())}`)
       setIsSearchOpen(false)
       setSearchQuery('')
     }
@@ -47,13 +47,13 @@ const Navbar = () => {
         {/* Left: Shop Navigation */}
         <div className="flex-1 flex items-center justify-start">
            <nav className="flex items-center h-full pt-1">
-             <Link to="/products" className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-charcoal hover:text-gold transition-luxury">Shop</Link>
+             <Link to="/" className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-charcoal hover:text-gold transition-luxury">Shop</Link>
            </nav>
         </div>
 
         {/* Center: Logo & Brand Name */}
         <div className="absolute inset-x-0 flex items-center justify-center h-full pointer-events-none mr-10">
-          <Link to="/" className="flex items-center space-x-1.5 sm:space-x-3 group h-full pointer-events-auto">
+          <Link to="/home" className="flex items-center space-x-1.5 sm:space-x-3 group h-full pointer-events-auto">
              <img src={LogoImg} alt="Lustrax Logo" className="h-6 sm:h-8 lg:h-10 w-auto object-contain transition-luxury group-hover:scale-105" />
              <span className="text-lg sm:text-xl lg:text-2xl font-brand text-charcoal">Lustrax</span>
           </Link>

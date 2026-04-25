@@ -1,10 +1,13 @@
+import { formatCurrency } from '../utils/formatters';
+import { motion, AnimatePresence } from 'framer-motion'
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import { ShoppingBag02Icon, Delete02Icon, ArrowRight01Icon } from 'hugeicons-react'
-import { motion } from 'framer-motion'
+
 import Button from '../components/ui/Button'
+
 
 const SHIPPING_POLICY = 'Complimentary'
 
@@ -32,7 +35,7 @@ const Cart = () => {
               Your cart is empty. Browse our collection to find something you love.
             </p>
           </div>
-          <Link to="/products">
+          <Link to="/">
             <Button variant="primary" size="lg">Explore Creations</Button>
           </Link>
         </motion.div>
@@ -113,7 +116,7 @@ const Cart = () => {
                             aria-label={`Decrease quantity of ${item.name}`}
                             onClick={() => updateQuantity(itemKey, item.quantity - 1)} 
                             className="w-11 lg:w-12 h-full hover:bg-white transition-luxury text-sm"
-                          >—</button>
+                          >-</button>
                           <span className="w-10 lg:w-12 text-center font-bold text-[10px] lg:text-[11px] tracking-widest">{item.quantity}</span>
                           <button 
                             aria-label={`Increase quantity of ${item.name}`}
@@ -181,3 +184,8 @@ const Cart = () => {
 }
 
 export default Cart
+
+
+
+
+

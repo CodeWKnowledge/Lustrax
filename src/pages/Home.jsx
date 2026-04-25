@@ -1,6 +1,7 @@
+import { motion, AnimatePresence } from 'framer-motion'
 import React, { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+
 import { ArrowRight01Icon } from 'hugeicons-react'
 import Button from '../components/ui/Button'
 import ProductCard from '../components/ui/ProductCard'
@@ -10,6 +11,7 @@ import { Helmet } from 'react-helmet-async'
 import { getOptimizedImage } from '../utils/imageOptimizer'
 import heroImg from '../assets/Images/hero2.jpeg'
 import advert from '../assets/Images/Chains.jpg'
+
 
 const ProductGrid = ({ products, loading }) => {
   if (loading) {
@@ -148,7 +150,7 @@ const Home = () => {
             transition={{ delay: 0.8 }}
             className="flex flex-col sm:flex-row gap-6 justify-center relative z-10 -mt-10"
           >
-            <Link to="/products">
+            <Link to="/">
               <Button variant="primary"  className="bg-gold border-gold text-black sm:w-auto px-2 hover:bg-gold/80 hover:border-gold/80">
                 Explore the Collection
               </Button>
@@ -166,7 +168,7 @@ const Home = () => {
                  <span className="text-subheading text-gold block mb-2">Curated Selection</span>
                  <h2 className="text-h2 text-charcoal">Luxury Pieces & Accessories</h2>
                </div>
-               <Link to="/products" className="group flex items-center space-x-2 text-ui text-charcoal hover:text-gold transition-luxury">
+               <Link to="/" className="group flex items-center space-x-2 text-ui text-charcoal hover:text-gold transition-luxury">
                   <span>View All Collections</span>
                   <ArrowRight01Icon size={14} className="group-hover:translate-x-1 transition-luxury" />
                </Link>
@@ -196,7 +198,7 @@ const Home = () => {
             <p className="text-body text-gray-400 max-w-2xl mx-auto mb-8">
               Discover our latest exclusive drops, crafted with impeccable attention to detail and designed to transcend seasons. Limited availability.
             </p>
-            <Link to="/products">
+            <Link to="/">
               <button className="px-8 py-4 border border-gold text-gold font-inter text-[10px] uppercase font-bold tracking-widest hover:bg-gold hover:text-white transition-luxury">
                 Explore the Campaign
               </button>
@@ -213,7 +215,7 @@ const Home = () => {
                  <span className="text-subheading text-gold block mb-2">Just Arrived</span>
                  <h2 className="text-h2 text-charcoal">New Releases</h2>
                </div>
-               <Link to="/products" className="group flex items-center space-x-2 text-ui text-charcoal hover:text-gold transition-luxury">
+               <Link to="/" className="group flex items-center space-x-2 text-ui text-charcoal hover:text-gold transition-luxury">
                   <span>Shop New Arrivals</span>
                   <ArrowRight01Icon size={14} className="group-hover:translate-x-1 transition-luxury" />
                </Link>
@@ -232,7 +234,7 @@ const Home = () => {
                  <span className="text-subheading text-gold block mb-2">Crowd Favorites</span>
                  <h2 className="text-h2 text-charcoal">Best Sellers</h2>
                </div>
-               <Link to="/products" className="group flex items-center space-x-2 text-ui text-charcoal hover:text-gold transition-luxury">
+               <Link to="/" className="group flex items-center space-x-2 text-ui text-charcoal hover:text-gold transition-luxury">
                   <span>Shop Best Sellers</span>
                   <ArrowRight01Icon size={14} className="group-hover:translate-x-1 transition-luxury" />
                </Link>
@@ -247,3 +249,7 @@ const Home = () => {
 }
 
 export default Home
+
+
+
+

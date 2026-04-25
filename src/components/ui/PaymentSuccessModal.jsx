@@ -1,4 +1,5 @@
-import React from 'react';
+import { formatCurrency } from '../../utils/formatters';
+﻿import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { generateReceipt } from '../../utils/receiptGenerator';
 import { 
@@ -17,7 +18,7 @@ const PaymentSuccessModal = ({ isOpen, onClose, data }) => {
   const { order, transaction, user } = data;
 
   const handleDownload = () => {
-    generateReceipt({ order, transaction, user });
+    generateReceipt({ order, transaction, user, customerName });
   };
 
   // Personalization logic
@@ -120,7 +121,7 @@ const PaymentSuccessModal = ({ isOpen, onClose, data }) => {
                               ))}
                             </div>
                           )}
-                          <p className="text-ui !text-[8px] text-gray-400">Qty: {item.quantity} · ₦{(item.price || 0).toLocaleString()}</p>
+                          <p className="text-ui !text-[8px] text-gray-400">Qty: {item.quantity}  ₦{(item.price || 0).toLocaleString()}</p>
                         </div>
                         <p className="text-price !text-xs text-charcoal/80">₦{((item.price || 0) * (item.quantity || 1)).toLocaleString()}</p>
                      </div>
@@ -146,7 +147,7 @@ const PaymentSuccessModal = ({ isOpen, onClose, data }) => {
                       <span className="text-ui !text-[8px] text-green-600">Verified Payment</span>
                    </div>
                 </div>
-                <p className="text-h2 !text-3xl text-charcoal !tracking-tighter">₦{(order.total_amount || 0).toLocaleString()}</p>
+                <p className="text-h2 !text-3xl text-charcoal !tracking-tighter">â‚¦{(order.total_amount || 0).toLocaleString()}</p>
              </div>
 
             <div className="space-y-3">
@@ -187,3 +188,5 @@ const PaymentSuccessModal = ({ isOpen, onClose, data }) => {
 };
 
 export default PaymentSuccessModal;
+
+
