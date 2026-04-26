@@ -147,6 +147,14 @@
     display: none;
   }
 
+  .bg-radial-luxury {
+    background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.5) 100%);
+  }
+
+  .backdrop-premium {
+    @apply backdrop-blur-xl bg-black/30;
+  }
+
   /* Core Web Vitals Optimization */
   .cv-auto {
     content-visibility: auto;

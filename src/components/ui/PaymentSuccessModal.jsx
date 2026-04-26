@@ -1,5 +1,6 @@
 import { formatCurrency } from '../../utils/formatters';
-﻿import React from 'react';
+import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { generateReceipt } from '../../utils/receiptGenerator';
 import { 
@@ -12,6 +13,18 @@ import {
 
 const PaymentSuccessModal = ({ isOpen, onClose, data }) => {
   const navigate = useNavigate();
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isOpen])
 
   if (!isOpen || !data) return null;
 
@@ -36,14 +49,17 @@ const PaymentSuccessModal = ({ isOpen, onClose, data }) => {
   // SVG Repeated Watermark Pattern (Base64)
   const watermarkPattern = `url("data:image/svg+xml,%3Csvg width='120' height='80' viewBox='0 0 120 80' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='10' y='40' font-family='serif' font-size='10' font-weight='bold' fill='%23000' fill-opacity='0.1' transform='rotate(-20 60 40)'%3ELUSTRAX%3C/text%3E%3C/svg%3E")`;
 
-  return (
+  const modalContent = (
     <div 
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-500"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/40 backdrop-blur-xl animate-in fade-in duration-500"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-white rounded-3xl w-full max-w-[380px] h-[580px] overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.4)] border border-gray-100 relative animate-in zoom-in-95 duration-300">
+      {/* Inner focus gradient */}
+      <div className="absolute inset-0 bg-radial-luxury opacity-80 pointer-events-none" />
+
+      <div className="bg-white rounded-3xl w-full max-w-[380px] h-[580px] overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.4)] border border-gray-100 relative z-10 animate-in zoom-in-95 duration-300">
         
         {/* Close Button */}
         <button 
@@ -75,7 +91,7 @@ const PaymentSuccessModal = ({ isOpen, onClose, data }) => {
                  <CheckmarkCircle01Icon size={24} />
                </div>
                 <div className="space-y-1">
-                  <h1 className="text-h2 !text-xl text-charcoal tracking-tighter uppercase">Acquisition Confirmed</h1>
+                  <h1 className="text-h2 !text-xl text-charcoal tracking-tighter uppercase">Purchase Confirmed</h1>
                   <p className="text-ui !text-[7px] text-gray-400 tracking-[0.4em]">REFERENCE ID: {transaction.payment_reference.slice(0, 16)}</p>
                 </div>
             </div>
@@ -147,7 +163,7 @@ const PaymentSuccessModal = ({ isOpen, onClose, data }) => {
                       <span className="text-ui !text-[8px] text-green-600">Verified Payment</span>
                    </div>
                 </div>
-                <p className="text-h2 !text-3xl text-charcoal !tracking-tighter">â‚¦{(order.total_amount || 0).toLocaleString()}</p>
+                <p className="text-h2 !text-3xl text-charcoal !tracking-tighter">₦{(order.total_amount || 0).toLocaleString()}</p>
              </div>
 
             <div className="space-y-3">
@@ -156,7 +172,7 @@ const PaymentSuccessModal = ({ isOpen, onClose, data }) => {
                   className="w-full h-12 bg-charcoal text-white rounded-xl flex items-center justify-center gap-3 text-ui hover:bg-black transition-luxury active:scale-[0.98] shadow-xl shadow-black/10 group"
                 >
                   <Download01Icon size={16} className="group-hover:-translate-y-0.5 transition-luxury" />
-                  Acquire PDF Manifest
+                  Download Reciept
                 </button>
                 
                 <div className="grid grid-cols-2 gap-3">
@@ -188,6 +204,8 @@ const PaymentSuccessModal = ({ isOpen, onClose, data }) => {
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };
 
 export default PaymentSuccessModal;

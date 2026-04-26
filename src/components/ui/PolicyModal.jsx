@@ -1,21 +1,36 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Cancel01Icon } from 'hugeicons-react';
 
 const PolicyModal = ({ isOpen, onClose, title, children }) => {
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isOpen])
+
   if (!isOpen) return null;
 
-  return (
+  const modalContent = (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 lg:p-10">
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 lg:p-10">
         {/* Backdrop */}
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="absolute inset-0 bg-black/80 backdrop-blur-md"
-        />
+          className="absolute inset-0 backdrop-premium transition-all duration-700"
+        >
+          <div className="absolute inset-0 bg-radial-luxury opacity-80 pointer-events-none" />
+        </motion.div>
 
         {/* Modal Content */}
         <motion.div 
@@ -55,6 +70,8 @@ const PolicyModal = ({ isOpen, onClose, title, children }) => {
       </div>
     </AnimatePresence>
   );
+
+  return createPortal(modalContent, document.body);
 };
 
 export default PolicyModal;

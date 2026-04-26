@@ -18,7 +18,13 @@ import {
   Cancel01Icon,
   PackageIcon,
   TruckDeliveryIcon,
-  Copy01Icon
+  Copy01Icon,
+  Time02Icon,
+  InformationCircleIcon,
+  DeliveredSentIcon,
+  SentIcon,
+  Package01Icon,
+  CreditCardAcceptIcon
 } from 'hugeicons-react'
 
 const PAGE_SIZE = 10
@@ -117,18 +123,61 @@ const Orders = () => {
     }
   }
 
-  const updateStatus = async (orderId, newStatus) => {
+  const handleStatusUpdate = async (orderId, newStatus, currentOrder) => {
+    if (!orderId || !newStatus) return
+    
+    // Prevent invalid transitions
+    const invalidTransitions = {
+      'delivered': ['pending', 'confirmed', 'processing', 'shipped', 'out_for_delivery'],
+      'cancelled': ['pending', 'confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered']
+    }
+
+    if (invalidTransitions[currentOrder?.status]?.includes(newStatus)) {
+      toast.error(`Protocol Violation: Cannot revert from ${currentOrder.status.toUpperCase()}`)
+      return
+    }
+
+    if (newStatus === 'cancelled') {
+      if (!window.confirm('CRITICAL ACTION: Are you sure you want to terminate this order? This action will restock items.')) return
+    }
+
+    const { data: { user } } = await supabase.auth.getUser()
+    const newLogEntry = {
+      status: newStatus,
+      timestamp: new Date().toISOString(),
+      admin_id: user?.id,
+      admin_name: user?.user_metadata?.full_name || 'Admin',
+      note: `Status updated to ${newStatus.toUpperCase()}`
+    }
+
+    const updatedLog = [...(currentOrder?.activity_log || []), newLogEntry]
+
     const { error } = await supabase
       .from('orders')
-      .update({ status: newStatus })
+      .update({ 
+        status: newStatus,
+        activity_log: updatedLog
+      })
       .eq('id', orderId)
     
     if (error) {
       toast.error('Protocol override failed')
     } else {
-      toast.success(`Order ${newStatus.toUpperCase()} successfully`)
+      toast.success(`ORDER ${newStatus.toUpperCase()} SUCCESSFUL`)
+      
+      // Instantly update local state if modal is open
+      if (selectedOrder?.id === orderId) {
+        setSelectedOrder(prev => ({ ...prev, status: newStatus, activity_log: updatedLog }))
+      }
+      
       fetchOrders()
     }
+  }
+
+  // Update existing updateStatus for legacy table dropdown compatibility
+  const updateStatus = (orderId, newStatus) => {
+    const order = orders.find(o => o.id === orderId)
+    handleStatusUpdate(orderId, newStatus, order)
   }
 
   const handleBulkUpdateStatus = async (newStatus) => {
@@ -168,6 +217,71 @@ const Orders = () => {
       { label: 'Total Amount', value: formatCurrency(order.total_amount) },
       { label: 'Reference', value: order.payment_reference || 'MANUAL' },
       { label: 'Current Status', value: <StatusBadge status={order.status} /> },
+      {
+        label: 'Lifecycle Management',
+        fullWidth: true,
+        value: (
+          <div className="mt-4 p-6 bg-soft-bg/30 rounded-luxury border border-gray-50">
+             <div className="flex flex-wrap gap-4">
+                {[
+                  { id: 'confirmed', label: 'Confirm', icon: CreditCardAcceptIcon, color: 'hover:bg-blue-600' },
+                  { id: 'processing', label: 'Process', icon: Package01Icon, color: 'hover:bg-purple-600' },
+                  { id: 'shipped', label: 'Ship', icon: DeliveredSentIcon, color: 'hover:bg-gold' },
+                  { id: 'out_for_delivery', label: 'Out for Delivery', icon: SentIcon, color: 'hover:bg-orange-400' },
+                  { id: 'delivered', label: 'Complete', icon: CheckmarkCircle01Icon, color: 'hover:bg-emerald-300' },
+                  { id: 'cancelled', label: 'Cancel', icon: Cancel01Icon, color: 'hover:bg-red-300' }
+                ].map((action) => (
+                  <button
+                    key={action.id}
+                    onClick={() => handleStatusUpdate(order.id, action.id, order)}
+                    disabled={order.status === action.id}
+                    className={`flex items-center space-x-3 px-6 py-3 rounded-sm text-[9px] font-black uppercase tracking-[0.2em] transition-luxury border border-black disabled:opacity-20 disabled:cursor-not-allowed ${
+                      order.status === action.id 
+                        ? 'bg-charcoal text-white' 
+                        : `bg-white text-charcoal ${action.color} hover:text-white`
+                    }`}
+                  >
+                    <action.icon size={14} />
+                    <span>{action.label}</span>
+                  </button>
+                ))}
+             </div>
+             <p className="mt-4 text-[8px] text-gray-400 font-bold uppercase tracking-widest italic opacity-60">
+                Protocol: Select a lifecycle stage to update order status in real-time.
+             </p>
+          </div>
+        )
+      },
+      {
+        label: 'Activity History',
+        fullWidth: true,
+        value: (
+          <div className="mt-4 space-y-6">
+            {!order.activity_log || order.activity_log.length === 0 ? (
+              <p className="text-[10px] text-gray-300 italic">No activity recorded in the luxury ledger yet.</p>
+            ) : (
+              <div className="relative pl-8 space-y-8 before:absolute before:left-3 before:top-2 before:bottom-2 before:w-[1px] before:bg-gray-100">
+                {order.activity_log.map((log, idx) => (
+                  <div key={idx} className="relative group">
+                    <div className="absolute -left-[25px] top-1 w-2 h-2 rounded-full bg-gray-200 border-2 border-white ring-4 ring-white group-last:bg-gold transition-luxury"></div>
+                    <div className="space-y-1">
+                      <div className="flex items-center space-x-3">
+                         <StatusBadge status={log.status} />
+                         <span className="text-[8px] font-bold text-gray-300 uppercase tracking-widest">{formatLuxuryDate(log.timestamp)}</span>
+                      </div>
+                      <p className="text-[10px] text-charcoal font-medium leading-relaxed">{log.note}</p>
+                      <div className="flex items-center space-x-2 text-[8px] text-gray-400 uppercase font-bold tracking-widest opacity-60">
+                         <InformationCircleIcon size={10} />
+                         <span>Authorized by {log.admin_name}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )
+      },
       { 
         label: 'Logistics Coordinates', 
         fullWidth: true,
@@ -363,8 +477,11 @@ const Orders = () => {
               >
                  <option value="all">ALL STATUSES</option>
                  <option value="pending">PENDING</option>
-                 <option value="paid">PAID</option>
+                 <option value="confirmed">CONFIRMED</option>
+                 <option value="processing">PROCESSING</option>
+                 <option value="paid">PAID (RECONCILED)</option>
                  <option value="shipped">SHIPPED</option>
+                 <option value="out_for_delivery">OUT FOR DELIVERY</option>
                  <option value="delivered">DELIVERED</option>
                  <option value="cancelled">CANCELLED</option>
               </select>
@@ -422,8 +539,11 @@ const Orders = () => {
                        value={order.status}
                      >
                         <option value="pending">PENDING</option>
+                        <option value="confirmed">CONFIRMED</option>
+                        <option value="processing">PROCESSING</option>
                         <option value="paid">PAID</option>
                         <option value="shipped">SHIPPED</option>
+                        <option value="out_for_delivery">OUT FOR DELIVERY</option>
                         <option value="delivered">DELIVERED</option>
                         <option value="cancelled">CANCELLED</option>
                      </select>

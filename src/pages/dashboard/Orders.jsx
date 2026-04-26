@@ -5,12 +5,22 @@ import {
   FilterIcon, 
   ViewIcon,
   PackageIcon,
-  ShoppingBag02Icon
+  ShoppingBag02Icon,
+  CheckmarkCircle01Icon,
+  Cancel01Icon,
+  TruckDeliveryIcon,
+  Time02Icon,
+  InformationCircleIcon,
+  DeliveredSentIcon,
+  SentIcon,
+  Package01Icon,
+  CreditCardAcceptIcon
 } from 'hugeicons-react'
 import { motion } from 'framer-motion'
 import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import StatusBadge from '../../components/admin/ui/StatusBadge'
+import { formatLuxuryDate } from '../../utils/formatters'
 
 const Orders = () => {
   const { user } = useAuth()
@@ -115,8 +125,11 @@ const Orders = () => {
               >
                  <option value="all">All Orders</option>
                  <option value="pending">Pending</option>
+                 <option value="confirmed">Confirmed</option>
+                 <option value="processing">Atelier Processing</option>
                  <option value="paid">Paid</option>
-                 <option value="shipped">Shipped</option>
+                 <option value="shipped">In Transit</option>
+                 <option value="out_for_delivery">Out for Delivery</option>
                  <option value="delivered">Delivered</option>
               </select>
            </div>
@@ -216,8 +229,78 @@ const Orders = () => {
                </div>
                <div className="space-y-1">
                   <p className="text-[8px] text-gray-400 font-bold uppercase tracking-widest">Payment</p>
-                  <p className="text-[10px] font-bold text-green-500 uppercase tracking-widest">PAID</p>
+                  <p className="text-[10px] font-bold text-green-500 uppercase tracking-widest">VERIFIED</p>
                </div>
+            </div>
+
+            {/* Order Progress Tracker */}
+            <div className="border-t border-gray-50 pt-8 space-y-6">
+              <h4 className="text-[9px] font-bold uppercase tracking-[0.3em] text-charcoal">Acquisition Journey</h4>
+              <div className="relative flex justify-between items-start">
+                {/* Progress Line */}
+                <div className="absolute top-4 left-0 w-full h-[1px] bg-gray-100 -z-10">
+                   <div 
+                     className="h-full bg-gold transition-all duration-1000" 
+                     style={{ 
+                       width: `${
+                         ['pending', 'confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered'].indexOf(selectedOrder.status) * 20
+                       }%` 
+                     }}
+                   />
+                </div>
+                
+                {[
+                  { id: 'pending', label: 'Draft', icon: PackageIcon },
+                  { id: 'confirmed', label: 'Confirmed', icon: CreditCardAcceptIcon },
+                  { id: 'processing', label: 'Processing', icon: Package01Icon },
+                  { id: 'shipped', label: 'Transit', icon: DeliveredSentIcon },
+                  { id: 'out_for_delivery', label: 'Delivery', icon: SentIcon },
+                  { id: 'delivered', label: 'Handover', icon: CheckmarkCircle01Icon }
+                ].map((step, idx) => {
+                  const stages = ['pending', 'confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered']
+                  const currentIdx = stages.indexOf(selectedOrder.status)
+                  const isCompleted = idx <= currentIdx && selectedOrder.status !== 'cancelled'
+                  const isActive = idx === currentIdx
+                  
+                  return (
+                    <div key={step.id} className="flex flex-col items-center space-y-3 w-1/6">
+                      <div className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all duration-500 ${
+                        isCompleted ? 'bg-gold border-gold text-white shadow-lg shadow-gold/20' : 
+                        isActive ? 'bg-white border-gold text-gold animate-pulse' :
+                        'bg-white border-gray-100 text-gray-200'
+                      }`}>
+                        <step.icon size={14} />
+                      </div>
+                      <span className={`text-[7px] font-bold uppercase tracking-widest text-center ${
+                        isCompleted ? 'text-charcoal' : 'text-gray-300'
+                      }`}>
+                        {step.label}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Detailed Activity Journey */}
+            <div className="border-t border-gray-50 pt-8 space-y-6">
+               <h4 className="text-[9px] font-bold uppercase tracking-[0.3em] text-charcoal">Activity Protocol</h4>
+               {!selectedOrder.activity_log || selectedOrder.activity_log.length === 0 ? (
+                 <p className="text-[10px] text-gray-400 italic">Tracking details will appear as your order moves through our atelier.</p>
+               ) : (
+                 <div className="space-y-6 pl-4 border-l border-gray-50">
+                    {[...selectedOrder.activity_log].reverse().map((log, idx) => (
+                      <div key={idx} className="relative group">
+                        <div className="absolute -left-[21px] top-1.5 w-2 h-2 rounded-full bg-gray-200 border-2 border-white ring-4 ring-white group-first:bg-gold"></div>
+                        <div className="space-y-1">
+                          <p className="text-[10px] font-bold text-charcoal uppercase tracking-widest">{log.status.replace(/_/g, ' ')}</p>
+                          <p className="text-[9px] text-gray-400 leading-relaxed font-medium">{log.note}</p>
+                          <p className="text-[7px] text-gray-300 font-bold uppercase tracking-[0.2em]">{formatLuxuryDate(log.timestamp)}</p>
+                        </div>
+                      </div>
+                    ))}
+                 </div>
+               )}
             </div>
 
             <div className="border-t border-gray-50 pt-8 space-y-6">

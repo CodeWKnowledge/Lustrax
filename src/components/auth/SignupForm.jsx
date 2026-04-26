@@ -119,7 +119,7 @@ const SignupForm = ({ onToggleMode, onComplete }) => {
          </div>
 
          <div className="space-y-1">
-            <label className="text-[8px] uppercase font-bold tracking-[0.2em] text-gray-400">Security Key</label>
+            <label className="text-[8px] uppercase font-bold tracking-[0.2em] text-gray-400">Password</label>
             <div className="relative group">
               <input 
                 id="signup-password"

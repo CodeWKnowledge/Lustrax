@@ -1,24 +1,39 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import React from 'react'
-
+import React, { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { Cancel01Icon } from 'hugeicons-react'
 
 
 const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl' }) => {
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isOpen])
+
   if (!isOpen) return null
 
-  return (
+  const modalContent = (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6">
           {/* Backdrop */}
           <motion.div 
             initial={{ opacity: 0 }} 
             animate={{ opacity: 1 }} 
             exit={{ opacity: 0 }}
             onClick={onClose} 
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-          />
+            className="absolute inset-0 backdrop-premium transition-all duration-700"
+          >
+            {/* Inner focus gradient */}
+            <div className="absolute inset-0 bg-radial-luxury opacity-80 pointer-events-none" />
+          </motion.div>
           
           {/* Modal Container */}
           <motion.div 
@@ -47,6 +62,8 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl' }) => 
       )}
     </AnimatePresence>
   )
+
+  return createPortal(modalContent, document.body)
 }
 
 export default Modal

@@ -51,8 +51,10 @@ const AdminSidebar = ({ isCollapsed, isSidebarOpen, onClose, toggleCollapse }) =
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] lg:hidden"
-          />
+            className="fixed inset-0 backdrop-premium z-[60] lg:hidden transition-all duration-700"
+          >
+            <div className="absolute inset-0 bg-radial-luxury opacity-80 pointer-events-none" />
+          </motion.div>
         )}
       </AnimatePresence>
 
