@@ -38,6 +38,7 @@ const AdminOverviewPage = () => {
   const [loading, setLoading] = useState(true)
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [timeFrame, setTimeFrame] = useState(7)
 
   const fetchStats = useCallback(async () => {
     setLoading(true)
@@ -74,17 +75,30 @@ const AdminOverviewPage = () => {
 
       setRecentOrders(recentOrdersData || [])
 
-      // 3. Process Chart Data (Last 7 Days) via Optimized RPC
+      // 3. Process Chart Data via Optimized RPC
       const { data: chartMetricData, error: chartError } = await supabase
-        .rpc('get_revenue_metrics', { days_limit: 7 })
+        .rpc('get_revenue_metrics', { days_limit: timeFrame })
 
       if (chartError) throw chartError
 
       if (chartMetricData) {
-        const dailyRevenue = chartMetricData.map(row => ({
-          name: new Date(row.day).toLocaleDateString(undefined, { weekday: 'short' }),
-          revenue: parseFloat(row.revenue) || 0
-        }))
+        const dailyRevenue = chartMetricData.map(row => {
+          const date = new Date(row.day)
+          let name = ''
+          
+          if (timeFrame <= 7) {
+            name = date.toLocaleDateString(undefined, { weekday: 'short' })
+          } else if (timeFrame <= 90) {
+            name = date.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
+          } else {
+            name = date.toLocaleDateString(undefined, { month: 'short', year: '2-digit' })
+          }
+
+          return {
+            name,
+            revenue: parseFloat(row.revenue) || 0
+          }
+        })
         setChartData(dailyRevenue)
       }
     } catch (err) {
@@ -92,7 +106,7 @@ const AdminOverviewPage = () => {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [timeFrame])
 
   const fetchStatsSilent = async () => {
     try {
@@ -239,7 +253,16 @@ const AdminOverviewPage = () => {
                   <ChartLineData01Icon size={20} className="text-gold" />
                   <h3 className="text-[11px] font-bold uppercase tracking-[0.5em] text-charcoal">Revenue Performance</h3>
                </div>
-               <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Last 7 Cycles</span>
+                <select 
+                  value={timeFrame} 
+                  onChange={(e) => setTimeFrame(parseInt(e.target.value))}
+                  className="bg-transparent text-[10px] font-bold uppercase tracking-widest text-gold outline-none cursor-pointer hover:text-charcoal transition-luxury appearance-none text-right"
+                >
+                  <option value={7}>Last 7 Cycles</option>
+                  <option value={30}>Last 30 Cycles</option>
+                  <option value={90}>Last Quarter</option>
+                  <option value={365}>Full Year</option>
+                </select>
             </div>
             
             <div className="min-h-[400px] h-[400px] w-full bg-white rounded-luxury border border-gray-50/50 p-6 lg:p-10 shadow-premium">
@@ -257,6 +280,7 @@ const AdminOverviewPage = () => {
                       dataKey="name" 
                       axisLine={false} 
                       tickLine={false} 
+                      minTickGap={30}
                       tick={{ fontSize: 8, fontWeight: 700, fill: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.1em' }}
                     />
                     <YAxis 
