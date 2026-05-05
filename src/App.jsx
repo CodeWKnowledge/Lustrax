@@ -1,49 +1,47 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { AuthProvider, useAuth } from './context/AuthContext'
-import { CartProvider } from './context/CartContext'
-import { ModalProvider } from './context/ModalContext'
-import { WishlistProvider } from './context/WishlistContext'
-import Layout from './components/Layout'
-import GlobalModal from './components/ui/GlobalModal'
+import { AuthProvider, useAuth } from '@/context/AuthContext'
+import { CartProvider } from '@/context/CartContext'
+import { ModalProvider } from '@/context/ModalContext'
+import { WishlistProvider } from '@/context/WishlistContext'
+import Layout from '@/components/common/Layout'
+import GlobalModal from '@/components/ui/GlobalModal'
 import { Toaster } from 'react-hot-toast'
-import { NotificationProvider } from './context/NotificationContext'
+import { NotificationProvider } from '@/context/NotificationContext'
 import { HelmetProvider, Helmet } from 'react-helmet-async'
 
 
-// Pages
-import Home from './pages/Home'
-import Products from './pages/Products'
-import ProductDetails from './pages/ProductDetails'
-import Cart from './pages/Cart'
-import Checkout from './pages/Checkout'
-import TermsAndConditions from './pages/TermsAndConditions'
-import RefundPolicy from './pages/RefundPolicy'
+// Marketing Module
+import LandingPage from '@/modules/marketing/landing/LandingPage'
+import ProductsPage from '@/modules/marketing/products/ProductsPage'
+import ProductDetailsPage from '@/modules/marketing/products/ProductDetailsPage'
+import CartPage from '@/modules/marketing/cart/CartPage'
+import CheckoutPage from '@/modules/marketing/checkout/CheckoutPage'
+import TermsPage from '@/modules/marketing/legal/TermsPage'
+import RefundPage from '@/modules/marketing/legal/RefundPage'
 
-// Dashboard Suite (Personalized)
-import DashboardLayout from './components/dashboard/DashboardLayout'
-import UserOverview from './pages/dashboard/Overview'
-import UserOrders from './pages/dashboard/Orders'
-import UserWishlist from './pages/dashboard/Wishlist'
-import UserTransactions from './pages/dashboard/Transactions'
-import UserSettings from './pages/dashboard/Settings'
+// Dashboard Module (App/MFI)
+import DashboardLayout from '@/modules/app/dashboard/components/DashboardLayout'
+import DashboardOverviewPage from '@/modules/app/dashboard/pages/Overview'
+import DashboardOrdersPage from '@/modules/app/dashboard/pages/Orders'
+import DashboardWishlistPage from '@/modules/app/dashboard/pages/Wishlist'
+import DashboardTransactionsPage from '@/modules/app/dashboard/pages/Transactions'
+import DashboardSettingsPage from '@/modules/app/dashboard/pages/Settings'
 
-// Admin Suite (Modern Modular)
-import AdminLayout from './components/admin/AdminLayout'
-import AdminOverview from './pages/admin/Overview'
-import AdminOrders from './pages/admin/Orders'
-import AdminProducts from './pages/admin/Products'
-import AdminCustomers from './pages/admin/Customers'
+// Admin Module (App/MFI)
+import AdminLayout from '@/modules/app/admin/components/AdminLayout'
+import AdminOverviewPage from '@/modules/app/admin/pages/Overview'
+import AdminOrdersPage from '@/modules/app/admin/pages/Orders'
+import AdminProductsPage from '@/modules/app/admin/pages/Products'
+import AdminCustomersPage from '@/modules/app/admin/pages/Customers'
+import AdminFinancePage from '@/modules/app/admin/pages/Finance'
+import AdminWishlistPage from '@/modules/app/admin/pages/Wishlist'
+import AdminProductFormPage from '@/modules/app/admin/pages/ProductForm'
+import AdminSettingsPage from '@/modules/app/admin/pages/Settings'
+import AdminNotificationsPage from '@/modules/app/admin/pages/Notifications'
 
-import AdminFinance from './pages/admin/Finance'
-import AdminWishlist from './pages/admin/Wishlist'
-import AdminProductForm from './pages/admin/ProductForm'
-
-
-import AdminSettings from './pages/admin/Settings'
-import AdminNotifications from './pages/admin/Notifications'
-import NotFound from './pages/NotFound'
-import ErrorBoundary from './components/ErrorBoundary'
+import NotFound from '@/pages/NotFound'
+import ErrorBoundary from '@/components/common/ErrorBoundary'
 import { useEffect } from 'react'
 
 
@@ -81,18 +79,18 @@ const GlobalApp = () => {
   return (
     <Layout>
       <Routes>
-        <Route path="/" element={<Products />} />
+        <Route path="/" element={<ProductsPage />} />
         <Route path="/products" element={<Navigate to="/" replace />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/product/:id" element={<ProductDetails />} />
-        <Route path="/cart" element={<Cart />} />
+        <Route path="/home" element={<LandingPage />} />
+        <Route path="/product/:id" element={<ProductDetailsPage />} />
+        <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={
           <ProtectedRoute>
-            <Checkout />
+            <CheckoutPage />
           </ProtectedRoute>
         } />
-        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-        <Route path="/refund-policy" element={<RefundPolicy />} />
+        <Route path="/terms-and-conditions" element={<TermsPage />} />
+        <Route path="/refund-policy" element={<RefundPage />} />
         
         {/* Personalized Dashboard Architecture */}
         <Route path="/dashboard" element={
@@ -100,11 +98,11 @@ const GlobalApp = () => {
             <DashboardLayout />
           </ProtectedRoute>
         }>
-          <Route index element={<UserOverview />} />
-          <Route path="orders" element={<UserOrders />} />
-          <Route path="wishlist" element={<UserWishlist />} />
-          <Route path="transactions" element={<UserTransactions />} />
-          <Route path="settings" element={<UserSettings />} />
+          <Route index element={<DashboardOverviewPage />} />
+          <Route path="orders" element={<DashboardOrdersPage />} />
+          <Route path="wishlist" element={<DashboardWishlistPage />} />
+          <Route path="transactions" element={<DashboardTransactionsPage />} />
+          <Route path="settings" element={<DashboardSettingsPage />} />
         </Route>
         
         {/* Modular Admin Architecture */}
@@ -113,18 +111,18 @@ const GlobalApp = () => {
             <AdminLayout />
           </ProtectedRoute>
         }>
-          <Route index element={<AdminOverview />} />
-          <Route path="orders" element={<AdminOrders />} />
-          <Route path="products" element={<AdminProducts />} />
-          <Route path="products/add" element={<AdminProductForm />} />
-          <Route path="products/edit/:id" element={<AdminProductForm />} />
-          <Route path="customers" element={<AdminCustomers />} />
+          <Route index element={<AdminOverviewPage />} />
+          <Route path="orders" element={<AdminOrdersPage />} />
+          <Route path="products" element={<AdminProductsPage />} />
+          <Route path="products/add" element={<AdminProductFormPage />} />
+          <Route path="products/edit/:id" element={<AdminProductFormPage />} />
+          <Route path="customers" element={<AdminCustomersPage />} />
 
-          <Route path="payments" element={<AdminFinance />} />
+          <Route path="payments" element={<AdminFinancePage />} />
 
-          <Route path="wishlist" element={<AdminWishlist />} />
-          <Route path="settings" element={<AdminSettings />} />
-          <Route path="notifications" element={<AdminNotifications />} />
+          <Route path="wishlist" element={<AdminWishlistPage />} />
+          <Route path="settings" element={<AdminSettingsPage />} />
+          <Route path="notifications" element={<AdminNotificationsPage />} />
         </Route>
         {/* 404 â€” Catch-all for unknown routes */}
         <Route path="*" element={<NotFound />} />
