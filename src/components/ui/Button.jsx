@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Button = ({ children, variant = 'primary', size = 'md', className = '', disabled, ...props }) => {
+const Button = ({ children, variant = 'primary', size = 'md', className = '', disabled, loading, ...props }) => {
   const baseStyles = 'inline-flex items-center justify-center font-inter font-bold tracking-[0.25em] uppercase transition-luxury rounded-luxury disabled:opacity-50 disabled:cursor-not-allowed'
   
   const variants = {
@@ -19,11 +19,18 @@ const Button = ({ children, variant = 'primary', size = 'md', className = '', di
 
   return (
     <button 
-      disabled={disabled}
+      disabled={disabled || loading}
       className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className} hover-scale`}
       {...props}
     >
-      {children}
+      {loading ? (
+        <span className="flex items-center gap-2">
+          <span className="w-3 h-3 border-[1.5px] border-current border-t-transparent rounded-full animate-spin"></span>
+          <span>PROCESSING...</span>
+        </span>
+      ) : (
+        children
+      )}
     </button>
   )
 }
