@@ -39,6 +39,8 @@ import AdminWishlistPage from '@/modules/app/admin/pages/Wishlist'
 import AdminProductFormPage from '@/modules/app/admin/pages/ProductForm'
 import AdminSettingsPage from '@/modules/app/admin/pages/Settings'
 import AdminNotificationsPage from '@/modules/app/admin/pages/Notifications'
+import AdminBannersPage from '@/modules/app/admin/pages/Banners'
+import { CtaBannersProvider } from '@/context/CtaBannersContext'
 
 import NotFound from '@/pages/NotFound'
 import ErrorBoundary from '@/components/common/ErrorBoundary'
@@ -121,6 +123,7 @@ const GlobalApp = () => {
           <Route path="payments" element={<AdminFinancePage />} />
 
           <Route path="wishlist" element={<AdminWishlistPage />} />
+          <Route path="banners" element={<AdminBannersPage />} />
           <Route path="settings" element={<AdminSettingsPage />} />
           <Route path="notifications" element={<AdminNotificationsPage />} />
         </Route>
@@ -166,35 +169,37 @@ function App() {
           <ModalProvider>
             <CartProvider>
               <WishlistProvider>
-                <NotificationProvider>
-                  <ErrorBoundary>
-                    <GlobalApp />
-                    <GlobalModal />
-                  
-                  <Toaster 
-                    position="top-right"
-                    toastOptions={{
-                      style: {
-                        background: '#1A1A1A',
-                        color: '#D4AF37',
-                        border: '1px solid rgba(212, 175, 55, 0.1)',
-                        fontSize: '10px',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.2em',
-                        fontWeight: '700',
-                        borderRadius: '0',
-                        padding: '16px 24px'
-                      },
-                      success: {
-                        iconTheme: {
-                          primary: '#D4AF37',
-                          secondary: '#1A1A1A',
+                <CtaBannersProvider>
+                  <NotificationProvider>
+                    <ErrorBoundary>
+                      <GlobalApp />
+                      <GlobalModal />
+                    
+                    <Toaster 
+                      position="top-right"
+                      toastOptions={{
+                        style: {
+                          background: '#1A1A1A',
+                          color: '#D4AF37',
+                          border: '1px solid rgba(212, 175, 55, 0.1)',
+                          fontSize: '10px',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.2em',
+                          fontWeight: '700',
+                          borderRadius: '0',
+                          padding: '16px 24px'
                         },
-                      },
-                    }}
-                  />
-                  </ErrorBoundary>
-                </NotificationProvider>
+                        success: {
+                          iconTheme: {
+                            primary: '#D4AF37',
+                            secondary: '#1A1A1A',
+                          },
+                        },
+                      }}
+                    />
+                    </ErrorBoundary>
+                  </NotificationProvider>
+                </CtaBannersProvider>
               </WishlistProvider>
             </CartProvider>
           </ModalProvider>

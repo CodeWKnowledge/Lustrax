@@ -54,8 +54,8 @@ const SignupForm = ({ onToggleMode, onComplete }) => {
   return (
     <div className="space-y-6">
       <div className="text-center space-y-1">
-         <h2 className="text-2xl font-bold tracking-tight text-charcoal uppercase">Create Account</h2>
-         <p className="text-[9px] text-gray-400 uppercase tracking-widest font-medium">New Identity Protocol</p>
+         <h2 className="text-xl font-normal tracking-[0.3em] text-charcoal uppercase">Create Account</h2>
+         <p className="text-[9px] text-gray-400 uppercase tracking-widest font-light">New Identity Protocol</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">

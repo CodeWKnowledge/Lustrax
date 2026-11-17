@@ -223,45 +223,61 @@ const ProductDetailsPage = () => {
           Back to Selection
         </button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-32 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
           {/* Visual Presentation */}
           <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="space-y-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-7 space-y-6"
           >
-            <div className="aspect-[4/5] overflow-hidden rounded-luxury bg-soft-bg relative border-subtle group">
-               <div className="absolute inset-0 bg-gray-100 animate-pulse"></div>
+            <div className="aspect-[4/5] overflow-hidden bg-stone relative border border-neutral-border group">
+               <div className="absolute inset-0 bg-[#F2F2EE] animate-pulse"></div>
                <img 
                  key={activeImage}
-                 src={getOptimizedImage(activeImage, 1200)} 
+                 src={getOptimizedImage(activeImage, 1400)} 
                  alt={`Lustrax Jewelries: ${product.name} Detailed View`}
                  fetchPriority="high"
                  onLoad={() => setMainImgLoaded(true)}
-                 className={`w-full h-full object-cover transition-all duration-500 ease-out group-hover:scale-110 relative z-10 ${mainImgLoaded ? 'opacity-100 blur-0 scale-100' : 'opacity-0 blur-md scale-105'}`} 
+                 className={`w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-105 relative z-10 ${mainImgLoaded ? 'opacity-100 blur-0 scale-100' : 'opacity-0 blur-md scale-105'}`} 
                />
-               <div className="absolute inset-0 bg-black/5 pointer-events-none z-20"></div>
+               <div className="absolute top-4 left-4 z-20">
+                 <span className="text-[9px] uppercase font-bold tracking-[0.3em] bg-obsidian text-gold px-3 py-1.5 border border-gold/20">
+                   {product.category || 'Fine Jewelry'}
+                 </span>
+               </div>
             </div>
 
             {/* Gallery Thumbnails */}
             {product.additional_images?.length > 0 && (
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-5 gap-3">
                  <div 
                    onClick={() => setSelectedImage(product.image_url)}
-                   className={`aspect-square rounded-lg overflow-hidden border-2 cursor-pointer transition-all duration-300 relative ${activeImage === product.image_url ? 'border-gold shadow-md' : 'border-transparent hover:border-gold/50'}`}
+                   className={`aspect-square overflow-hidden border cursor-pointer transition-luxury relative bg-stone ${
+                     activeImage === product.image_url ? 'border-charcoal shadow-sm' : 'border-neutral-border opacity-70 hover:opacity-100'
+                   }`}
                    aria-label="View primary angle"
                  >
-                    <div className="absolute inset-0 bg-gray-100 animate-pulse"></div>
-                    <img onLoad={({ target }) => { target.classList.remove('opacity-0'); target.classList.add('opacity-100') }} src={getOptimizedImage(product.image_url, 400)} className="w-full h-full object-cover relative z-10 opacity-0 transition-opacity duration-300" alt="Primary view" />
+                    <img 
+                      src={getOptimizedImage(product.image_url, 400)} 
+                      className="w-full h-full object-cover" 
+                      alt="Primary view" 
+                    />
                  </div>
                  {product.additional_images.map((img, idx) => (
                    <div 
                      key={idx} 
                      onClick={() => setSelectedImage(img)}
-                     className={`aspect-square rounded-lg overflow-hidden border-2 cursor-pointer transition-all duration-300 relative ${activeImage === img ? 'border-gold shadow-md' : 'border-transparent hover:border-gold/50'}`} aria-label={`View detail angle ${idx + 1}`}
+                     className={`aspect-square overflow-hidden border cursor-pointer transition-luxury relative bg-stone ${
+                       activeImage === img ? 'border-charcoal shadow-sm' : 'border-neutral-border opacity-70 hover:opacity-100'
+                     }`} 
+                     aria-label={`View detail angle ${idx + 1}`}
                    >
-                      <div className="absolute inset-0 bg-gray-100 animate-pulse"></div>
-                      <img onLoad={({ target }) => { target.classList.remove('opacity-0'); target.classList.add('opacity-100') }} src={getOptimizedImage(img, 400)} className="w-full h-full object-cover relative z-10 opacity-0 transition-opacity duration-300" alt={`Detail angle ${idx + 1}`} />
+                      <img 
+                        src={getOptimizedImage(img, 400)} 
+                        className="w-full h-full object-cover" 
+                        alt={`Detail angle ${idx + 1}`} 
+                      />
                    </div>
                  ))}
               </div>
@@ -271,33 +287,39 @@ const ProductDetailsPage = () => {
 
           {/* Intellectual Property & Acquisition */}
           <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="space-y-10 lg:space-y-16"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="lg:col-span-5 space-y-8 lg:space-y-10"
           >
-            <div className="space-y-4 lg:space-y-6">
+            <div className="space-y-4 pb-6 border-b border-neutral-border">
                <div className="flex items-center space-x-2 text-gold">
-                  {[...Array(5)].map((_, i) => <StarIcon key={i} size={10} className="fill-current" />)}
-                  <span className="text-[8px] uppercase tracking-widest pl-2 opacity-50">Atelier Selection</span>
+                  {[...Array(5)].map((_, i) => <StarIcon key={i} size={11} className="fill-gold" />)}
+                  <span className="text-[9px] uppercase tracking-[0.3em] font-bold text-gray-400 pl-2">
+                    Premium Quality
+                  </span>
                </div>
                
-               <h1 className="text-h1 text-charcoal uppercase leading-[1.1]">{product.name}</h1>
+               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold text-charcoal tracking-tight leading-[1.05]">
+                 {product.name}
+               </h1>
                
-               
-               <p className={`text-price !text-2xl lg:!text-3xl ${((variants.length > 0 ? selectedVariant?.stock_quantity : product.stock_quantity) === 0) ? 'text-gray-400 line-through' : 'text-charcoal'}`}>
+               <p className={`text-2xl sm:text-3xl font-price font-bold ${
+                 ((variants.length > 0 ? selectedVariant?.stock_quantity : product.stock_quantity) === 0) ? 'text-gray-400 line-through' : 'text-charcoal'
+               }`}>
                   ₦{getEffectivePrice(product, selectedVariant).toLocaleString()}
                </p>
             </div>
 
             {/* Variant Selection UI */}
             {variants.length > 0 && (
-              <div className="space-y-12">
+              <div className="space-y-6 pb-6 border-b border-neutral-border">
                 {Array.from(new Set(variants.flatMap(v => Object.keys(v.attributes)))).map(attrName => {
                   const availableValues = Array.from(new Set(variants.map(v => v.attributes[attrName])))
                   return (
-                    <div key={attrName} className="space-y-4">
-                      <p className="text-subheading text-charcoal/40 uppercase tracking-[0.2em] font-bold text-[10px]">{attrName}</p>
-                      <div className="flex flex-wrap gap-3">
+                    <div key={attrName} className="space-y-3">
+                      <p className="text-[10px] uppercase tracking-[0.25em] font-bold text-gray-400">{attrName}</p>
+                      <div className="flex flex-wrap gap-2.5">
                         {availableValues.map(val => (
                           <button
                             key={val}
@@ -306,7 +328,11 @@ const ProductDetailsPage = () => {
                               setSelectedAttributes(newSelected)
                               setSelectedVariant(findMatchingVariant(variants, newSelected))
                             }}
-                            className={`px-6 py-3 border rounded-full text-[10px] font-bold uppercase tracking-widest transition-luxury ${selectedAttributes[attrName] === val ? 'bg-charcoal text-white border-charcoal' : 'bg-white text-gray-400 border-gray-100 hover:border-gold hover:text-gold'}`}
+                            className={`px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.2em] transition-luxury border ${
+                              selectedAttributes[attrName] === val 
+                                ? 'bg-obsidian text-white border-obsidian' 
+                                : 'bg-white text-gray-500 border-neutral-border hover:border-charcoal hover:text-charcoal'
+                            }`}
                           >
                             {val}
                           </button>
@@ -318,30 +344,32 @@ const ProductDetailsPage = () => {
               </div>
             )}
 
-            <div className="space-y-10 lg:space-y-12">
-               <div className="space-y-4 lg:space-y-6">
-                  <p className="text-subheading text-gray-400">The Essence</p>
-                  <p className="text-body !text-base lg:!text-lg font-libre italic border-l border-gold/30 pl-6 lg:pl-8 text-gray-500">
-                     {product.description || 'A timeless representation of elegance, meticulously crafted to mirror the beauty of the cosmos.'}
+            <div className="space-y-6">
+               <div className="space-y-3">
+                  <span className="text-subheading text-gold block">Product Description</span>
+                  <p className="text-body text-gray-600 text-sm sm:text-base leading-relaxed border-l-2 border-gold/40 pl-5">
+                     {product.description || 'A timeless representation of elegance, meticulously crafted to mirror contemporary luxury and personal expression.'}
                   </p>
                </div>
 
-                <div className="flex flex-col sm:flex-row gap-4 lg:gap-6 pt-10 border-t border-gray-50">
-                  <div className="flex flex-col space-y-2">
-                    <div className="flex items-center bg-soft-bg rounded-luxury border-subtle h-14 lg:h-16">
+                <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-neutral-border">
+                  <div className="flex flex-col space-y-1">
+                    <div className="flex items-center border border-neutral-border bg-stone h-13 px-2">
                        <button 
                          onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                         className="w-14 lg:w-16 h-full hover:bg-white transition-luxury text-sm"
+                         className="w-10 h-full hover:text-gold transition-luxury font-bold text-base"
+                         aria-label="Decrease quantity"
                        >—</button>
-                       <span className="flex-1 text-center font-bold text-xs tracking-widest min-w-[50px] lg:min-w-[60px]">{quantity}</span>
+                       <span className="w-12 text-center font-bold text-xs tracking-widest">{quantity}</span>
                        <button 
                          onClick={() => setQuantity(Math.min((variants.length > 0 ? selectedVariant?.stock_quantity : product?.stock_quantity) ?? 0, quantity + 1))}
-                         className="w-14 lg:w-16 h-full hover:bg-white transition-luxury text-sm"
+                         className="w-10 h-full hover:text-gold transition-luxury font-bold text-base"
+                         aria-label="Increase quantity"
                        >+</button>
                     </div>
                     {(variants.length > 0 ? selectedVariant?.stock_quantity : product?.stock_quantity) > 0 && (variants.length > 0 ? selectedVariant?.stock_quantity : product?.stock_quantity) <= 3 && (
-                      <span className="text-[9px] text-orange-500 font-bold uppercase tracking-widest animate-pulse mt-1 block">
-                        Only {(variants.length > 0 ? selectedVariant?.stock_quantity : product?.stock_quantity)} remaining
+                      <span className="text-[9px] text-amber-600 font-bold uppercase tracking-widest block">
+                        Low stock: only {(variants.length > 0 ? selectedVariant?.stock_quantity : product?.stock_quantity)} left
                       </span>
                     )}
                   </div>
@@ -362,16 +390,16 @@ const ProductDetailsPage = () => {
                      }}
                      disabled={(variants.length > 0 && !selectedVariant) || (variants.length > 0 ? selectedVariant?.stock_quantity === 0 : product.stock_quantity === 0)}
                      size="lg" 
-                     className="flex-grow group h-14 lg:h-16 text-ui"
+                     className="flex-grow !bg-obsidian !text-gold hover:!bg-black h-13 text-[10px] uppercase font-bold tracking-[0.25em] transition-luxury"
                   >
                      <span>
                        {variants.length > 0 && !selectedVariant 
-                        ? 'SELECT OPTIONS' 
+                        ? 'SELECT AN OPTION' 
                         : (variants.length > 0 ? selectedVariant?.stock_quantity === 0 : product.stock_quantity === 0) 
-                         ? 'OUT OF STOCK' 
-                         : 'ADD TO CART'}
+                          ? 'OUT OF STOCK' 
+                          : 'ADD TO BAG'}
                      </span>
-                     {((variants.length > 0 && selectedVariant && selectedVariant.stock_quantity > 0) || (variants.length === 0 && product.stock_quantity > 0)) && <ShoppingBag02Icon size={18} className="ml-4 group-hover:scale-110 transition-luxury" />}
+                     {((variants.length > 0 && selectedVariant && selectedVariant.stock_quantity > 0) || (variants.length === 0 && product.stock_quantity > 0)) && <ShoppingBag02Icon size={16} className="ml-3" />}
                   </Button>
 
                   <button 
@@ -379,40 +407,37 @@ const ProductDetailsPage = () => {
                        if (!user) openAuthModal()
                        else toggleWishlist(product)
                      }}
-                     className={`h-14 lg:h-16 px-6 flex items-center justify-center border rounded-luxury transition-luxury ${isInWishlist(product.id) ? 'text-red-500 border-red-100 bg-red-50/30' : 'border-gray-100 hover:text-red-500 hover:border-red-100'}`}
+                     className={`h-13 w-13 flex-shrink-0 flex items-center justify-center border transition-luxury ${isInWishlist(product.id) ? 'text-gold border-gold bg-gold/5' : 'border-neutral-border text-charcoal hover:border-gold hover:text-gold'}`}
+                     aria-label="Toggle wishlist"
                   >
-                     <FavouriteIcon size={20} className={isInWishlist(product.id) ? 'fill-current' : ''} />
+                     <FavouriteIcon size={18} className={isInWishlist(product.id) ? 'fill-gold' : ''} />
                   </button>
 
-               </div>
+                </div>
 
-               <div className="grid grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 py-10 lg:py-12 border-y border-gray-50">
-                  <div className="space-y-2 lg:space-y-3">
-                     <p className="text-subheading !text-[8px] lg:!text-[9px] text-gray-300 uppercase tracking-widest">Composition</p>
-                     <p className="text-ui !tracking-widest text-charcoal">{product.material || 'Lustrax Signature Standard'}</p>
+               <div className="grid grid-cols-3 gap-6 py-8 border-y border-neutral-border">
+                  <div className="space-y-1">
+                     <p className="text-[8px] text-gray-400 uppercase tracking-[0.25em] font-bold">Material</p>
+                     <p className="text-xs font-bold text-charcoal">{product.material || 'Solid Standard'}</p>
                   </div>
-                  <div className="space-y-2 lg:space-y-3">
-                     <p className="text-subheading !text-[8px] lg:!text-[9px] text-gray-300 uppercase tracking-widest">Calculated Mass</p>
-                     <p className="text-ui !tracking-widest text-charcoal">{product.weight || 'Refined Variance'}</p>
+                  <div className="space-y-1">
+                     <p className="text-[8px] text-gray-400 uppercase tracking-[0.25em] font-bold">Weight</p>
+                     <p className="text-xs font-bold text-charcoal">{product.weight || 'Standard'}</p>
                   </div>
-                  <div className="space-y-2 lg:space-y-3 col-span-2 lg:col-span-1">
-                     <p className="text-subheading !text-[8px] lg:!text-[9px] text-gray-300 uppercase tracking-widest">Availability</p>
-                     <p className={`text-ui !tracking-widest font-bold ${
-                       (variants.length > 0 ? selectedVariant?.stock_quantity : product.stock_quantity) > 3 ? 'text-charcoal' : 
-                       (variants.length > 0 ? selectedVariant?.stock_quantity : product.stock_quantity) > 0 ? 'text-orange-500 animate-pulse' : 
-                       'text-red-500'
+                  <div className="space-y-1">
+                     <p className="text-[8px] text-gray-400 uppercase tracking-[0.25em] font-bold">Availability</p>
+                     <p className={`text-xs font-bold ${
+                       (variants.length > 0 ? selectedVariant?.stock_quantity : product.stock_quantity) > 0 ? 'text-charcoal' : 'text-red-500'
                      }`}>
-                       {(variants.length > 0 ? selectedVariant?.stock_quantity : product.stock_quantity) > 3 ? `${(variants.length > 0 ? selectedVariant?.stock_quantity : product.stock_quantity)} Units Available` : 
-                        (variants.length > 0 ? selectedVariant?.stock_quantity : product.stock_quantity) > 0 ? `Only ${(variants.length > 0 ? selectedVariant?.stock_quantity : product.stock_quantity)} Remaining` : 
-                        'Depleted Vault'}
+                       {(variants.length > 0 ? selectedVariant?.stock_quantity : product.stock_quantity) > 0 ? 'In Stock' : 'Out of Stock'}
                      </p>
                   </div>
                </div>
 
-                <div className="flex items-center space-x-4 pt-4">
+                <div className="flex items-center space-x-3 pt-2">
                   <div className="w-1.5 h-1.5 bg-gold rounded-full"></div>
                   <p className="text-[9px] uppercase tracking-[0.2em] font-bold text-gray-400">
-                    Returns accepted within 3 days. <Link to="/refund-policy" className="text-gold hover:underline">View Refund Policy</Link>
+                    Returns accepted within 3 days. <Link to="/refund-policy" className="text-gold hover:underline">See Return Policy</Link>
                   </p>
                 </div>
 

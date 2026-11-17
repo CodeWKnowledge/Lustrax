@@ -1,56 +1,59 @@
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import React from 'react'
 import { Link } from 'react-router-dom'
-
-
 
 const NotFound = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 relative overflow-hidden">
-      {/* Subtle background detail */}
+      {/* Ambient gold diffusion */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-gold/[0.03] blur-[120px]" />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-gold/[0.04] blur-[150px]" />
       </div>
 
       <motion.div
-        initial={{ opacity: 0, y: 24 }}
+        initial={{ opacity: 0, y: 32 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="text-center space-y-10 relative z-10 max-w-lg"
+        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+        className="text-center space-y-12 relative z-10 max-w-md"
       >
-        {/* 404 Number */}
-        <div className="space-y-2">
-          <p className="text-[120px] lg:text-[180px] font-bold font-playfair text-charcoal/5 leading-none select-none">
+        {/* Ghost numerals */}
+        <div className="relative select-none leading-none">
+          <p className="text-[160px] lg:text-[220px] font-display text-charcoal/[0.04] leading-none tracking-tighter">
             404
           </p>
-          <div className="-mt-8 space-y-4">
-            <h1 className="text-2xl lg:text-3xl font-playfair font-bold text-charcoal tracking-tight">
+          <div className="absolute inset-0 flex flex-col items-center justify-center space-y-3">
+            <span className="text-subheading text-gold tracking-[0.5em]">LUST RAX</span>
+            <h1 className="text-h2 text-charcoal text-xl lg:text-2xl tracking-tight uppercase">
               Page Not Found
             </h1>
-            <p className="text-sm text-gray-400 font-inter leading-relaxed max-w-xs mx-auto">
-              The page you are looking for may have moved, been renamed, or no longer exists.
-            </p>
           </div>
         </div>
 
-        {/* Divider */}
+        {/* Gold hairline */}
         <div className="flex items-center justify-center space-x-4">
-          <span className="h-px w-12 bg-gold/30" />
-          <span className="text-gold text-xs font-inter tracking-[0.3em] uppercase">Lustrax</span>
-          <span className="h-px w-12 bg-gold/30" />
+          <span className="h-px w-10 bg-gold/40" />
+          <span className="text-[8px] text-gold/60 tracking-[0.6em] uppercase font-normal">
+            Lost in Transit
+          </span>
+          <span className="h-px w-10 bg-gold/40" />
         </div>
 
-        {/* Actions */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        {/* Body */}
+        <p className="text-body text-gray-400 !text-sm leading-relaxed max-w-xs mx-auto font-light">
+          The piece you are seeking may have been relocated, renamed, or retired from the collection.
+        </p>
+
+        {/* CTA row */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
           <Link
             to="/"
-            className="w-full sm:w-auto inline-flex items-center justify-center h-13 px-10 bg-charcoal text-white text-[10px] font-bold uppercase tracking-[0.25em] hover:bg-charcoal/80 transition-all duration-300"
+            className="w-full sm:w-auto inline-flex items-center justify-center h-12 px-10 bg-obsidian text-white text-[9px] font-normal uppercase tracking-[0.3em] hover:bg-charcoal-light transition-luxury"
           >
             Return to Boutique
           </Link>
           <Link
-            to="/"
-            className="w-full sm:w-auto inline-flex items-center justify-center h-13 px-10 border border-gray-100 text-charcoal text-[10px] font-bold uppercase tracking-[0.25em] hover:border-gold hover:text-gold transition-all duration-300"
+            to="/products"
+            className="w-full sm:w-auto inline-flex items-center justify-center h-12 px-10 border border-neutral-border text-charcoal text-[9px] font-normal uppercase tracking-[0.3em] hover:border-gold hover:text-gold transition-luxury"
           >
             Browse Collection
           </Link>
@@ -61,7 +64,3 @@ const NotFound = () => {
 }
 
 export default NotFound
-
-
-
-

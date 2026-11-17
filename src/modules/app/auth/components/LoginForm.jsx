@@ -28,8 +28,8 @@ const LoginForm = ({ onToggleMode, onComplete }) => {
   return (
     <div className="space-y-10">
       <div className="text-center space-y-2">
-         <h2 className="text-2xl font-bold tracking-tight text-charcoal uppercase">Sign In</h2>
-         <p className="text-[9px] text-gray-400 uppercase tracking-widest font-medium">Protocol Access Required</p>
+         <h2 className="text-xl font-normal tracking-[0.3em] text-charcoal uppercase">Sign In</h2>
+         <p className="text-[9px] text-gray-400 uppercase tracking-widest font-light">Protocol Access Required</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">

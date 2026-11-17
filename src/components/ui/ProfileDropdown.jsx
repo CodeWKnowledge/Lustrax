@@ -60,12 +60,12 @@ const ProfileDropdown = ({ user, profile, onSignOut }) => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] border border-gray-50 overflow-hidden z-[110]"
+            className="absolute right-0 mt-2 w-64 bg-white shadow-[0_20px_40px_-15px_rgba(0,0,0,0.12)] border border-neutral-border overflow-hidden z-[110]"
           >
             {/* User Info Section */}
             <div className="p-5 bg-gray-50/50">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-full bg-charcoal flex items-center justify-center text-white text-xs font-bold uppercase tracking-widest">
+                <div className="w-10 h-10 bg-charcoal flex items-center justify-center text-white text-xs font-normal uppercase tracking-widest flex-shrink-0">
                   {profile?.full_name?.charAt(0) || user.email.charAt(0)}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -84,7 +84,7 @@ const ProfileDropdown = ({ user, profile, onSignOut }) => {
                 <Link
                   key={idx}
                   to={item.link}
-                  className="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-gray-500 hover:text-charcoal hover:bg-gray-50 transition-all group"
+                  className="flex items-center space-x-3 px-3 py-2.5 text-gray-500 hover:text-charcoal hover:bg-stone/40 transition-all group"
                   onClick={() => setIsOpen(false)}
                 >
                   <span className="text-gray-300 group-hover:text-gold transition-colors">
@@ -103,7 +103,7 @@ const ProfileDropdown = ({ user, profile, onSignOut }) => {
                   setIsOpen(false)
                   onSignOut()
                 }}
-                className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50/50 transition-all group"
+                className="w-full flex items-center space-x-3 px-3 py-2.5 text-red-400 hover:text-red-600 hover:bg-red-50/50 transition-all group"
               >
                 <span className="text-red-200 group-hover:text-red-400 transition-colors">
                   <Logout01Icon size={16} />

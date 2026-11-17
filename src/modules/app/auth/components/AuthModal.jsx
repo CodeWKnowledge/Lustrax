@@ -42,7 +42,7 @@ const AuthModal = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.98, y: 5 }}
             transition={{ type: 'spring', damping: 30, stiffness: 400 }}
-            className="relative max-h-[90vh] w-full max-w-[380px] bg-white p-6 lg:p-10 rounded-2xl shadow-[0_32px_64px_-15px_rgba(0,0,0,0.5)] border border-gray-100 overflow-y-auto no-scrollbar"
+            className="relative max-h-[90vh] w-full max-w-[380px] bg-white p-6 lg:p-10 shadow-[0_32px_64px_-15px_rgba(0,0,0,0.5)] border border-gray-100 overflow-y-auto no-scrollbar"
           >
             <button 
               onClick={closeAuthModal}
@@ -54,8 +54,8 @@ const AuthModal = () => {
 
             {mode === 'select' ? (
               <div className="text-center space-y-6 py-8">
-                 <h2 className="text-2xl font-serif text-charcoal tracking-wide">Welcome</h2>
-                 <p className="text-[10px] uppercase tracking-[0.2em] text-gray-400">Gain access to the exclusive collection.</p>
+                 <h2 className="text-xl font-normal tracking-[0.4em] text-charcoal uppercase">Welcome</h2>
+                 <p className="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-light">Gain access to the exclusive collection.</p>
                  <div className="flex flex-col space-y-4 pt-4">
                     <Button onClick={() => setMode('signup')} variant="gold" className="w-full h-12 text-[10px] tracking-widest shadow-premium-sm">Create Account</Button>
                     <Button onClick={() => setMode('login')} variant="outline" className="w-full h-12 text-[10px] tracking-widest">Sign In</Button>

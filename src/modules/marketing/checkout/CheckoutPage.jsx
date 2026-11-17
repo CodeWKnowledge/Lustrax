@@ -92,10 +92,10 @@ const CheckoutPage = () => {
       
       const itemPrice = parseFloat(item.price)
       if (Math.abs(price - itemPrice) > 0.01) {
-        return { valid: false, error: `Valuation for ${item.name} has changed. Please refresh your bag.` }
+        return { valid: false, error: `The price for ${item.name} has changed. Please refresh your cart.` }
       }
-      if (item.quantity <= 0) return { valid: false, error: `${item.name} is currently out of stock. Please remove it from your selection.` }
-      if (stock < item.quantity) return { valid: false, error: `Only ${stock} units of ${item.name} (selected variation) remain.` }
+      if (item.quantity <= 0) return { valid: false, error: `${item.name} is currently out of stock. Please remove it from your cart.` }
+      if (stock < item.quantity) return { valid: false, error: `Only ${stock} items left for ${item.name}.` }
     }
 
     return { valid: true }
@@ -123,7 +123,7 @@ const CheckoutPage = () => {
     if (!formData.landmark.trim()) return toast.error('Please specify a recognizable Landmark')
 
     if (!agreedToTerms) {
-      toast.error('Protocol Error: You must agree to the Terms & Conditions and Refund Policy to proceed.')
+      toast.error('Please agree to the Terms & Conditions and Refund Policy to continue.')
       return
     }
 
@@ -228,19 +228,24 @@ const CheckoutPage = () => {
       handler.openIframe()
     } catch (err) { 
       setLoading(false)
-      toast.error(`Acquisition protocol error: ${err.message}`)
+      toast.error(`Checkout error: ${err.message}`)
     }
   }
 
   if (checkoutItems.length === 0 && !showSuccess) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center space-y-8">
-        <div className="w-20 h-20 bg-soft-bg rounded-full flex items-center justify-center text-gray-200">
-           <ShoppingBag02Icon size={32} />
+      <div className="min-h-screen flex flex-col items-center justify-center space-y-10 px-6">
+        <div className="w-16 h-16 border border-neutral-border flex items-center justify-center text-gray-300">
+           <ShoppingBag02Icon size={24} />
         </div>
-        <p className="text-subheading text-gray-300 italic">Your acquisition manifest is empty</p>
-        <Link to="/">
-          <Button variant="outline" className="px-12">Return to Boutique</Button>
+        <div className="text-center space-y-2">
+          <p className="text-subheading text-charcoal/30 tracking-[0.4em]">Acquisition Manifest</p>
+          <p className="text-body text-gray-400 !text-sm">Your bag is empty. Return to the collection.</p>
+        </div>
+        <Link to="/products">
+          <button className="text-[9px] uppercase tracking-[0.35em] font-normal text-charcoal border border-neutral-border px-10 py-3.5 hover:border-gold hover:text-gold transition-luxury">
+            Browse Collection
+          </button>
         </Link>
       </div>
     )
@@ -256,18 +261,18 @@ const CheckoutPage = () => {
                 className="group flex items-center text-ui text-gray-300 hover:text-gold transition-luxury mb-4"
               >
                 <ArrowLeft01Icon size={12} className="mr-2 group-hover:-translate-x-1 transition-luxury" /> 
-                Revise Selection
+                Back to Cart
               </button>
-              <h1 className="text-h2 text-charcoal">Unified Checkout</h1>
+              <h1 className="text-h2 text-charcoal">Checkout</h1>
            </div>
            <div className="hidden lg:flex items-center space-x-12">
               <div className="flex items-center space-x-4">
                  <div className="w-8 h-8 rounded-full bg-gold/5 flex items-center justify-center text-gold"><TruckDeliveryIcon size={16} /></div>
-                 <span className="text-ui text-charcoal/40">Secure Delivery</span>
+                 <span className="text-ui text-charcoal/40">Fast Delivery</span>
               </div>
               <div className="flex items-center space-x-4">
                  <div className="w-8 h-8 rounded-full bg-gold/5 flex items-center justify-center text-gold"><ShieldEnergyIcon size={16} /></div>
-                 <span className="text-ui text-charcoal/40">Encrypted Protocol</span>
+                 <span className="text-ui text-charcoal/40">Secure Payment</span>
               </div>
            </div>
         </div>
@@ -279,7 +284,7 @@ const CheckoutPage = () => {
             <section className="space-y-12">
                <div className="flex items-center space-x-6">
                   <span className="text-xl font-playfair italic text-gold">01</span>
-                  <h2 className="text-h2 !text-xl lg:!text-2xl text-charcoal !tracking-tight border-b border-gold/20 pb-2 flex-grow uppercase">Delivery Coordinates</h2>
+                  <h2 className="text-h2 !text-xl lg:!text-2xl text-charcoal !tracking-tight border-b border-gold/20 pb-2 flex-grow uppercase">Delivery Address</h2>
                </div>
                
                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
@@ -420,7 +425,7 @@ const CheckoutPage = () => {
             <section className="space-y-12">
                <div className="flex items-center space-x-6">
                   <span className="text-xl font-playfair italic text-gold">02</span>
-                  <h2 className="text-h2 !text-xl lg:!text-2xl text-charcoal !tracking-tight border-b border-gold/20 pb-2 flex-grow uppercase">Selection Review</h2>
+                  <h2 className="text-h2 !text-xl lg:!text-2xl text-charcoal !tracking-tight border-b border-gold/20 pb-2 flex-grow uppercase">Order Review</h2>
                </div>
                               <div className="space-y-8 bg-soft-bg/30 p-8 lg:p-12 rounded-luxury border border-gray-50">
                   {checkoutItems.map((item, idx) => (
@@ -435,12 +440,12 @@ const CheckoutPage = () => {
                   
                   <div className="pt-8 border-t border-gray-100 space-y-4">
                      <div className="flex justify-between items-center text-ui text-gray-400">
-                        <span>Manifest Subtotal</span>
+                        <span>Items Subtotal</span>
                         <span className="text-price !text-sm">{formatCurrency(totalToPay)}</span>
                      </div>
                      <div className="flex justify-between items-center text-ui text-gray-400">
-                        <span>Exclusive Delivery</span>
-                        <span className="text-green-600 font-inter">Complimentary</span>
+                        <span>Delivery Fee</span>
+                        <span className="text-green-600 font-inter">Free</span>
                      </div>
                   </div>
                </div>
@@ -454,11 +459,11 @@ const CheckoutPage = () => {
                
                <div className="space-y-6 relative z-10">
                   <div className="space-y-2">
-                     <span className="text-subheading text-gold">Final Valuations</span>
+                     <span className="text-subheading text-gold">Total Amount</span>
                      <p className="text-5xl lg:text-7xl font-bold tracking-tighter text-white font-playfair">{formatCurrency(totalToPay)}</p>
                   </div>
                   <p className="text-body text-gray-500 !text-[11px] leading-relaxed">
-                     By proceeding, you authorize the secure collection of funds for your selected luxury pieces.
+                     You will be directed to Paystack to complete your secure payment.
                   </p>
                </div>
                
@@ -500,7 +505,7 @@ const CheckoutPage = () => {
                           className="flex items-center space-x-3"
                         >
                            <CheckmarkCircle01Icon size={20} className="group-hover:scale-110 transition-luxury" />
-                           <span className="text-ui">AUTHORIZE ACQUISITION</span>
+                           <span className="text-ui">PAY NOW WITH PAYSTACK</span>
                         </motion.span>
                       )}
                     </AnimatePresence>
@@ -509,7 +514,7 @@ const CheckoutPage = () => {
                   <div className="pt-10 flex flex-col items-center space-y-6 border-t border-white/5 opacity-40">
                      <div className="flex items-center space-x-3 text-ui !text-[8px] text-white">
                         <ShieldEnergyIcon size={12} className="text-gold" />
-                        <span>Encrypted Protocol IX</span>
+                        <span>Secure SSL Payment</span>
                      </div>
                      <div className="flex space-x-6 items-center grayscale opacity-80">
                         <div className="h-4 w-12 bg-white/20 rounded-sm"></div>

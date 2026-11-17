@@ -54,10 +54,10 @@ const DashboardSidebar = ({ isCollapsed, isSidebarOpen, onClose }) => {
           {/* Header */}
           <div className="h-24 flex items-center px-8 border-b border-gray-50/50">
             <Link to="/" className="flex flex-col">
-              <span className={`text-xl font-serif text-charcoal uppercase tracking-[0.4em] transition-all ${isCollapsed ? 'lg:scale-0' : 'scale-100'}`}>
+              <span className={`text-sm font-normal text-charcoal uppercase tracking-[0.5em] transition-all ${isCollapsed ? 'lg:scale-0' : 'scale-100'}`}>
                 Lustrax
               </span>
-              <span className={`text-[7px] text-gold font-bold tracking-[0.4em] uppercase opacity-60 transition-all ${isCollapsed ? 'lg:scale-0' : 'scale-100'}`}>
+              <span className={`text-[7px] text-gold font-normal tracking-[0.4em] uppercase opacity-60 transition-all ${isCollapsed ? 'lg:scale-0' : 'scale-100'}`}>
                 Dashboard
               </span>
               {isCollapsed && <span className="absolute left-1/2 -translate-x-1/2 text-xl font-serif text-gold hidden lg:block">L</span>}

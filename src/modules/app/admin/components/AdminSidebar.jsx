@@ -13,7 +13,8 @@ import {
   Logout01Icon,
   Menu01Icon,
   Notification01Icon,
-  ConversationIcon
+  ConversationIcon,
+  Megaphone01Icon
 } from 'hugeicons-react'
 
 import { useNotifications } from '@/context/NotificationContext'
@@ -30,6 +31,7 @@ const AdminSidebar = ({ isCollapsed, isSidebarOpen, onClose, toggleCollapse }) =
     { name: 'Products', icon: <Package01Icon size={18} />, path: '/admin/products' },
     { name: 'Customers', icon: <UserGroupIcon size={18} />, path: '/admin/customers' },
     { name: 'Wishlist', icon: <FavouriteIcon size={18} />, path: '/admin/wishlist' },
+    { name: 'CTA Banners', icon: <Megaphone01Icon size={18} />, path: '/admin/banners' },
     { name: 'Payments', icon: <Payment02Icon size={18} />, path: '/admin/payments' },
     { name: 'Transactions', icon: <Analytics01Icon size={18} />, path: '/admin/transactions' },
     { name: 'Settings', icon: <Settings02Icon size={18} />, path: '/admin/settings' },

@@ -45,7 +45,7 @@ const RefundPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="mt-8 p-4 bg-gold/5 border border-gold/10 inline-block rounded-lg"
+            className="mt-8 p-4 bg-gold/5 border border-gold/20 inline-block"
           >
             <p className="text-gold text-[10px] font-bold uppercase tracking-[0.2em]">
               Important: 3-Day Integrity Window Applied

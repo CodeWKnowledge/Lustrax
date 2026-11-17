@@ -1,7 +1,7 @@
 import React from 'react'
 
 const Button = ({ children, variant = 'primary', size = 'md', className = '', disabled, loading, ...props }) => {
-  const baseStyles = 'inline-flex items-center justify-center font-inter font-bold tracking-[0.25em] uppercase transition-luxury rounded-luxury disabled:opacity-50 disabled:cursor-not-allowed'
+  const baseStyles = 'inline-flex items-center justify-center font-normal tracking-[0.25em] uppercase transition-luxury rounded-luxury disabled:opacity-50 disabled:cursor-not-allowed'
   
   const variants = {
     primary: 'bg-black text-white hover:bg-gold hover:shadow-premium border border-black hover:border-gold',

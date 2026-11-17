@@ -59,7 +59,7 @@ const PaymentSuccessModal = ({ isOpen, onClose, data }) => {
       {/* Inner focus gradient */}
       <div className="absolute inset-0 bg-radial-luxury opacity-80 pointer-events-none" />
 
-      <div className="bg-white rounded-3xl w-full max-w-[380px] h-[580px] overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.4)] border border-gray-100 relative z-10 animate-in zoom-in-95 duration-300">
+      <div className="bg-white w-full max-w-[380px] h-[580px] overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.4)] border border-neutral-border relative z-10 animate-in zoom-in-95 duration-300">
         
         {/* Close Button */}
         <button 
@@ -169,7 +169,7 @@ const PaymentSuccessModal = ({ isOpen, onClose, data }) => {
             <div className="space-y-3">
                <button 
                   onClick={handleDownload}
-                  className="w-full h-12 bg-charcoal text-white rounded-xl flex items-center justify-center gap-3 text-ui hover:bg-black transition-luxury active:scale-[0.98] shadow-xl shadow-black/10 group"
+                  className="w-full h-12 bg-charcoal text-white flex items-center justify-center gap-3 text-ui hover:bg-black transition-luxury active:scale-[0.98] shadow-xl shadow-black/10 group"
                 >
                   <Download01Icon size={16} className="group-hover:-translate-y-0.5 transition-luxury" />
                   Download Reciept
@@ -178,14 +178,14 @@ const PaymentSuccessModal = ({ isOpen, onClose, data }) => {
                 <div className="grid grid-cols-2 gap-3">
                   <button 
                     onClick={() => { onClose(); navigate('/dashboard'); }}
-                    className="h-10 border border-gray-100 bg-white text-charcoal rounded-xl flex items-center justify-center gap-2 text-ui !text-[9px] hover:bg-gray-50 transition-luxury"
+                    className="h-10 border border-neutral-border bg-white text-charcoal flex items-center justify-center gap-2 text-ui !text-[9px] hover:bg-stone/50 transition-luxury"
                   >
                     <DashboardSquare02Icon size={14} />
                     Dashboard
                   </button>
                   <button 
                     onClick={() => { onClose(); navigate('/'); }}
-                    className="h-10 border border-gray-100 bg-white text-charcoal rounded-xl flex items-center justify-center gap-2 text-ui !text-[9px] hover:bg-gray-50 transition-luxury"
+                    className="h-10 border border-neutral-border bg-white text-charcoal flex items-center justify-center gap-2 text-ui !text-[9px] hover:bg-stone/50 transition-luxury"
                   >
                     <ShoppingBag01Icon size={14} />
                     Boutique
