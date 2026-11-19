@@ -41,9 +41,9 @@ const Footer = () => {
               Modern jewelry crafted with high standards. Solid chains, rings, and accessories made to help you look your best and wear with confidence.
             </p>
             <div className="flex items-center space-x-4 pt-2">
-              <span className="text-[10px] uppercase font-bold tracking-[0.3em] text-gold">Lagos</span>
+              <span className="text-[10px] uppercase font-bold tracking-[0.3em] text-gold">Abuja</span>
               <span className="w-1 h-1 bg-white/20 rounded-full"></span>
-              <span className="text-[10px] uppercase font-bold tracking-[0.3em] text-gray-400">Abuja</span>
+              <span className="text-[10px] uppercase font-bold tracking-[0.3em] text-gray-400">Nigeria</span>
               <span className="w-1 h-1 bg-white/20 rounded-full"></span>
               <span className="text-[10px] uppercase font-bold tracking-[0.3em] text-gray-400">Nationwide Delivery</span>
             </div>

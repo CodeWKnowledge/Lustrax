@@ -10,6 +10,7 @@ import DetailsModal from '@/modules/app/admin/components/ui/DetailsModal'
 import { motion, AnimatePresence } from 'framer-motion'
 import { formatCurrency, formatLuxuryDate } from '@/utils/formatters'
 import { toast } from 'react-hot-toast'
+import { notifyOrderStatusUpdate } from '@/services/emailNotificationService'
 import { 
   ViewIcon, 
   FilterIcon,
@@ -165,6 +166,22 @@ const AdminOrdersPage = () => {
     } else {
       toast.success(`ORDER ${newStatus.toUpperCase()} SUCCESSFUL`)
       
+      // Dispatch email notification to customer for status step updates
+      const targetOrder = currentOrder || orders.find(o => o.id === orderId)
+      if (targetOrder) {
+        notifyOrderStatusUpdate({
+          order: targetOrder,
+          newStatus,
+          items: targetOrder.order_items
+        }).then(res => {
+          if (res?.success) {
+            toast.success(`Customer notification dispatched (${newStatus})`, { duration: 3000 })
+          }
+        }).catch(err => {
+          console.warn('Notification dispatch non-blocking error:', err)
+        })
+      }
+
       // Instantly update local state if modal is open
       if (selectedOrder?.id === orderId) {
         setSelectedOrder(prev => ({ ...prev, status: newStatus, activity_log: updatedLog }))

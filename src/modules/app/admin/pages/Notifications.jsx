@@ -5,8 +5,7 @@ import {
   CheckmarkCircle01Icon,
   Clock01Icon,
   InformationCircleIcon,
-  ShoppingBag01Icon,
-  Delete02Icon
+  ShoppingBag01Icon
 } from 'hugeicons-react'
 import { formatDistanceToNow } from 'date-fns'
 import Button from '@/components/ui/Button'
@@ -108,5 +107,3 @@ const AdminNotificationsPage = () => {
 }
 
 export default AdminNotificationsPage
-
-

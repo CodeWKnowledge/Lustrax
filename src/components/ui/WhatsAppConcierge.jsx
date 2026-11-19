@@ -49,14 +49,14 @@ const WhatsAppConcierge = () => {
       animate={{ opacity: 1, scale: 1, y: 0 }}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      className="fixed bottom-6 right-6 z-[100] flex items-center space-x-3 bg-obsidian text-gold px-4 py-3 border border-gold/30 shadow-2xl group transition-luxury"
+      className="fixed bottom-6 right-6 z-[100] flex items-center space-x-3 text-gold px-4 py-3 shadow-2xl group transition-luxury"
       title="Chat with us on WhatsApp"
     >
        <div className="w-10 h-10 transition-luxury group-hover:scale-110 flex-shrink-0 flex items-center justify-center filter drop-shadow-md">
          <OfficialWhatsAppLogo className="w-full h-full" />
        </div>
        <div className="hidden sm:flex flex-col text-left">
-          <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-white group-hover:text-gold transition-luxury">
+          <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-[#25D366] group-hover:text-gold transition-luxury">
             Chat with Us
           </span>
           <span className="text-[8px] uppercase tracking-widest text-[#25D366] font-bold">

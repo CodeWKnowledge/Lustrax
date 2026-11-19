@@ -142,7 +142,7 @@ const ProductsPage = () => {
       {(() => {
         const bgImage = headerConfig?.background_image || heroImg
         return (
-          <section className="relative w-full h-screen min-h-[650px] flex items-center justify-center overflow-hidden bg-obsidian text-white mb-2 sm:mb-3">
+          <section className="relative w-full h-[65vh] min-h-[650px] flex items-center justify-center overflow-hidden bg-obsidian text-white mb-2 sm:mb-3">
             {/* Background Picture with Scrim */}
             <div className="absolute inset-0 z-0">
               <img 

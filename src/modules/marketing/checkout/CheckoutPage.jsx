@@ -18,6 +18,7 @@ import Button from '@/components/ui/Button'
 import PaymentSuccessModal from '@/components/ui/PaymentSuccessModal'
 import { formatCurrency } from '@/utils/formatters'
 import { toast } from 'react-hot-toast'
+import { notifyOrderPlaced } from '@/services/emailNotificationService'
 import locationData from '@/data/nigeria-locations.json'
 import PolicyModal from '@/components/ui/PolicyModal'
 import { TermsContent, RefundContent } from '@/data/legal-content'
@@ -215,6 +216,24 @@ const CheckoutPage = () => {
             })
             setShowSuccess(true)
             clearCart()
+
+            // Trigger customer confirmation & admin alert email
+            notifyOrderPlaced({
+              order: {
+                id: result.orderId,
+                total_amount: totalToPay,
+                payment_reference: response.reference,
+                created_at: new Date().toISOString(),
+                shipping_address: addrMeta
+              },
+              items: checkoutItems,
+              customer: {
+                email: user?.email,
+                full_name: formData.name || profile?.full_name,
+                phone: formData.phone
+              },
+              shippingAddress: addrMeta
+            }).catch(e => console.warn('Order placed notification warning:', e))
           } else {
             const isStockError = result.error && result.error.includes('Insufficient stock');
             showAlert(isStockError ? 'Acquisition Halted' : 'Verification Denied', 
